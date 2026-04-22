@@ -4,153 +4,140 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-bg: #0b0f19; --card-bg: #161c2c; --accent: #38bdf8; --text-gray: #94a3b8; }
-        body { background: var(--main-bg); color: white; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding-bottom: 90px; user-select: none; }
+        :root { --bg: #0b0f19; --card: #161c2c; --accent: #38bdf8; --glass: rgba(255, 255, 255, 0.05); }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* Шапка */
-        .header { display: flex; justify-content: space-between; padding: 15px; align-items: center; position: sticky; top: 0; background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(10px); z-index: 100; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-info img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--accent); }
-        .balance-block { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px; color: var(--accent); font-weight: bold; }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass); }
+        .balance { background: var(--glass); padding: 8px 15px; border-radius: 12px; color: var(--accent); font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.2); }
 
-        /* Контент */
-        .container { padding: 15px; }
-        .tab-content { display: none; animation: slideUp 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { padding: 20px; }
+        .main-case { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid var(--glass); text-align: center; }
+        .case-img { width: 100%; max-width: 250px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        /* Дизайн Профиля (как на скрине) */
-        .profile-header { background: var(--card-bg); border-radius: 25px; padding: 30px 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); position: relative; }
-        .main-avatar { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; }
-        .btn-support { background: #2563eb; color: white; border: none; width: 100%; padding: 14px; border-radius: 15px; font-weight: bold; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }
+        /* Выбор количества */
+        .selector-label { margin: 20px 0 10px; color: #94a3b8; font-size: 14px; }
+        .count-selector { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .count-btn { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 18px; border-radius: 12px; cursor: pointer; transition: 0.2s; flex: 1; }
+        .count-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
 
-        /* Промокод */
-        .promo-section { background: var(--card-bg); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .input-group { display: flex; gap: 10px; margin-top: 10px; }
-        input { background: #0b0f19; border: 1px solid #2d3748; color: white; padding: 12px; border-radius: 12px; flex: 1; outline: none; }
-        .btn-apply { background: #22c55e; color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: bold; }
+        /* Кнопки действий */
+        .action-btns { display: flex; flex-direction: column; gap: 10px; }
+        .btn-main { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-demo { background: var(--glass); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 16px; cursor: pointer; }
 
-        /* Кейсы */
-        .case-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .case-item { background: var(--card-bg); border-radius: 25px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-        .case-item img { width: 100%; height: 200px; object-fit: cover; }
-        .case-info { padding: 15px; text-align: center; }
+        /* Наполнение */
+        .items-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; }
+        .item-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 15px; font-size: 10px; border: 1px solid var(--glass); }
+        .item-box img { width: 40px; height: 40px; object-fit: contain; margin-bottom: 5px; }
+        .item-box b { display: block; color: var(--accent); margin-top: 3px; }
 
-        /* Навигация (Нижняя) */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #161c2c; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid rgba(255,255,255,0.05); }
-        .nav-item { color: var(--text-gray); text-align: center; font-size: 11px; flex: 1; transition: 0.3s; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 5px; }
-        .nav-item.active { color: var(--accent); }
-
-        /* Админка */
-        .admin-panel { background: #7f1d1d; padding: 20px; border-radius: 20px; margin-top: 20px; display: none; }
+        /* Экран рулетки */
+        #roulette-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
+        .roulette-track { width: 300px; height: 100px; border: 2px solid var(--accent); margin: 5px; overflow: hidden; position: relative; border-radius: 12px; background: #0f172a; }
+        .center-line { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: red; z-index: 5; transform: translateX(-50%); }
+        .tape { display: flex; position: absolute; left: 0; height: 100%; align-items: center; }
+        .tape-item { width: 100px; flex-shrink: 0; text-align: center; }
+        .tape-item img { width: 60px; height: 60px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="user-info">
-            <img id="header-avatar" src="" style="display:none">
-            <span id="header-name">Загрузка...</span>
-        </div>
-        <div class="balance-block" id="admin-trigger">
-            <i class="fa-solid fa-gem"></i>
-            <span id="balance-val">0.1</span>
-            <i class="fa-solid fa-plus"></i>
-        </div>
+        <span id="user-name" style="font-weight: bold;">CASEMONK</span>
+        <div class="balance">💰 <span id="balance">0.00</span> TON</div>
     </div>
 
     <div class="container">
-        <div id="tab-cases" class="tab-content active">
-            <div class="case-grid">
-                <div class="case-item">
-                    <img src="BAZAITEM.jpg">
-                    <div class="case-info">
-                        <h3>Farm Case</h3>
-                        <p style="color:var(--accent)">1.5 TON</p>
-                        <button class="btn-support" style="background:var(--accent); color:black" onclick="openCase()">Открыть</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-profile" class="tab-content">
-            <div class="profile-header">
-                <img id="profile-avatar" class="main-avatar" src="">
-                <h2 id="profile-name">User</h2>
-                <p style="color:var(--text-gray)">@<span id="profile-username">username</span></p>
-                <a href="https://t.me/casemonk_sup_robot" class="btn-support">
-                    <i class="fa-solid fa-headset"></i> Поддержка
-                </a>
+        <div class="main-case">
+            <img src="BAZAITEM.jpg" class="case-img">
+            <h1 style="margin: 0; font-size: 24px;">Farm Case</h1>
+            
+            <div class="selector-label">Выберите количество кейсов:</div>
+            <div class="count-selector">
+                <button class="count-btn active" onclick="setCount(1, this)">1x</button>
+                <button class="count-btn" onclick="setCount(2, this)">2x</button>
+                <button class="count-btn" onclick="setCount(3, this)">3x</button>
+                <button class="count-btn" onclick="setCount(4, this)">4x</button>
+                <button class="count-btn" onclick="setCount(5, this)">5x</button>
             </div>
 
-            <div class="promo-section">
-                <h4>Активировать промокод</h4>
-                <div class="input-group">
-                    <input type="text" id="promo-input" placeholder="Введите промокод">
-                    <button class="btn-apply">Применить</button>
-                </div>
+            <div class="action-btns">
+                <button class="btn-main" onclick="startRolling(false)">ОТКРЫТЬ ЗА <span id="total-price">1.5</span> TON</button>
+                <button class="btn-demo" onclick="startRolling(true)">ДЕМО-РЕЖИМ (БЕСПЛАТНО)</button>
             </div>
 
-            <div id="admin-panel" class="admin-panel">
-                <h3>🛠 Админ Панель</h3>
-                <p>Баланс: <input type="number" id="adm-set-bal" step="0.1"></p>
-                <button class="btn-apply" onclick="saveAdmin()">Сохранить</button>
-            </div>
+            <h4 style="text-align: left; margin: 30px 0 15px; color: #94a3b8;">Содержимое кейса:</h4>
+            <div class="items-grid" id="preview-grid"></div>
         </div>
     </div>
 
-    <div class="nav-bar">
-        <div class="nav-item" onclick="switchTab('modes', this)"><i class="fa-solid fa-gamepad"></i>Режимы</div>
-        <div class="nav-item active" onclick="switchTab('cases', this)"><i class="fa-solid fa-box-open"></i>Кейсы</div>
-        <div class="nav-item" onclick="switchTab('bonuses', this)"><i class="fa-solid fa-gift"></i>Бонусы</div>
-        <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-circle-user"></i>Профиль</div>
+    <div id="roulette-overlay">
+        <h2 id="roll-status">ОТКРЫВАЕМ...</h2>
+        <div id="tracks-container"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const MY_ID = 999313063; // Твой ID
+        
+        let selectedCount = 1;
+        const items = [
+            { name: "Ring", price: 0.7, img: "Ring.png" },
+            { name: "Trophy", price: 0.5, img: "Trophy.png" },
+            { name: "1 TON", price: 1.0, img: "1 ton.jpg" },
+            { name: "Ice Cream", price: 2.83, img: "https://cdn.changes.tg/gifts/ice-cream.png" },
+            { name: "Fresh Socks", price: 2.97, img: "https://cdn.changes.tg/gifts/fresh-socks.png" },
+            { name: "Clover Pin", price: 3.74, img: "https://cdn.changes.tg/gifts/clover-pin.png" }
+        ];
 
-        // Инициализация
-        const user = tg.initDataUnsafe?.user;
-        if(user) {
-            document.getElementById('header-name').innerText = user.first_name;
-            document.getElementById('profile-name').innerText = user.first_name;
-            document.getElementById('profile-username').innerText = user.username || user.id;
-            if(user.photo_url) {
-                document.getElementById('header-avatar').src = user.photo_url;
-                document.getElementById('header-avatar').style.display = 'block';
-                document.getElementById('profile-avatar').src = user.photo_url;
+        // Рендер превью предметов
+        const grid = document.getElementById('preview-grid');
+        items.forEach(item => {
+            grid.innerHTML += `<div class="item-box"><img src="${item.img}"><div>${item.name}</div><b>${item.price} TON</b></div>`;
+        });
+
+        function setCount(num, btn) {
+            selectedCount = num;
+            document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('total-price').innerText = (num * 1.5).toFixed(1);
+        }
+
+        function startRolling(isDemo) {
+            const overlay = document.getElementById('roulette-overlay');
+            const tracksContainer = document.getElementById('tracks-container');
+            tracksContainer.innerHTML = '';
+            overlay.style.display = 'flex';
+
+            for (let i = 0; i < selectedCount; i++) {
+                const track = document.createElement('div');
+                track.className = 'roulette-track';
+                track.innerHTML = `<div class="center-line"></div><div class="tape" id="tape-${i}"></div>`;
+                tracksContainer.appendChild(track);
+
+                const tape = document.getElementById(`tape-${i}`);
+                // Создаем ленту
+                for (let j = 0; j < 60; j++) {
+                    const itm = items[Math.floor(Math.random() * items.length)];
+                    tape.innerHTML += `<div class="tape-item"><img src="${itm.img}"></div>`;
+                }
+
+                // Логика победы
+                const winIdx = 55;
+                const winner = items[Math.floor(Math.random() * items.length)];
+                tape.children[winIdx].innerHTML = `<img src="${winner.img}">`;
+
+                setTimeout(() => {
+                    tape.style.transition = 'transform 10s cubic-bezier(0.1, 0, 0.1, 1)';
+                    tape.style.transform = `translateX(-${(winIdx * 100) - 100}px)`;
+                }, 100);
             }
-            
-            // Проверка на админа
-            if(user.id === MY_ID) {
-                document.getElementById('admin-panel').style.display = 'block';
-                tg.showAlert("Привет, Босс! Админка доступна в профиле.");
-            }
-        }
 
-        function switchTab(tab, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            const target = document.getElementById('tab-' + tab);
-            if(target) target.classList.add('active');
-            el.classList.add('active');
-        }
-
-        function saveAdmin() {
-            const val = document.getElementById('adm-set-bal').value;
-            document.getElementById('balance-val').innerText = val;
-            tg.showScanQrPopup({text: "Сохранение настроек..."});
-            setTimeout(() => tg.closeScanQrPopup(), 1000);
-        }
-
-        function openCase() {
-            tg.showConfirm("Открыть Farm Case?");
+            setTimeout(() => {
+                tg.showAlert(isDemo ? "Демонстрация окончена. Предметы не начислены." : "Кейсы открыты! Предметы в профиле.");
+                overlay.style.display = 'none';
+            }, 10500);
         }
     </script>
 </body>
