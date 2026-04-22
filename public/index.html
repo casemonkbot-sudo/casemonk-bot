@@ -22,21 +22,26 @@
             margin: 0; padding: 0; overflow-x: hidden;
         }
 
-        /* Шапка */
         .header { display: flex; justify-content: space-between; padding: 15px 20px; align-items: center; }
         .balance { background: var(--card-bg); padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .ton-icon { width: 14px; height: 14px; vertical-align: middle; }
 
-        .page { display: none; padding: 0 15px 120px; }
+        .page { display: none; padding: 0 15px 120px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Плитка кейса */
+        /* Профиль */
+        .profile-card { text-align: center; padding: 25px; background: var(--card-bg); border-radius: 24px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; }
+
+        /* Кейсы */
         .case-card {
             background: var(--card-bg); border-radius: 20px; padding: 20px; text-align: center;
             border: 1px solid rgba(255,255,255,0.05); cursor: pointer; margin-top: 20px;
         }
         .case-card img { width: 140px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
 
-        /* Модальное окно */
+        /* Модалка */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000;
@@ -49,69 +54,73 @@
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .modal-main-img { width: 120px; display: block; margin: 0 auto 10px; }
-        
-        /* Список предметов в столбик (как на скрине) */
-        .items-list { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+        .items-list { margin: 20px 0; display: flex; flex-direction: column; gap: 8px; }
         .item-row {
             display: flex; align-items: center; justify-content: space-between;
             background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 15px;
         }
-        .item-info { display: flex; align-items: center; gap: 15px; }
-        .item-info img { width: 40px; height: 40px; object-fit: contain; }
-        .item-name { font-size: 15px; font-weight: 500; }
-        .item-price { color: var(--green); font-weight: bold; font-size: 14px; }
+        .item-info { display: flex; align-items: center; gap: 12px; }
+        .item-info img { width: 35px; height: 35px; object-fit: contain; }
+        .item-price { color: var(--green); font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 4px; }
 
-        /* Выбор количества */
-        .multi-select {
-            display: flex; justify-content: center; gap: 10px; margin: 20px 0;
-        }
+        .multi-select { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
         .multi-btn {
             background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1);
-            color: white; padding: 8px 15px; border-radius: 12px; cursor: pointer;
+            color: white; padding: 10px 16px; border-radius: 14px; cursor: pointer; flex: 1;
         }
         .multi-btn.active { background: var(--accent); border-color: var(--accent); }
 
         .btn-main {
             background: var(--accent); color: white; border: none; width: 100%;
-            padding: 18px; border-radius: 18px; font-weight: bold; font-size: 16px;
+            padding: 18px; border-radius: 20px; font-weight: bold; font-size: 16px;
         }
+
+        /* Навигация */
+        .nav {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: rgba(25, 30, 48, 0.95); display: flex; justify-content: space-around;
+            padding: 12px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); z-index: 500;
+        }
+        .nav-link { color: var(--text-gray); text-decoration: none; font-size: 11px; text-align: center; flex: 1; }
+        .nav-link.active { color: white; }
+        .nav-link i { display: block; font-size: 20px; margin-bottom: 4px; }
 
         /* Рулетка */
         #roulette-screen {
             display: none; position: fixed; top:0; left:0; width:100%; height:100%;
             background: var(--bg); z-index: 2000; flex-direction: column; align-items: center; justify-content: center;
         }
-        .roulette-box { width: 100%; height: 140px; position: relative; overflow: hidden; margin: 40px 0; background: rgba(255,255,255,0.02); }
+        .roulette-box { width: 100%; height: 140px; position: relative; overflow: hidden; margin: 30px 0; }
         .rail { display: flex; position: absolute; left: 50%; transition: transform 8s cubic-bezier(0.1, 0, 0.1, 1); }
-        .rail-item { min-width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; }
+        .rail-item { min-width: 100px; display: flex; align-items: center; justify-content: center; }
         .rail-item img { width: 70px; }
-        .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--green); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--green); }
-
-        /* Навигация */
-        .nav {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(25, 30, 48, 0.95); display: flex; justify-content: space-around;
-            padding: 15px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .nav-link { color: var(--text-gray); text-decoration: none; font-size: 12px; text-align: center; }
-        .nav-link.active { color: white; }
-        .nav-link i { display: block; font-size: 20px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div id="u-name">Player</div>
+    <div id="u-name">Загрузка...</div>
     <div class="balance">
-        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
+        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon">
         <span id="u-bal">0.1</span>
     </div>
 </div>
 
-<div id="p-cases" class="page active">
+<div id="p-profile" class="page active">
+    <div class="profile-card">
+        <img id="u-avatar" class="avatar" src="">
+        <h3 id="u-full-name" style="margin: 0;">User</h3>
+        <div id="u-handle" style="color: var(--text-gray); font-size: 14px;">@username</div>
+    </div>
+    <h3 style="margin-top: 30px;">Инвентарь</h3>
+    <div id="inventory-list" style="color: var(--text-gray); text-align: center; margin-top: 20px;">
+        Здесь пока ничего нет
+    </div>
+</div>
+
+<div id="p-cases" class="page">
     <div class="case-card" onclick="showModal()">
-        <img src="case_farm.jpg">
+        <img src="case_farm.png">
         <h3>Farm</h3>
         <div style="color: var(--green); font-weight: bold;">1.5 TON</div>
     </div>
@@ -119,31 +128,30 @@
 
 <div id="modal" class="modal-overlay" onclick="if(event.target==this) hideModal()">
     <div class="modal">
-        <img src="case_farm.jpg" class="modal-main-img">
+        <img src="case_farm.png" style="width: 100px; display: block; margin: 0 auto 10px;">
         <h2 style="text-align: center; margin: 0;">Farm</h2>
         
         <div class="items-list">
             <div class="item-row">
-                <div class="item-info"><img src="ring.png"><span class="item-name">Ring</span></div>
-                <div class="item-price">0.7 T</div>
+                <div class="item-info"><img src="ring.png"><span>Ring</span></div>
+                <div class="item-price">0.7 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon"></div>
             </div>
             <div class="item-row">
-                <div class="item-info"><img src="trophy.png"><span class="item-name">Trophy</span></div>
-                <div class="item-price">0.5 T</div>
+                <div class="item-info"><img src="trophy.png"><span>Trophy</span></div>
+                <div class="item-price">0.5 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon"></div>
             </div>
             <div class="item-row">
-                <div class="item-info"><img src="ton.webp"><span class="item-name">1 TON</span></div>
-                <div class="item-price">1.0 T</div>
+                <div class="item-info"><img src="ton.webp"><span>1 TON</span></div>
+                <div class="item-price">1.0 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon"></div>
             </div>
         </div>
 
-        <div style="text-align: center; font-size: 13px; color: var(--text-gray);">Количество открытий:</div>
         <div class="multi-select">
-            <button class="multi-btn active" onclick="setCount(1, this)">1</button>
-            <button class="multi-btn" onclick="setCount(2, this)">2</button>
-            <button class="multi-btn" onclick="setCount(3, this)">3</button>
-            <button class="multi-btn" onclick="setCount(4, this)">4</button>
-            <button class="multi-btn" onclick="setCount(5, this)">5</button>
+            <button class="multi-btn active" onclick="setCount(1, this)">1x</button>
+            <button class="multi-btn" onclick="setCount(2, this)">2x</button>
+            <button class="multi-btn" onclick="setCount(3, this)">3x</button>
+            <button class="multi-btn" onclick="setCount(4, this)">4x</button>
+            <button class="multi-btn" onclick="setCount(5, this)">5x</button>
         </div>
 
         <button class="btn-main" onclick="startSpin()">Открыть кейс</button>
@@ -153,14 +161,14 @@
 <div id="roulette-screen">
     <h2 id="spin-status">Удачи!</h2>
     <div class="roulette-box">
-        <div class="pointer"></div>
+        <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--green); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 10px var(--green);"></div>
         <div id="rail" class="rail"></div>
     </div>
 </div>
 
 <div class="nav">
-    <a href="#" class="nav-link active"><i class="fa-solid fa-box"></i>Кейсы</a>
-    <a href="#" class="nav-link"><i class="fa-solid fa-user"></i>Профиль</a>
+    <a href="javascript:void(0)" class="nav-link" onclick="switchTab('cases', this)"><i class="fa-solid fa-box"></i>Кейсы</a>
+    <a href="javascript:void(0)" class="nav-link active" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Профиль</a>
 </div>
 
 <script>
@@ -169,13 +177,21 @@
     
     let balance = 0.1;
     let openCount = 1;
-    const pricePerCase = 1.5;
 
     const possibleItems = [
         { name: 'Ring', img: 'ring.png', price: 0.7 },
         { name: 'Trophy', img: 'trophy.png', price: 0.5 },
         { name: '1 TON', img: 'ton.webp', price: 1.0 }
     ];
+
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ
+    function switchTab(tab, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        
+        document.getElementById('p-' + tab).classList.add('active');
+        el.classList.add('active');
+    }
 
     function showModal() { document.getElementById('modal').classList.add('active'); }
     function hideModal() { document.getElementById('modal').classList.remove('active'); }
@@ -187,12 +203,7 @@
     }
 
     function startSpin() {
-        const totalCost = pricePerCase * openCount;
-        if (balance < totalCost) {
-            alert("Недостаточно TON!");
-            return;
-        }
-
+        if (balance < (1.5 * openCount)) { alert("Недостаточно TON!"); return; }
         hideModal();
         const screen = document.getElementById('roulette-screen');
         const rail = document.getElementById('rail');
@@ -202,37 +213,34 @@
         rail.style.transform = 'translateX(0)';
         rail.innerHTML = '';
 
-        // Генерируем ленту предметов
         const spinItems = [];
-        for(let i=0; i<80; i++) {
-            spinItems.push(possibleItems[Math.floor(Math.random() * possibleItems.length)]);
-        }
+        for(let i=0; i<80; i++) spinItems.push(possibleItems[Math.floor(Math.random() * possibleItems.length)]);
+        spinItems.forEach(item => { rail.innerHTML += `<div class="rail-item"><img src="${item.img}"></div>`; });
 
-        spinItems.forEach(item => {
-            rail.innerHTML += `<div class="rail-item"><img src="${item.img}"></div>`;
-        });
-
-        const winIndex = 70; // На каком предмете остановимся
+        const winIndex = 70;
         const winItem = spinItems[winIndex];
 
         setTimeout(() => {
             rail.style.transition = 'transform 8s cubic-bezier(0.1, 0, 0.1, 1)';
-            // Центрируем выигрышный предмет
-            const shift = (winIndex * 110) + 55;
-            rail.style.transform = `translateX(-${shift}px)`;
+            rail.style.transform = `translateX(-${(winIndex * 100) + 50}px)`;
         }, 100);
 
         setTimeout(() => {
-            alert(`Поздравляем! Вы выбили: ${winItem.name}`);
-            balance -= totalCost;
+            alert(`Выпало: ${winItem.name}`);
+            balance -= (1.5 * openCount);
             document.getElementById('u-bal').innerText = balance.toFixed(1);
             screen.style.display = 'none';
         }, 8500);
     }
 
-    // Имя из Телеграм
+    // Данные пользователя
     const user = tg.initDataUnsafe?.user;
-    if(user) document.getElementById('u-name').innerText = user.first_name;
+    if(user) {
+        document.getElementById('u-name').innerText = user.first_name;
+        document.getElementById('u-full-name').innerText = user.first_name;
+        document.getElementById('u-handle').innerText = '@' + (user.username || 'user');
+        if(user.photo_url) document.getElementById('u-avatar').src = user.photo_url;
+    }
 </script>
 
 </body>
