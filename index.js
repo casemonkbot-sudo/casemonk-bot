@@ -1,21 +1,18 @@
-const { Telegraf } = require('telegraf');
-const express = require('express');
-const path = require('path');
-
-const bot = new Telegraf('8774206010:AAHmvdYuN0xUOCL8poGlLYuy_SkaV2r9cUg');
-const app = express();
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-bot.start((ctx) => {
-    ctx.reply(`🎁Привет, на связи команда CASEMONK и теперь ты вместе с нами! ⚡️\n\nОткрывай кейсы и выигрывай самые дорогие и лучшие NFT подарки!\n\n💸Делись своей реферальной ссылкой с друзьями - и за каждого проведённого друга который сделает депозит ты получаешь 15% от суммы их пополнений!\nКруто - действуй\n\n🎉Хочешь выиграть дорогие подарки? Время пришло!\nЖми «Играть» и забирай свой NFT-приз!`, {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: "Играть 🚀", web_app: { url: "https://" + process.env.RENDER_EXTERNAL_HOSTNAME } }]
-            ]
-        }
-    });
-});
-
-bot.launch();
-app.listen(process.env.PORT || 3000);
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .btn { background: #38bdf8; border: none; padding: 15px 30px; border-radius: 10px; color: #0f172a; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🚀 CASEMONK</h1>
+    <p>Приложение запущено!</p>
+    <button class="btn" onclick="Telegram.WebApp.close()">ЗАКРЫТЬ</button>
+    <script>window.Telegram.WebApp.expand();</script>
+</body>
+</html>
