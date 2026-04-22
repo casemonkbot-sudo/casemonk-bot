@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CaseMonk - Farm Case</title>
+    <title>CaseMonk - аккуратный интерфейс</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --bg-gradient: linear-gradient(180deg, #1a2036 0%, #0f121d 100%);
             --card-bg: rgba(255, 255, 255, 0.05);
+            --modal-bg: #141829;
             --accent-blue: #246bfd;
             --accent-green: #4ade80;
             --text-main: #ffffff;
@@ -17,72 +18,83 @@
         }
 
         body {
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-main);
-            font-family: -apple-system, system-ui, sans-serif;
-            margin: 0; padding: 0; overflow-x: hidden;
+            background: var(--bg-gradient); background-attachment: fixed; color: var(--text-main);
+            font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 0; overflow-x: hidden;
         }
 
         .header { display: flex; justify-content: space-between; padding: 15px 20px; align-items: center; }
         .balance-badge { background: var(--card-bg); padding: 6px 14px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; align-items: center; }
 
-        .page { display: none; padding: 0 20px 120px; animation: fadeIn 0.3s ease; }
+        .page { display: none; padding: 0 15px 120px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Дизайн кейса */
-        .case-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-top: 20px;
+        /* Плитки кейсов (Аккуратные) */
+        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .case-tile {
+            background: var(--card-bg); border-radius: 16px; padding: 15px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s;
         }
-        .case-img { width: 100%; max-width: 200px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        .case-tile:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
+        .case-tile img { width: 100%; max-width: 120px; margin-bottom: 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
         
-        .btn-open {
-            background: var(--accent-blue);
-            color: white; border: none; width: 100%; padding: 15px;
-            border-radius: 16px; font-weight: bold; margin-top: 15px; font-size: 16px;
+        /* Детальное окно (Modal) */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000;
+            align-items: center; justify-content: center; padding: 20px;
         }
-        .btn-demo {
-            background: transparent;
-            color: var(--text-gray); border: 1px solid var(--text-gray); width: 100%; padding: 10px;
-            border-radius: 16px; margin-top: 10px;
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--modal-bg); border-radius: 24px; width: 100%; max-width: 400px;
+            padding: 25px; border: 1px solid rgba(255,255,255,0.1); position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-close { position: absolute; top: 15px; right: 15px; color: var(--text-gray); font-size: 20px; }
+        
+        .modal-main-img { width: 100%; max-width: 180px; display: block; margin: 0 auto 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        
+        /* Список предметов в окне */
+        .modal-item-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; max-height: 200px; overflow-y: auto; }
+        .modal-item {
+            display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.2);
+            padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);
+        }
+        .modal-item img { width: 40px; height: 40px; object-fit: contain; }
+        .modal-item-info { flex-grow: 1; font-size: 14px; }
+        .modal-item-price { color: var(--accent-green); font-weight: bold; }
+
+        /* Кнопки в окне */
+        .btn-open-real {
+            background: var(--accent-blue); color: white; border: none; width: 100%;
+            padding: 15px; border-radius: 16px; font-weight: bold; font-size: 16px; margin-top: 15px;
+        }
+        .btn-open-demo {
+            background: transparent; color: var(--text-gray); border: 1px solid var(--text-gray);
+            width: 100%; padding: 10px; border-radius: 16px; margin-top: 10px; font-size: 14px;
         }
 
-        /* Рулетка */
+        /* Рулетка (без изменений) */
         #roulette-container {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 1000;
-            flex-direction: column; align-items: center; justify-content: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; flex-direction: column; align-items: center; justify-content: center;
         }
         .roulette-window {
             width: 300px; height: 120px; border: 2px solid var(--accent-blue);
             position: relative; overflow: hidden; border-radius: 15px; background: #0a0d16;
         }
-        .roulette-rail {
-            display: flex; position: absolute; left: 0; transition: transform 10s cubic-bezier(0.15, 0, 0.15, 1);
-        }
-        .item-card {
-            min-width: 100px; height: 100px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; padding: 10px;
-        }
+        .roulette-rail { display: flex; position: absolute; left: 0; transition: transform 10s cubic-bezier(0.15, 0, 0.15, 1); }
+        .item-card { min-width: 100px; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
         .item-card img { width: 60px; height: 60px; object-fit: contain; }
-        .marker {
-            position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
-            background: var(--accent-green); z-index: 10; transform: translateX(-50%);
-        }
+        .marker { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--accent-green); z-index: 10; transform: translateX(-50%); }
 
-        /* Инвентарь */
+        /* Профиль и Инвентарь (без изменений) */
         .inventory-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
         .inv-item { background: var(--card-bg); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
         .inv-item img { width: 50px; margin-bottom: 10px; }
 
-        /* Навигация */
+        /* Навигация (без изменений) */
         .nav-bar {
             position: fixed; bottom: 20px; left: 20px; right: 20px;
             background: rgba(25, 30, 48, 0.9); backdrop-filter: blur(20px);
@@ -110,7 +122,6 @@
         <h3 id="full-name" style="margin: 10px 0 0;">User</h3>
         <div id="username" style="color: var(--text-gray); font-size: 14px;">@username</div>
     </div>
-
     <h3 style="margin-top: 25px;">Инвентарь</h3>
     <div id="inventory" class="inventory-list">
         <div style="grid-column: 1/3; color: var(--text-gray); text-align: center;">Пусто...</div>
@@ -118,19 +129,45 @@
 </div>
 
 <div id="cases-page" class="page">
-    <div class="case-card">
-        <img src="https://i.postimg.cc/mD3mZ6mS/1000001923.jpg" class="case-img" alt="Farm Case">
-        <h2 style="margin: 10px 0;">Farm Random</h2>
-        <div style="color: var(--accent-green); font-weight: bold; font-size: 18px;">1.5 TON</div>
+    <h3 style="margin-top: 15px;">Уникальные</h3>
+    <div class="cases-grid">
+        <div class="case-tile" onclick="openCaseModal()">
+            <img src="https://i.postimg.cc/mD3mZ6mS/1000001923.jpg" alt="Farm Case">
+            <div style="font-weight: 500; font-size: 14px;">Farm Random</div>
+            <div style="color: var(--accent-green); font-weight: bold; font-size: 14px; margin-top: 3px;">1.5 TON</div>
+        </div>
+        </div>
+</div>
+
+<div id="case-modal" class="modal-overlay" onclick="closeModalOnBg()">
+    <div class="modal">
+        <i class="fa-solid fa-times modal-close" onclick="closeCaseModal()"></i>
+        <img src="https://i.postimg.cc/mD3mZ6mS/1000001923.jpg" class="modal-main-img" alt="Farm Case">
+        <h2 style="text-align: center; margin: 0 0 5px;">Farm Random</h2>
+        <div style="text-align: center; color: var(--accent-green); font-weight: bold; font-size: 18px;">Цена: 1.5 TON</div>
+
+        <h4 style="margin: 25px 0 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;">Содержимое</h4>
         
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 15px; font-size: 12px; color: var(--text-gray);">
-            <span>💍 Ring (0.7 TON)</span>
-            <span>🏆 Trophy (0.5 TON)</span>
-            <span>💎 1 TON Random</span>
+        <div class="modal-item-list">
+            <div class="modal-item">
+                <img src="https://i.postimg.cc/B6fD6v8C/1000001919.png" alt="Ring">
+                <div class="modal-item-info">Ring Random</div>
+                <div class="modal-item-price">0.7 T</div>
+            </div>
+            <div class="modal-item">
+                <img src="https://i.postimg.cc/8zXyB6S2/1000001920.png" alt="Trophy">
+                <div class="modal-item-info">Trophy Random</div>
+                <div class="modal-item-price">0.5 T</div>
+            </div>
+            <div class="modal-item">
+                <img src="https://i.postimg.cc/6pD6v8C/1000001918.webp" alt="1 TON">
+                <div class="modal-item-info">1 TON Random</div>
+                <div class="modal-item-price">1.0 T</div>
+            </div>
         </div>
 
-        <button class="btn-open" onclick="startOpening(false)">Открыть за 1.5 TON</button>
-        <button class="btn-demo" onclick="startOpening(true)">Демо режим</button>
+        <button class="btn-open-real" onclick="startOpening(false)">Открыть за 1.5 TON</button>
+        <button class="btn-open-demo" onclick="startOpening(true)">Демо режим</button>
     </div>
 </div>
 
@@ -145,7 +182,7 @@
 
 <div class="nav-bar">
     <a href="#" class="nav-item" onclick="switchTab('cases', this)">
-        <i class="fa-solid fa-box"></i><span>Кейсы</span>
+        <i class="fa-solid fa-shapes"></i><span>Кейсы</span>
     </a>
     <a href="#" class="nav-item active" onclick="switchTab('profile', this)">
         <i class="fa-solid fa-user-circle"></i><span>Профиль</span>
@@ -159,14 +196,14 @@
     let balance = 0.1;
     let inventory = [];
 
-    // Предметы
+    // Предметы (без изменений)
     const items = [
-        { id: 'ring', name: 'Ring Random', price: 0.7, img: 'https://i.postimg.cc/B6fD6v8C/1000001919.png', weight: 40 },
-        { id: 'trophy', name: 'Trophy Random', price: 0.5, img: 'https://i.postimg.cc/8zXyB6S2/1000001920.png', weight: 60 },
-        { id: 'ton1', name: '1 TON Random', price: 1.0, img: 'https://i.postimg.cc/6pD6v8C/1000001918.webp', weight: 50 }
+        { id: 'ring', name: 'Ring Random', price: 0.7, img: 'https://i.postimg.cc/B6fD6v8C/1000001919.png' },
+        { id: 'trophy', name: 'Trophy Random', price: 0.5, img: 'https://i.postimg.cc/8zXyB6S2/1000001920.png' },
+        { id: 'ton1', name: '1 TON Random', price: 1.0, img: 'https://i.postimg.cc/6pD6v8C/1000001918.webp' }
     ];
 
-    // Инициализация данных пользователя
+    // Инициализация (без изменений)
     const user = tg.initDataUnsafe?.user;
     if (user) {
         document.getElementById('top-name').innerText = user.first_name;
@@ -180,13 +217,27 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(page + '-page').classList.add('active');
         el.classList.add('active');
+        closeCaseModal(); // Закрываем окно при переключении табов
     }
 
+    // ЛОГИКА ОКНА (MODAL)
+    function openCaseModal() {
+        document.getElementById('case-modal').classList.add('active');
+    }
+    function closeCaseModal() {
+        document.getElementById('case-modal').classList.remove('active');
+    }
+    function closeModalOnBg() {
+        if (event.target.id === 'case-modal') closeCaseModal();
+    }
+
+    // ЛОГИКА ОТКРЫТИЯ (без изменений)
     function startOpening(isDemo) {
         if (!isDemo && balance < 1.5) {
             alert("Недостаточно баланса!");
             return;
         }
+        closeCaseModal(); // Закрываем окно перед анимацией
 
         const container = document.getElementById('roulette-container');
         const rail = document.getElementById('rail');
@@ -194,20 +245,15 @@
         rail.style.transition = 'none';
         rail.style.transform = 'translateX(0)';
         
-        // Генерируем 50 предметов для прокрутки
         rail.innerHTML = '';
-        let list = [];
         for(let i=0; i<60; i++) {
             const randomItem = items[Math.floor(Math.random() * items.length)];
-            list.push(randomItem);
             rail.innerHTML += `<div class="item-card"><img src="${randomItem.img}"><span>${randomItem.price} T</span></div>`;
         }
 
-        // Выбор победителя (шансы)
         let winner;
         if (isDemo) {
-            // В демо всегда выпадает что-то подороже (например 1 TON)
-            winner = items[2]; 
+            winner = items[2]; // Демо: всегда 1 TON
         } else {
             const rand = Math.random() * 150;
             if (rand < 40) winner = items[0];
@@ -217,37 +263,29 @@
             updateUI();
         }
 
-        // Подменяем 55-й элемент на нашего победителя
         const winnerIdx = 55;
         rail.children[winnerIdx].innerHTML = `<img src="${winner.img}"><span>${winner.price} T</span>`;
 
-        // Запуск анимации
         setTimeout(() => {
             rail.style.transition = 'transform 10s cubic-bezier(0.15, 0, 0.15, 1)';
-            const offset = -(winnerIdx * 100) + 100; // Центрируем
-            rail.style.transform = `translateX(${offset}px)`;
+            rail.style.transform = `translateX(${- (winnerIdx * 100) + 100}px)`;
         }, 100);
 
-        // Конец анимации
         setTimeout(() => {
             container.style.display = 'none';
             handleWin(winner, isDemo);
         }, 10500);
     }
 
+    // ОБРАБОТКА ВЫИГРЫША И ОБНОВЛЕНИЕ (без изменений)
     function handleWin(item, isDemo) {
         if (isDemo) {
             alert(`Демо: Вы выбили ${item.name}! (Приз не начислен)`);
             return;
         }
-
-        const action = confirm(`Вы выбили ${item.name} (${item.price} TON)!\nПродать за ${item.price} TON? (ОК - Продать, Отмена - Оставить в инвентаре)`);
-        
-        if (action) {
-            balance += item.price;
-        } else {
-            inventory.push(item);
-        }
+        const action = confirm(`Вы выбили ${item.name} (${item.price} TON)!\nПродать за ${item.price} TON?`);
+        if (action) balance += item.price;
+        else inventory.push(item);
         updateUI();
     }
 
