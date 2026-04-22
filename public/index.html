@@ -11,35 +11,28 @@
             --bg: #0b0e16;
             --surface: #161b2c;
             --accent: #246bfd;
-            --accent-glow: rgba(36, 107, 253, 0.3);
-            --green: #00f2fe;
+            --green: #4ade80;
             --text: #ffffff;
             --text-gray: #8a96b1;
             --card-grad: linear-gradient(145deg, #1e253d, #161b2c);
         }
 
         body {
-            background: var(--bg); color: var(--text);
-            font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0; padding: 0; overflow: hidden;
-            user-select: none; -webkit-tap-highlight-color: transparent;
+            background: #000; color: var(--text);
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0;
+            display: flex; justify-content: center; overflow: hidden;
         }
 
-        /* Обрезка под стандартные мобильные экраны */
+        /* Ограничение под 1080x2400 (соотношение сторон) */
         .app-container {
-            max-width: 500px; margin: 0 auto; height: 100vh;
-            position: relative; overflow-y: auto; overflow-x: hidden;
+            width: 100vw; max-width: 460px; height: 100vh;
+            background: var(--bg); position: relative;
+            display: flex; flex-direction: column; overflow: hidden;
         }
 
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px; position: sticky; top: 0; z-index: 100;
-            background: rgba(11, 14, 22, 0.9); backdrop-filter: blur(10px);
-        }
-
-        .lang-switcher {
-            background: var(--surface); border: 1px solid rgba(255,255,255,0.1);
-            padding: 6px 14px; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: bold;
+            padding: 20px; z-index: 100; background: rgba(11, 14, 22, 0.8);
         }
 
         .balance-pill {
@@ -47,255 +40,193 @@
             border: 1px solid rgba(36, 107, 253, 0.2); display: flex; align-items: center; gap: 8px;
         }
 
-        .page { display: none; padding: 10px 20px 140px; animation: fadeIn 0.3s ease; }
+        .page { display: none; padding: 10px 20px 120px; overflow-y: auto; flex: 1; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Кейсы */
-        .section-title { font-size: 20px; font-weight: 800; margin: 20px 0; text-align: center; }
-        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .case-card {
-            background: var(--card-grad); border-radius: 24px; padding: 20px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.2s;
+        /* Дизайн промокода по скриншоту */
+        .promo-card {
+            background: #1c1f2e; border-radius: 24px; padding: 24px;
+            margin-top: 20px; border: 1px solid rgba(255,255,255,0.05);
         }
-        .case-card img { width: 100%; max-width: 110px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
-
-        /* Профиль */
-        .profile-hero {
-            background: var(--card-grad); border-radius: 28px; padding: 30px;
-            text-align: center; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .avatar-frame {
-            width: 85px; height: 85px; border-radius: 50%; padding: 3px;
-            background: linear-gradient(45deg, var(--accent), var(--green)); margin: 0 auto 15px;
-        }
-        .avatar-frame img { width: 100%; height: 100%; border-radius: 50%; background: var(--bg); }
-
-        .promo-box {
-            background: var(--surface); border-radius: 20px; padding: 20px;
-            border: 1px solid rgba(255,255,255,0.05); margin-top: 20px;
-        }
-        .promo-input-group { display: flex; gap: 8px; margin-top: 10px; }
+        .promo-card h3 { margin: 0 0 10px 0; font-size: 20px; font-weight: 600; }
+        .promo-card p { color: var(--text-gray); font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
+        .promo-input-wrapper { display: flex; gap: 10px; }
         .promo-input {
-            flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px; color: white; outline: none;
+            flex: 1; background: #0f121d; border: none; border-radius: 16px;
+            padding: 16px; color: white; font-size: 15px; outline: none;
         }
-        .btn-promo { background: var(--accent); border: none; color: white; padding: 0 15px; border-radius: 12px; font-weight: bold; }
-
-        /* Модалка - Исправлено перекрытие */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000;
-            align-items: center; justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal {
-            background: var(--surface); border-radius: 30px; width: 90%; max-width: 380px;
-            padding: 25px; position: relative; border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6); animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .modal-item {
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 15px; margin-bottom: 8px;
-        }
-        .modal-item img { width: 40px; height: 40px; object-fit: contain; }
-
-        /* Управление */
-        .control-panel { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; margin: 15px 0; }
-        .multi-row { display: flex; gap: 6px; margin-bottom: 12px; }
-        .m-btn {
-            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: white; padding: 10px 0; border-radius: 12px; font-size: 13px;
-        }
-        .m-btn.active { background: var(--accent); border-color: var(--accent); }
-
-        .btn-open {
-            background: var(--accent); color: white; border: none; width: 100%; padding: 16px;
-            border-radius: 18px; font-size: 16px; font-weight: bold; cursor: pointer;
+        .promo-btn {
+            background: var(--green); color: #000; border: none;
+            padding: 0 25px; border-radius: 16px; font-weight: bold; font-size: 15px;
         }
 
-        /* Рулетка - Исправлена высота */
-        #roulette-screen {
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: var(--bg); z-index: 3000; flex-direction: column; align-items: center; justify-content: center;
+        /* Сетка кейсов */
+        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .case-card {
+            background: var(--card-grad); border-radius: 24px; padding: 20px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.03);
         }
-        .r-window {
-            width: 320px; height: 120px; border: 2px solid var(--accent);
-            border-radius: 20px; position: relative; overflow: hidden; background: #080a11;
-        }
-        .r-rail { display: flex; position: absolute; left: 50%; transition: transform 8s cubic-bezier(0.1, 0, 0.1, 1); }
-        .r-item { min-width: 100px; height: 120px; display: flex; align-items: center; justify-content: center; }
-        .r-item img { width: 75px; height: 75px; object-fit: contain; }
-        .r-pointer { position: absolute; left: 50%; top:0; bottom:0; width: 2px; background: var(--green); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--green); }
+        .case-card img { width: 100%; height: auto; max-width: 120px; margin-bottom: 10px; }
 
         /* Навигация */
         .nav-bar {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 40px); max-width: 460px;
-            background: rgba(22, 27, 44, 0.95); backdrop-filter: blur(15px);
-            display: flex; justify-content: space-around; padding: 14px;
-            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+            position: absolute; bottom: 30px; left: 20px; right: 20px;
+            background: rgba(22, 27, 44, 0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; padding: 15px;
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
         }
-        .nav-item { text-align: center; color: var(--text-gray); text-decoration: none; font-size: 11px; flex: 1; }
+        .nav-item { color: var(--text-gray); text-decoration: none; text-align: center; font-size: 11px; }
         .nav-item.active { color: var(--accent); }
-        .nav-item i { display: block; font-size: 22px; margin-bottom: 4px; }
+        .nav-item i { display: block; font-size: 20px; margin-bottom: 5px; }
 
-        /* Toast */
-        .toast {
-            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
-            padding: 12px 25px; border-radius: 15px; background: var(--surface);
-            border: 1px solid var(--accent); z-index: 9999; display: none; font-size: 14px;
+        /* Модалка открытия */
+        .modal-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--surface); width: 90%; border-radius: 30px;
+            padding: 25px; border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .3s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(18px); }
+        /* Исправленная рулетка */
+        #roulette-screen {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 3000; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .r-window {
+            width: 320px; height: 140px; border: 2px solid var(--accent);
+            border-radius: 24px; position: relative; overflow: hidden; background: #080a11;
+        }
+        .r-rail { display: flex; position: absolute; left: 50%; transition: transform 8s cubic-bezier(0.1, 0, 0.1, 1); }
+        .r-item-bundle { min-width: 120px; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+        .r-item-bundle img { width: 50px; height: 50px; object-fit: contain; }
+
+        .toast {
+            position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+            background: var(--surface); padding: 12px 20px; border-radius: 12px;
+            border: 1px solid var(--accent); z-index: 5000; display: none;
+        }
     </style>
 </head>
 <body>
 
-<div id="toast" class="toast"></div>
-
 <div class="app-container">
+    <div id="toast" class="toast"></div>
+
     <div class="header">
         <div class="lang-switcher" onclick="toggleLang()" id="lang-btn">RU</div>
         <div class="balance-pill">
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="16">
+            <img src="ton.webp" width="20">
             <span id="u-bal">0.00</span>
         </div>
     </div>
 
     <div id="p-cases" class="page active">
-        <div class="section-title" data-key="title_cases">Уникальные</div>
+        <h2 style="text-align:center" data-key="title_cases">Уникальные</h2>
         <div class="cases-grid">
             <div class="case-card" onclick="openModal()">
-                <img src="case_farm.png">
-                <div style="margin-top:12px; font-weight:bold; font-size: 15px;">Farm</div>
-                <div style="color:var(--green); font-size:14px; font-weight: bold; margin-top:4px;">1.50 TON</div>
+                <img src="case_farm.jpg">
+                <div style="font-weight:bold">Farm</div>
+                <div style="color:var(--green)">1.50 TON</div>
             </div>
         </div>
     </div>
 
     <div id="p-profile" class="page">
-        <div class="profile-hero">
-            <div class="avatar-frame"><img id="u-avatar" src=""></div>
+        <div style="text-align:center; padding: 20px;">
+            <div style="width:80px; height:80px; background:var(--accent); border-radius:50%; margin: 0 auto 10px;"></div>
             <h2 id="u-name" style="margin:0">User</h2>
-            <div id="u-handle" style="color:var(--text-gray)">@username</div>
         </div>
 
-        <div class="promo-box">
-            <div style="font-weight:bold; font-size: 14px;" data-key="promo_title">Промокод</div>
-            <div class="promo-input-group">
-                <input type="text" class="promo-input" id="promo-input" placeholder="...">
-                <button class="btn-promo" onclick="applyPromo()" data-key="btn_apply">ОК</button>
+        <div class="promo-card">
+            <h3 data-key="promo_h">Активировать промокод</h3>
+            <p data-key="promo_p">Вводите реферальный или бонусный промокод и получайте подарки и бонусы</p>
+            <div class="promo-input-wrapper">
+                <input type="text" class="promo-input" id="promo-input" placeholder="Введите промокод">
+                <button class="promo-btn" onclick="applyPromo()" data-key="btn_apply">Применить</button>
             </div>
         </div>
 
-        <div class="section-title" style="text-align:left; margin-top:30px;" data-key="inventory">Инвентарь</div>
-        <div id="inventory-list" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;"></div>
+        <h3 style="margin-top:30px" data-key="inventory">Инвентарь</h3>
+        <div id="inventory-list" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
     </div>
 
     <div class="nav-bar">
-        <a href="javascript:void(0)" class="nav-item active" onclick="switchTab('cases', this)">
+        <a href="#" class="nav-item active" onclick="switchTab('cases', this)">
             <i class="fa-solid fa-box-open"></i><span data-key="nav_cases">Кейсы</span>
         </a>
-        <a href="javascript:void(0)" class="nav-item" onclick="switchTab('profile', this)">
-            <i class="fa-solid fa-circle-user"></i><span data-key="nav_profile">Профиль</span>
+        <a href="#" class="nav-item" onclick="switchTab('profile', this)">
+            <i class="fa-solid fa-user"></i><span data-key="nav_profile">Профиль</span>
         </a>
     </div>
-</div>
 
-<div id="modal" class="modal-overlay" onclick="if(event.target==this) closeModal()">
-    <div class="modal">
-        <i class="fa-solid fa-xmark" style="position:absolute; right:25px; top:25px; color:var(--text-gray); font-size:20px;" onclick="closeModal()"></i>
-        <img src="case_farm.png" style="width:90px; display:block; margin: 0 auto 15px;">
-        <h2 style="text-align:center; margin:0 0 20px;">Farm</h2>
+    <div id="modal" class="modal-overlay" onclick="if(event.target==this) closeModal()">
+        <div class="modal">
+            <img src="case_farm.jpg" style="width:100px; display:block; margin: 0 auto 15px;">
+            <h2 style="text-align:center; margin-bottom:20px;">Farm</h2>
+            
+            <div id="modal-items" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px;"></div>
 
-        <div id="modal-items"></div>
-
-        <div class="control-panel">
-            <div class="multi-row">
-                <button class="m-btn active" onclick="setCount(1, this)">1</button>
-                <button class="m-btn" onclick="setCount(2, this)">2</button>
-                <button class="m-btn" onclick="setCount(3, this)">3</button>
-                <button class="m-btn" onclick="setCount(4, this)">4</button>
-                <button class="m-btn" onclick="setCount(5, this)">5</button>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--text-gray);">
-                <span data-key="demo_mode">Демо режим</span>
-                <label class="switch">
+            <div style="background:rgba(0,0,0,0.2); padding:15px; border-radius:20px; margin-bottom:15px;">
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <button class="m-btn" onclick="setCount(1, this)" style="flex:1; padding:8px; border-radius:10px; border:1px solid #333; background:none; color:white;">1</button>
+                    <button class="m-btn" onclick="setCount(2, this)" style="flex:1; padding:8px; border-radius:10px; border:1px solid #333; background:none; color:white;">2</button>
+                    <button class="m-btn" onclick="setCount(5, this)" style="flex:1; padding:8px; border-radius:10px; border:1px solid #333; background:none; color:white;">5</button>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:13px">Демо режим</span>
                     <input type="checkbox" id="demo-switch">
-                    <span class="slider"></span>
-                </label>
+                </div>
             </div>
+
+            <button onclick="startSpin()" style="width:100%; padding:16px; background:var(--accent); border:none; border-radius:15px; color:white; font-weight:bold;" id="btn-open-text">Открыть</button>
         </div>
-
-        <button class="btn-open" onclick="startSpin()" id="btn-open-text">Открыть</button>
     </div>
-</div>
 
-<div id="roulette-screen">
-    <div class="r-window">
-        <div class="r-pointer"></div>
-        <div id="rail" class="r-rail"></div>
+    <div id="roulette-screen">
+        <div class="r-window">
+            <div style="position:absolute; left:50%; top:0; bottom:0; width:2px; background:var(--green); z-index:10; transform:translateX(-50%)"></div>
+            <div id="rail" class="r-rail"></div>
+        </div>
+        <h3 style="margin-top:20px" data-key="status_luck">УДАЧИ!</h3>
     </div>
-    <h3 id="r-status" style="margin-top:25px; letter-spacing:1px;" data-key="status_luck">УДАЧИ!</h3>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    let state = {
-        lang: 'ru',
-        balance: 0.00, // Стартовый баланс убран
-        openCount: 1,
-        inventory: []
-    };
+    let state = { lang: 'ru', balance: 0.00, openCount: 1, inventory: [] };
 
     const i18n = {
         ru: {
             title_cases: "Уникальные", nav_cases: "Кейсы", nav_profile: "Профиль",
-            promo_title: "Промокод", btn_apply: "ОК", inventory: "Инвентарь",
-            demo_mode: "Демо режим", btn_open: "Открыть за", status_luck: "КРУТИМ...",
-            err_no_bal: "Недостаточно TON!", promo_ok: "Успешно активирован!",
-            promo_err: "Промокода не существует", promo_end: "Промокод закончился",
-            win_msg: "Вы выбили:", items: ["Ice Cream", "Fresh Socks", "Clover Pin", "Ring"]
+            promo_h: "Активировать промокод", promo_p: "Вводите реферальный или бонусный промокод и получайте подарки и бонусы",
+            btn_apply: "Применить", inventory: "Инвентарь", status_luck: "УДАЧИ!",
+            promo_ok: "Промокод успешно активирован!", promo_err: "Промокода не существует", promo_end: "Промокод закончился",
+            win: "Вы получили:"
         },
         en: {
-            title_cases: "Unique Cases", nav_cases: "Cases", nav_profile: "Profile",
-            promo_title: "Promo Code", btn_apply: "OK", inventory: "Inventory",
-            demo_mode: "Demo Mode", btn_open: "Open for", status_luck: "SPINNING...",
-            err_no_bal: "Insufficient TON!", promo_ok: "Activated successfully!",
-            promo_err: "Code does not exist", promo_end: "Promo expired",
-            win_msg: "You got:", items: ["Ice Cream", "Fresh Socks", "Clover Pin", "Ring"]
+            title_cases: "Unique", nav_cases: "Cases", nav_profile: "Profile",
+            promo_h: "Activate promo code", promo_p: "Enter a referral or bonus promo code to receive gifts and bonuses",
+            btn_apply: "Apply", inventory: "Inventory", status_luck: "GOOD LUCK!",
+            promo_ok: "Promo activated!", promo_err: "Promo does not exist", promo_end: "Promo expired",
+            win: "You got:"
         }
     };
 
+    // Предметы с моделями (картинками)
     const dropList = [
-        { id: 0, name: 'Ice Cream Random', price: 2.83, img: 'https://cdn.changes.tg/gifts/ice-cream.png', w: 20 },
-        { id: 1, name: 'Fresh Socks Random', price: 2.97, img: 'https://cdn.changes.tg/gifts/fresh-socks.png', w: 20 },
-        { id: 2, name: 'Clover Pin Random', price: 3.74, img: 'https://cdn.changes.tg/gifts/clover-pin.png', w: 10 },
-        { id: 3, name: 'Ring Random', price: 0.70, img: 'ring.png', w: 50 }
+        { name: 'Ice Cream', img: 'https://cdn.changes.tg/gifts/ice-cream.png', price: 2.48 },
+        { name: 'Fresh Socks', img: 'https://cdn.changes.tg/gifts/fresh-socks.png', price: 2.97 },
+        { name: 'Clover Pin', img: 'https://cdn.changes.tg/gifts/clover-pin.png', price: 3.56 },
+        { name: 'Trophy', img: 'trophy.png', price: 0.50 }
     ];
-
-    function updateLangUI() {
-        document.querySelectorAll('[data-key]').forEach(el => {
-            el.innerText = i18n[state.lang][el.getAttribute('data-key')];
-        });
-        document.getElementById('lang-btn').innerText = state.lang.toUpperCase();
-        renderModalItems();
-        updateOpenBtnText();
-    }
 
     function toggleLang() {
         state.lang = state.lang === 'ru' ? 'en' : 'ru';
-        updateLangUI();
+        document.querySelectorAll('[data-key]').forEach(el => el.innerText = i18n[state.lang][el.getAttribute('data-key')]);
+        document.getElementById('lang-btn').innerText = state.lang.toUpperCase();
     }
 
     function switchTab(tab, el) {
@@ -311,40 +242,33 @@
         setTimeout(() => t.style.display = 'none', 2500);
     }
 
-    function renderModalItems() {
+    function openModal() {
         const container = document.getElementById('modal-items');
-        container.innerHTML = dropList.map((it, idx) => `
-            <div class="modal-item">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <img src="${it.img}">
-                    <span style="font-size:13px; font-weight:500;">${i18n[state.lang].items[idx]} Random</span>
-                </div>
-                <div style="color:var(--green); font-weight:bold; font-size:13px;">${it.price} TON</div>
+        container.innerHTML = dropList.map(it => `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; margin-bottom:5px;">
+                <div style="display:flex; align-items:center; gap:10px;"><img src="${it.img}" width="30"> <span>${it.name}</span></div>
+                <div style="color:var(--green)">${it.price} TON</div>
             </div>
         `).join('');
+        document.getElementById('modal').classList.add('active');
     }
 
-    function openModal() { document.getElementById('modal').classList.add('active'); }
     function closeModal() { document.getElementById('modal').classList.remove('active'); }
 
     function setCount(n, btn) {
         state.openCount = n;
-        document.querySelectorAll('.m-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        updateOpenBtnText();
-    }
-
-    function updateOpenBtnText() {
-        document.getElementById('btn-open-text').innerText = `${i18n[state.lang].btn_open} ${(1.5 * state.openCount).toFixed(2)} TON`;
+        document.querySelectorAll('.m-btn').forEach(b => b.style.background = 'none');
+        btn.style.background = 'var(--accent)';
+        document.getElementById('btn-open-text').innerText = `Открыть за ${(1.5 * n).toFixed(2)} TON`;
     }
 
     function applyPromo() {
-        const val = document.getElementById('promo-input').value.trim().toLowerCase();
-        if (val === 'ton') {
-            state.balance += 5; 
+        const val = document.getElementById('promo-input').value.toLowerCase();
+        if(val === 'ton') {
+            state.balance += 10;
             document.getElementById('u-bal').innerText = state.balance.toFixed(2);
             showToast(i18n[state.lang].promo_ok);
-        } else if (val === 'old') {
+        } else if(val === 'expired') {
             showToast(i18n[state.lang].promo_end);
         } else {
             showToast(i18n[state.lang].promo_err);
@@ -353,9 +277,8 @@
 
     function startSpin() {
         const isDemo = document.getElementById('demo-switch').checked;
-        const price = 1.5 * state.openCount;
-        if (!isDemo && state.balance < price) { showToast(i18n[state.lang].err_no_bal); return; }
-        
+        if(!isDemo && state.balance < (1.5 * state.openCount)) { showToast("Недостаточно TON"); return; }
+
         closeModal();
         const screen = document.getElementById('roulette-screen');
         const rail = document.getElementById('rail');
@@ -364,58 +287,56 @@
         rail.style.transform = 'translateX(0)';
         rail.innerHTML = '';
 
-        for(let i=0; i<85; i++) {
-            const rand = dropList[Math.floor(Math.random()*dropList.length)];
-            rail.innerHTML += `<div class="r-item"><img src="${rand.img}"></div>`;
-        }
-
-        const wins = [];
-        for(let k=0; k<state.openCount; k++) {
-            let r = Math.random()*100;
-            let sum = 0;
-            for(let it of dropList) {
-                sum += it.w;
-                if(r <= sum) { wins.push(it); break; }
+        // Генерация ленты (каждый слот содержит N предметов, если выбрано N открытий)
+        for(let i=0; i<60; i++) {
+            let bundleHtml = '<div class="r-item-bundle">';
+            for(let k=0; k<state.openCount; k++) {
+                const rand = dropList[Math.floor(Math.random()*dropList.length)];
+                bundleHtml += `<img src="${rand.img}">`;
             }
+            bundleHtml += '</div>';
+            rail.innerHTML += bundleHtml;
         }
 
-        const finalWin = wins[wins.length-1];
-        rail.children[75].innerHTML = `<img src="${finalWin.img}">`;
+        // Финальный результат
+        const winItems = [];
+        let finalBundleHtml = '<div class="r-item-bundle">';
+        for(let k=0; k<state.openCount; k++) {
+            const win = dropList[Math.floor(Math.random()*dropList.length)];
+            winItems.push(win);
+            finalBundleHtml += `<img src="${win.img}">`;
+        }
+        finalBundleHtml += '</div>';
+        rail.children[50].innerHTML = finalBundleHtml;
 
         setTimeout(() => {
             rail.style.transition = 'transform 8s cubic-bezier(0.1, 0, 0.1, 1)';
-            rail.style.transform = `translateX(-${75 * 100 + 50}px)`;
+            rail.style.transform = `translateX(-${50 * 120}px)`;
         }, 100);
 
         setTimeout(() => {
             screen.style.display = 'none';
             if(!isDemo) {
-                state.balance -= price;
-                state.inventory.push(...wins);
-                updateInventoryUI();
+                state.balance -= (1.5 * state.openCount);
+                state.inventory.push(...winItems);
+                updateInventory();
             }
-            tg.showAlert(`${i18n[state.lang].win_msg} ${wins.map(w => w.name).join(', ')}`);
+            tg.showAlert(`${i18n[state.lang].win} ${winItems.map(i => i.name).join(', ')}`);
             document.getElementById('u-bal').innerText = state.balance.toFixed(2);
         }, 8500);
     }
 
-    function updateInventoryUI() {
-        const inv = document.getElementById('inventory-list');
-        inv.innerHTML = state.inventory.map(it => `
-            <div style="background:var(--card-grad); padding:15px; border-radius:20px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                <img src="${it.img}" width="50" height="50" style="object-fit:contain;">
-                <div style="font-size:12px; margin-top:8px; font-weight:500;">${it.name}</div>
+    function updateInventory() {
+        document.getElementById('inventory-list').innerHTML = state.inventory.map(it => `
+            <div style="background:var(--card-grad); padding:15px; border-radius:15px; text-align:center;">
+                <img src="${it.img}" width="40">
+                <div style="font-size:12px; margin-top:5px;">${it.name}</div>
             </div>
         `).join('');
     }
 
-    const user = tg.initDataUnsafe?.user;
-    if(user) {
-        document.getElementById('u-name').innerText = user.first_name;
-        document.getElementById('u-handle').innerText = '@' + (user.username || 'user');
-        if(user.photo_url) document.getElementById('u-avatar').src = user.photo_url;
-    }
-    updateLangUI();
+    setCount(1, document.querySelector('.m-btn'));
+    toggleLang(); // Set default text
 </script>
 </body>
 </html>
