@@ -1,18 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
-        .btn { background: #38bdf8; border: none; padding: 15px 30px; border-radius: 10px; color: #0f172a; font-weight: bold; }
+        body { background: #0f172a; color: white; font-family: sans-serif; margin: 0; text-align: center; overflow: hidden; }
+        .header { padding: 15px; background: #1e293b; display: flex; justify-content: space-between; border-bottom: 2px solid #38bdf8; }
+        .balance { color: #38bdf8; font-weight: bold; }
+        
+        /* Стили кейса */
+        .case-container { padding: 20px; }
+        .case-card { background: #1e293b; border-radius: 20px; padding: 20px; border: 1px solid #38bdf8; }
+        .case-img { width: 150px; height: 150px; object-fit: contain; }
+        
+        /* Рулетка */
+        #roulette-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 100; flex-direction: column; justify-content: center; align-items: center; }
+        .roulette-window { width: 300px; height: 120px; border: 3px solid #38bdf8; overflow: hidden; position: relative; background: #1e293b; border-radius: 10px; }
+        .roulette-line { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: red; z-index: 10; transform: translateX(-50%); }
+        .items-tape { display: flex; position: absolute; left: 0; transition: transform 10s cubic-bezier(0.15, 0, 0.15, 1); }
+        .tape-item { width: 100px; height: 120px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #334155; }
+        .tape-item img { width: 60px; height: 60px; }
+        .tape-item span { font-size: 10px; margin-top: 5px; }
+
+        .btn { background: #38bdf8; border: none; padding: 15px 30px; border-radius: 12px; color: #0f172a; font-weight: bold; margin: 10px; cursor: pointer; }
+        .btn-demo { background: #64748b; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <h1>🚀 CASEMONK</h1>
-    <p>Приложение запущено!</p>
-    <button class="btn" onclick="Telegram.WebApp.close()">ЗАКРЫТЬ</button>
-    <script>window.Telegram.WebApp.expand();</script>
+
+    <div class="header">
+        <span>CASEMONK</span>
+        <div class="balance">💰 <span id="balance">0.00</span> TON</div>
+    </div>
+
+    <div class="case-container" id="main-screen">
+        <div class="case-card">
+            <h2>Кейс: Farm</h2>
+            <img src="https://raw.githubusercontent.com/casemonk-sudo/casemonk-bot/main/BAZAITEM.jpg" class="case-img">
+            <p>Стоимость: 1.5 TON</p>
+            <button class="btn" onclick="startOpener(false)">ОТКРЫТЬ (1.5 TON)</button>
+            <button class="btn btn-demo" onclick="startOpener(true)">ДЕМО РЕЖИМ</button>
+        </div>
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">Наполнение: Ring, Trophy, 1 TON, Ice Cream (Random), Fresh Socks (Random), Clover Pin (Random)</p>
+    </div>
+
+    <div id="roulette-container">
+        <h2 id="roulette-status">Крутим...</h2>
+        <div class="roulette-window">
+            <div class="roulette-line"></div>
+            <div id="tape" class="items-tape"></div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let userBalance = 0.00;
+        const items = [
+            { name: "Ring", price: 0.7, chance: 40, demoChance: 10, img: "https://raw.githubusercontent.com/casemonk-sudo/casemonk-bot/main/Ring.png" },
+            { name: "Trophy", price: 0.5, chance: 60, demoChance: 10, img: "https://raw.githubusercontent.com/casemonk-sudo/casemonk-bot/main/Trophy.png" },
+            { name: "1 TON", price: 1.0, chance: 50, demoChance: 10, isMoney: true, img: "https://raw.githubusercontent.com/casemonk-sudo/casemonk-bot/main/1%20ton.jpg" },
+            { name: "Ice Cream (Random)", price: 2.83, chance: 30, demoChance: 80, img: "https://cdn.changes.tg/gifts/ice-cream.png" },
+            { name: "Fresh Socks (Random)", price: 2.97, chance: 25, demoChance: 75, img: "https://cdn.changes.tg/gifts/fresh-socks.png" },
+            { name: "Clover Pin (Random)", price: 3.74, chance: 15, demoChance: 70, img: "https://cdn.changes.tg/gifts/clover-pin.png" }
+        ];
+
+        function startOpener(isDemo) {
+            const container = document.getElementById('roulette-container');
+            const tape = document.getElementById('tape');
+            tape.innerHTML = '';
+            tape.style.transition = 'none';
+            tape.style.transform = 'translateX(0)';
+            
+            // Генерируем 50 предметов для ленты
+            let randomItems = [];
+            for(let i=0; i<50; i++) {
+                let itm = items[Math.floor(Math.random() * items.length)];
+                randomItems.push(itm);
+                let div = document.createElement('div');
+                div.className = 'tape-item';
+                div.innerHTML = `<img src="${itm.img}"><span>${itm.price} TON</span>`;
+                tape.appendChild(div);
+            }
+
+            // Выбираем победителя по твоим шансам
+            let winner;
+            const roll = Math.random() * 100;
+            const pool = items.sort((a, b) => (isDemo ? b.demoChance - a.demoChance : a.chance - b.chance));
+            winner = pool.find(i => roll <= (isDemo ? i.demoChance : i.chance)) || pool[0];
+            
+            // Ставим победителя на 45-ю позицию
+            const winnerIdx = 45;
+            tape.children[winnerIdx].innerHTML = `<img src="${winner.img}"><span>${winner.price} TON</span>`;
+
+            container.style.display = 'flex';
+            
+            setTimeout(() => {
+                tape.style.transition = 'transform 10s cubic-bezier(0.15, 0, 0.15, 1)';
+                const stopPos = (winnerIdx * 100) - 100; // Центрируем
+                tape.style.transform = `translateX(-${stopPos}px)`;
+            }, 100);
+
+            setTimeout(() => {
+                if(!isDemo) {
+                    if(winner.isMoney) {
+                        userBalance += winner.price;
+                        document.getElementById('balance').innerText = userBalance.toFixed(2);
+                    }
+                    tg.showAlert(`Выпало: ${winner.name} (${winner.price} TON). Предмет добавлен в профиль!`);
+                } else {
+                    tg.showAlert(`ДЕМО: Выпало ${winner.name}. Баланс не начислен.`);
+                }
+                container.style.display = 'none';
+            }, 10500);
+        }
+    </script>
 </body>
 </html>
