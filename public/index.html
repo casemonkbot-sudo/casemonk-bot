@@ -5,84 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #0b0f19; --card: #161c2c; --accent: #38bdf8; --glass: rgba(255, 255, 255, 0.05); }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        :root { --bg: #0b0f19; --card: #161c2c; --accent: #38bdf8; }
+        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass); }
-        .balance { background: var(--glass); padding: 8px 15px; border-radius: 12px; color: var(--accent); font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .balance { color: var(--accent); font-weight: bold; background: rgba(56, 189, 248, 0.1); padding: 5px 12px; border-radius: 20px; }
 
-        .container { padding: 20px; }
-        .main-case { background: var(--card); border-radius: 24px; padding: 20px; border: 1px solid var(--glass); text-align: center; }
-        .case-img { width: 100%; max-width: 250px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .container { padding: 15px; }
+        .case-card { background: var(--card); border-radius: 24px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .case-img { width: 100%; max-width: 280px; border-radius: 20px; margin-bottom: 15px; }
 
-        /* Выбор количества */
-        .selector-label { margin: 20px 0 10px; color: #94a3b8; font-size: 14px; }
-        .count-selector { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
-        .count-btn { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 18px; border-radius: 12px; cursor: pointer; transition: 0.2s; flex: 1; }
-        .count-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
+        /* Селектор количества */
+        .count-row { display: flex; justify-content: space-between; gap: 8px; margin: 15px 0; }
+        .c-btn { flex: 1; background: #2d3748; border: none; color: white; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .c-btn.active { background: var(--accent); color: #000; }
 
-        /* Кнопки действий */
-        .action-btns { display: flex; flex-direction: column; gap: 10px; }
-        .btn-main { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .btn-demo { background: var(--glass); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 16px; cursor: pointer; }
+        /* Кнопки */
+        .btn-main { background: var(--accent); color: #000; border: none; width: 100%; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 16px; margin-top: 10px; }
+        .btn-demo { background: rgba(255,255,255,0.05); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); width: 100%; padding: 12px; border-radius: 16px; margin-top: 8px; font-size: 14px; }
 
         /* Наполнение */
-        .items-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; }
-        .item-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 15px; font-size: 10px; border: 1px solid var(--glass); }
-        .item-box img { width: 40px; height: 40px; object-fit: contain; margin-bottom: 5px; }
-        .item-box b { display: block; color: var(--accent); margin-top: 3px; }
+        .items-label { text-align: left; margin: 25px 0 10px; color: #94a3b8; font-size: 14px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .i-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); font-size: 10px; }
+        .i-box img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px; }
+        .i-box b { color: var(--accent); display: block; margin-top: 3px; }
 
-        /* Экран рулетки */
-        #roulette-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
-        .roulette-track { width: 300px; height: 100px; border: 2px solid var(--accent); margin: 5px; overflow: hidden; position: relative; border-radius: 12px; background: #0f172a; }
-        .center-line { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: red; z-index: 5; transform: translateX(-50%); }
+        /* Рулетка */
+        #roulette { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
+        .track { width: 320px; height: 110px; border: 2px solid var(--accent); margin: 5px; overflow: hidden; position: relative; border-radius: 15px; background: #0f172a; }
+        .line { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: #ff4757; z-index: 5; transform: translateX(-50%); }
         .tape { display: flex; position: absolute; left: 0; height: 100%; align-items: center; }
-        .tape-item { width: 100px; flex-shrink: 0; text-align: center; }
-        .tape-item img { width: 60px; height: 60px; }
+        .t-item { width: 100px; flex-shrink: 0; text-align: center; }
+        .t-item img { width: 65px; height: 65px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <span id="user-name" style="font-weight: bold;">CASEMONK</span>
-        <div class="balance">💰 <span id="balance">0.00</span> TON</div>
+        <span id="u-name">CASEMONK</span>
+        <div class="balance">💰 <span id="u-bal">0.00</span> TON</div>
     </div>
 
     <div class="container">
-        <div class="main-case">
+        <div class="case-card">
             <img src="BAZAITEM.jpg" class="case-img">
-            <h1 style="margin: 0; font-size: 24px;">Farm Case</h1>
+            <h2 style="margin:0">Farm Case</h2>
             
-            <div class="selector-label">Выберите количество кейсов:</div>
-            <div class="count-selector">
-                <button class="count-btn active" onclick="setCount(1, this)">1x</button>
-                <button class="count-btn" onclick="setCount(2, this)">2x</button>
-                <button class="count-btn" onclick="setCount(3, this)">3x</button>
-                <button class="count-btn" onclick="setCount(4, this)">4x</button>
-                <button class="count-btn" onclick="setCount(5, this)">5x</button>
+            <div class="count-row">
+                <button class="c-btn active" onclick="setCount(1, this)">1x</button>
+                <button class="c-btn" onclick="setCount(2, this)">2x</button>
+                <button class="c-btn" onclick="setCount(3, this)">3x</button>
+                <button class="c-btn" onclick="setCount(4, this)">4x</button>
+                <button class="c-btn" onclick="setCount(5, this)">5x</button>
             </div>
 
-            <div class="action-btns">
-                <button class="btn-main" onclick="startRolling(false)">ОТКРЫТЬ ЗА <span id="total-price">1.5</span> TON</button>
-                <button class="btn-demo" onclick="startRolling(true)">ДЕМО-РЕЖИМ (БЕСПЛАТНО)</button>
-            </div>
+            <button class="btn-main" onclick="openRoll(false)">ОТКРЫТЬ ЗА <span id="price">1.5</span> TON</button>
+            <button class="btn-demo" onclick="openRoll(true)">ДЕМО-РЕЖИМ</button>
 
-            <h4 style="text-align: left; margin: 30px 0 15px; color: #94a3b8;">Содержимое кейса:</h4>
-            <div class="items-grid" id="preview-grid"></div>
+            <div class="items-label">Содержимое кейса:</div>
+            <div class="grid" id="items-list"></div>
         </div>
     </div>
 
-    <div id="roulette-overlay">
-        <h2 id="roll-status">ОТКРЫВАЕМ...</h2>
-        <div id="tracks-container"></div>
+    <div id="roulette">
+        <h2 id="st">УДАЧИ!</h2>
+        <div id="tracks"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        
-        let selectedCount = 1;
-        const items = [
+        let currentCount = 1;
+
+        const prizePool = [
             { name: "Ring", price: 0.7, img: "Ring.png" },
             { name: "Trophy", price: 0.5, img: "Trophy.png" },
             { name: "1 TON", price: 1.0, img: "1 ton.jpg" },
@@ -91,52 +87,50 @@
             { name: "Clover Pin", price: 3.74, img: "https://cdn.changes.tg/gifts/clover-pin.png" }
         ];
 
-        // Рендер превью предметов
-        const grid = document.getElementById('preview-grid');
-        items.forEach(item => {
-            grid.innerHTML += `<div class="item-box"><img src="${item.img}"><div>${item.name}</div><b>${item.price} TON</b></div>`;
+        // Рендер предметов
+        const list = document.getElementById('items-list');
+        prizePool.forEach(i => {
+            list.innerHTML += `<div class="i-box"><img src="${i.img}"><div>${i.name}</div><b>${i.price} TON</b></div>`;
         });
 
-        function setCount(num, btn) {
-            selectedCount = num;
-            document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('total-price').innerText = (num * 1.5).toFixed(1);
+        function setCount(n, b) {
+            currentCount = n;
+            document.querySelectorAll('.c-btn').forEach(btn => btn.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('price').innerText = (n * 1.5).toFixed(1);
         }
 
-        function startRolling(isDemo) {
-            const overlay = document.getElementById('roulette-overlay');
-            const tracksContainer = document.getElementById('tracks-container');
-            tracksContainer.innerHTML = '';
-            overlay.style.display = 'flex';
+        function openRoll(isDemo) {
+            const screen = document.getElementById('roulette');
+            const tracks = document.getElementById('tracks');
+            tracks.innerHTML = '';
+            screen.style.display = 'flex';
 
-            for (let i = 0; i < selectedCount; i++) {
-                const track = document.createElement('div');
-                track.className = 'roulette-track';
-                track.innerHTML = `<div class="center-line"></div><div class="tape" id="tape-${i}"></div>`;
-                tracksContainer.appendChild(track);
+            for(let i=0; i<currentCount; i++) {
+                const tr = document.createElement('div');
+                tr.className = 'track';
+                tr.innerHTML = `<div class="line"></div><div class="tape" id="t-${i}"></div>`;
+                tracks.appendChild(tr);
 
-                const tape = document.getElementById(`tape-${i}`);
-                // Создаем ленту
-                for (let j = 0; j < 60; j++) {
-                    const itm = items[Math.floor(Math.random() * items.length)];
-                    tape.innerHTML += `<div class="tape-item"><img src="${itm.img}"></div>`;
+                const tape = document.getElementById(`t-${i}`);
+                for(let j=0; j<60; j++) {
+                    const itm = prizePool[Math.floor(Math.random() * prizePool.length)];
+                    tape.innerHTML += `<div class="t-item"><img src="${itm.img}"></div>`;
                 }
 
-                // Логика победы
-                const winIdx = 55;
-                const winner = items[Math.floor(Math.random() * items.length)];
+                const winIdx = 53;
+                const winner = prizePool[Math.floor(Math.random() * prizePool.length)];
                 tape.children[winIdx].innerHTML = `<img src="${winner.img}">`;
 
                 setTimeout(() => {
                     tape.style.transition = 'transform 10s cubic-bezier(0.1, 0, 0.1, 1)';
-                    tape.style.transform = `translateX(-${(winIdx * 100) - 100}px)`;
+                    tape.style.transform = `translateX(-${(winIdx * 100) - 110}px)`;
                 }, 100);
             }
 
             setTimeout(() => {
-                tg.showAlert(isDemo ? "Демонстрация окончена. Предметы не начислены." : "Кейсы открыты! Предметы в профиле.");
-                overlay.style.display = 'none';
+                tg.showAlert(isDemo ? "Демонстрация завершена." : "Кейсы успешно открыты!");
+                screen.style.display = 'none';
             }, 10500);
         }
     </script>
