@@ -18,9 +18,31 @@
             margin: 0; padding: 0; overflow: hidden; height: 100vh;
         }
 
-        .app-container { padding: 20px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 100px; }
+        /* Верхняя панель (Header) */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; z-index: 100; background: var(--bg);
+        }
+        .logo { font-weight: 900; font-size: 18px; letter-spacing: -1px; }
+        .balance-chip {
+            background: var(--glass); border: 1px solid var(--glass);
+            border-radius: 16px; padding: 5px 5px 5px 12px;
+            display: flex; align-items: center; gap: 8px; font-weight: 700;
+        }
+        .add-btn {
+            background: var(--green); color: #000; border: none;
+            width: 26px; height: 26px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 800; cursor: pointer;
+        }
 
-        /* Дизайн профиля */
+        .app-container { 
+            padding: 70px 20px 100px; /* Отступ сверху под хедер */
+            height: 100vh; overflow-y: auto; display: flex; flex-direction: column; 
+        }
+
+        /* Профиль */
         .profile-box {
             background: linear-gradient(180deg, rgba(46, 204, 113, 0.12) 0%, rgba(0, 0, 0, 0) 100%);
             border: 1px solid var(--glass); border-radius: 32px; padding: 30px 20px; text-align: center; margin-bottom: 20px;
@@ -29,7 +51,7 @@
         .u-name { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
         
         .lang-bar { display: flex; justify-content: center; gap: 8px; margin: 12px 0; }
-        .l-btn { background: var(--glass); border: 1px solid transparent; color: var(--sub); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .l-btn { background: var(--glass); border: 1px solid transparent; color: var(--sub); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
         .l-btn.active { border-color: var(--green); color: var(--green); background: rgba(46, 204, 113, 0.1); }
 
         .btn {
@@ -41,7 +63,7 @@
         .btn-blue { background: var(--blue); color: white; text-decoration: none; margin-top: 15px; }
         .btn-main { background: var(--green); color: #000; margin-bottom: 20px; }
 
-        /* Модальное окно */
+        /* Модалка */
         .modal {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
             backdrop-filter: blur(10px); z-index: 1000;
@@ -64,16 +86,16 @@
             padding: 18px; color: white; font-size: 26px; text-align: center; font-weight: 800; margin: 15px 0;
         }
 
-        /* Инвентарь */
         .inv-card { background: var(--card); border-radius: 28px; padding: 20px; }
         .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
         .inv-slot { aspect-ratio: 1; background: var(--glass); border-radius: 16px; border: 1px dashed #3a3a3c; }
 
-        /* Gifts */
+        /* Gifts Инструкция */
         .gift-step { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
         .step-n { background: #2c2c2e; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
         .step-t b { display: block; font-size: 15px; }
         .step-t span { color: var(--sub); font-size: 13px; }
+        .alert-red { background: var(--red-bg); color: var(--red-text); padding: 14px; border-radius: 18px; font-size: 12px; font-weight: 600; text-align: center; margin-bottom: 20px; }
 
         .nav-fixed {
             position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
@@ -84,23 +106,32 @@
 </head>
 <body>
 
+    <header class="header">
+        <div class="logo">CASEMONK</div>
+        <div class="balance-chip">
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
+            <span id="u-balance">0.00</span>
+            <button class="add-btn" onclick="openDeposit()">+</button>
+        </div>
+    </header>
+
     <div class="app-container">
         <div class="profile-box">
             <img src="" id="u-avatar" class="avatar">
             <div class="u-name" id="u-display">@username</div>
             <div class="lang-bar">
-                <div class="l-btn active" onclick="changeLang('ru')">РУССКИЙ</div>
-                <div class="l-btn" onclick="changeLang('en')">ENGLISH</div>
+                <div class="l-btn active" id="l-ru" onclick="changeLang('ru')">РУССКИЙ</div>
+                <div class="l-btn" id="l-en" onclick="changeLang('en')">ENGLISH</div>
             </div>
-            <a href="https://t.me/casemonk_sup_robot" class="btn btn-blue">🎧 Поддержка</a>
+            <a href="https://t.me/casemonk_sup_robot" class="btn btn-blue" id="txt-support">🎧 Поддержка</a>
         </div>
 
-        <button class="btn btn-main" onclick="openDeposit()">➕ Пополнить баланс</button>
+        <button class="btn btn-main" onclick="openDeposit()" id="txt-dep-btn">➕ Пополнить баланс</button>
 
         <div class="inv-card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b>Инвентарь</b>
-                <span style="color:var(--sub); font-size:12px;">0 предметов</span>
+                <b id="txt-inv-title">Инвентарь</b>
+                <span style="color:var(--sub); font-size:12px;" id="txt-items-count">0 предметов</span>
             </div>
             <div class="inv-grid">
                 <div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div>
@@ -111,7 +142,7 @@
 
     <nav class="nav-fixed">
         <div style="color:var(--green); text-align:center; font-size:11px; font-weight:700;">
-            <div style="font-size:24px;">👤</div><span>Профиль</span>
+            <div style="font-size:24px;">👤</div><span id="txt-nav-prof">Профиль</span>
         </div>
     </nav>
 
@@ -120,32 +151,42 @@
             <div style="width:40px; height:4px; background:#333; border-radius:10px; margin:0 auto 20px;"></div>
             
             <div id="p-start">
-                <h3 style="margin-top:0">Пополнение</h3>
+                <h3 style="margin-top:0" id="txt-pay-head">Пополнение</h3>
                 <div class="option" onclick="go('ton')">
                     <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="32">
-                    <div><b>TON Wallet</b><br><small>Мгновенно (от 0.1 TON)</small></div>
+                    <div><b>TON Wallet</b><br><small id="txt-ton-sub">Мгновенно (от 0.1 TON)</small></div>
                 </div>
                 <div class="option" onclick="go('gifts')">
                     <div style="font-size:30px; width:32px; text-align:center;">🎁</div>
-                    <div><b>Gifts</b><br><small>NFT подарки</small></div>
+                    <div><b>Gifts</b><br><small id="txt-gifts-sub">NFT подарки</small></div>
                 </div>
             </div>
 
             <div id="p-ton" style="display:none; text-align:center;">
-                <h3>Сумма TON</h3>
+                <h3 id="txt-ton-q">Сумма TON</h3>
                 <input type="number" id="in-ton" class="input-box" placeholder="0.1" step="0.1">
-                <button class="btn btn-main" onclick="doTon()">Оплатить через TON</button>
+                <button class="btn btn-main" onclick="doTon()" id="txt-ton-btn">Оплатить через TON</button>
             </div>
 
             <div id="p-gifts" style="display:none;">
                 <h3 style="margin-top:0">Gifts 🎁</h3>
-                <div class="gift-step"><div class="step-n">1</div><div class="step-t"><b>Перейдите в бота</b><span>@casemonk_relayer</span></div></div>
-                <div class="gift-step"><div class="step-n">2</div><div class="step-t"><b>Отправьте NFT подарок</b><span>Модель и фон не важны!</span></div></div>
-                <div class="gift-step"><div class="step-n">3</div><div class="step-t"><b>Баланс обновится</b><span>В течение минуты</span></div></div>
-                <button class="btn btn-blue" onclick="window.open('https://t.me/casemonk_relayer')">Открыть релей-бота</button>
+                <div class="gift-step">
+                    <div class="step-n">1</div>
+                    <div class="step-t"><b id="txt-g1">Перейдите в нашего бота</b><span>@casemonk_relayer</span></div>
+                </div>
+                <div class="gift-step">
+                    <div class="step-n">2</div>
+                    <div class="step-t"><b id="txt-g2">Отправьте ему NFT подарок</b><span id="txt-g2s">Модель, фон и символ не учитываются!</span></div>
+                </div>
+                <div class="gift-step">
+                    <div class="step-n">3</div>
+                    <div class="step-t"><b id="txt-g3">Баланс пополнится</b><span id="txt-g3s">В течение нескольких секунд</span></div>
+                </div>
+                <div class="alert-red" id="txt-g-warn">Отправляйте подарки только напрямую со своего аккаунта!</div>
+                <button class="btn btn-blue" onclick="window.open('https://t.me/casemonk_relayer')" id="txt-g-btn">Перейти</button>
             </div>
 
-            <button onclick="reset()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;">⬅ Назад</button>
+            <button onclick="reset()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;" id="txt-back">⬅ Назад</button>
         </div>
     </div>
 
@@ -156,7 +197,6 @@
         tg.expand();
         const user = tg.initDataUnsafe.user;
 
-        // Исправленный манифест для твоей репы
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://casemonkbot-sudo.github.io/casemonk-bot/tonconnect-manifest.json',
             buttonRootId: 'ton-trigger'
@@ -165,6 +205,47 @@
         if(user) {
             document.getElementById('u-display').innerText = user.username ? `@${user.username}` : user.first_name;
             document.getElementById('u-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?background=2ecc71&color=fff&name=' + user.first_name;
+        }
+
+        const langData = {
+            ru: {
+                sup: "🎧 Поддержка", dep: "➕ Пополнить баланс", inv: "Инвентарь", items: "0 предметов", prof: "Профиль",
+                payH: "Пополнение", tonS: "Мгновенно (от 0.1 TON)", giftS: "NFT подарки", tonQ: "Сумма TON", 
+                tonB: "Оплатить через TON", back: "⬅ Назад", g1: "Перейдите в нашего бота", 
+                g2: "Отправьте ему NFT подарок", g2s: "Модель, фон и символ не учитываются!",
+                g3: "Баланс пополнится", g3s: "В течение нескольких секунд", gW: "Отправляйте подарки только напрямую со своего аккаунта!", gBtn: "Перейти"
+            },
+            en: {
+                sup: "🎧 Support", dep: "➕ Top Up Balance", inv: "Inventory", items: "0 items", prof: "Profile",
+                payH: "Deposit", tonS: "Instant (from 0.1 TON)", giftS: "NFT Gifts", tonQ: "TON Amount", 
+                tonB: "Pay via TON", back: "⬅ Back", g1: "Go to our bot", 
+                g2: "Send him an NFT gift", g2s: "Model, background and symbol are ignored!",
+                g3: "Balance updated", g3s: "Within a few seconds", gW: "Send gifts only directly from your account!", gBtn: "Go to Bot"
+            }
+        };
+
+        function changeLang(l) {
+            document.getElementById('l-ru').classList.toggle('active', l === 'ru');
+            document.getElementById('l-en').classList.toggle('active', l === 'en');
+            const d = langData[l];
+            document.getElementById('txt-support').innerText = d.sup;
+            document.getElementById('txt-dep-btn').innerText = d.dep;
+            document.getElementById('txt-inv-title').innerText = d.inv;
+            document.getElementById('txt-items-count').innerText = d.items;
+            document.getElementById('txt-nav-prof').innerText = d.prof;
+            document.getElementById('txt-pay-head').innerText = d.payH;
+            document.getElementById('txt-ton-sub').innerText = d.tonS;
+            document.getElementById('txt-gifts-sub').innerText = d.giftS;
+            document.getElementById('txt-ton-q').innerText = d.tonQ;
+            document.getElementById('txt-ton-btn').innerText = d.tonB;
+            document.getElementById('txt-back').innerText = d.back;
+            document.getElementById('txt-g1').innerText = d.g1;
+            document.getElementById('txt-g2').innerText = d.g2;
+            document.getElementById('txt-g2s').innerText = d.g2s;
+            document.getElementById('txt-g3').innerText = d.g3;
+            document.getElementById('txt-g3s').innerText = d.g3s;
+            document.getElementById('txt-g-warn').innerText = d.gW;
+            document.getElementById('txt-g-btn').innerText = d.gBtn;
         }
 
         function openDeposit() {
