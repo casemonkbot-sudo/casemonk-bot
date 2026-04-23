@@ -32,18 +32,16 @@
         .l-btn { background: var(--glass); border: 1px solid transparent; color: var(--sub); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .l-btn.active { border-color: var(--green); color: var(--green); background: rgba(46, 204, 113, 0.1); }
 
-        /* Кнопки */
         .btn {
             border: none; border-radius: 22px; width: 100%; padding: 18px; 
             font-size: 16px; font-weight: 700; display: flex; align-items: center; 
             justify-content: center; gap: 10px; cursor: pointer; transition: transform 0.1s ease;
-            will-change: transform;
         }
         .btn:active { transform: scale(0.97); }
         .btn-blue { background: var(--blue); color: white; text-decoration: none; margin-top: 15px; }
         .btn-main { background: var(--green); color: #000; margin-bottom: 20px; }
 
-        /* Модальное окно (BottomSheet) */
+        /* Модальное окно */
         .modal {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
             backdrop-filter: blur(10px); z-index: 1000;
@@ -52,7 +50,7 @@
             position: absolute; bottom: 0; width: 100%; background: #171719;
             border-radius: 35px 35px 0 0; padding: 25px 25px 45px;
             transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            will-change: transform; border-top: 1px solid var(--glass);
+            border-top: 1px solid var(--glass);
         }
         .modal-active .sheet { transform: translateY(0); }
 
@@ -65,7 +63,6 @@
             width: 100%; background: #242426; border: 2px solid transparent; border-radius: 20px;
             padding: 18px; color: white; font-size: 26px; text-align: center; font-weight: 800; margin: 15px 0;
         }
-        .input-box:focus { border-color: var(--green); }
 
         /* Инвентарь */
         .inv-card { background: var(--card); border-radius: 28px; padding: 20px; }
@@ -77,7 +74,6 @@
         .step-n { background: #2c2c2e; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
         .step-t b { display: block; font-size: 15px; }
         .step-t span { color: var(--sub); font-size: 13px; }
-        .alert-red { background: var(--red-bg); color: var(--red-text); padding: 14px; border-radius: 18px; font-size: 12px; font-weight: 600; text-align: center; margin-bottom: 20px; }
 
         .nav-fixed {
             position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
@@ -96,14 +92,14 @@
                 <div class="l-btn active" onclick="changeLang('ru')">РУССКИЙ</div>
                 <div class="l-btn" onclick="changeLang('en')">ENGLISH</div>
             </div>
-            <a href="https://t.me/casemonk_sup_robot" class="btn btn-blue" id="ln-support">🎧 Поддержка</a>
+            <a href="https://t.me/casemonk_sup_robot" class="btn btn-blue">🎧 Поддержка</a>
         </div>
 
-        <button class="btn btn-main" onclick="openDeposit()" id="ln-deposit">➕ Пополнить баланс</button>
+        <button class="btn btn-main" onclick="openDeposit()">➕ Пополнить баланс</button>
 
         <div class="inv-card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b id="ln-inv">Инвентарь</b>
+                <b>Инвентарь</b>
                 <span style="color:var(--sub); font-size:12px;">0 предметов</span>
             </div>
             <div class="inv-grid">
@@ -115,7 +111,7 @@
 
     <nav class="nav-fixed">
         <div style="color:var(--green); text-align:center; font-size:11px; font-weight:700;">
-            <div style="font-size:24px;">👤</div><span id="ln-prof-nav">Профиль</span>
+            <div style="font-size:24px;">👤</div><span>Профиль</span>
         </div>
     </nav>
 
@@ -124,53 +120,32 @@
             <div style="width:40px; height:4px; background:#333; border-radius:10px; margin:0 auto 20px;"></div>
             
             <div id="p-start">
-                <h3 id="ln-pay-title" style="margin-top:0">Пополнение</h3>
+                <h3 style="margin-top:0">Пополнение</h3>
                 <div class="option" onclick="go('ton')">
                     <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="32">
-                    <div><b>TON Wallet</b><br><small id="ln-ton-s">Мгновенно (от 0.1 TON)</small></div>
-                </div>
-                <div class="option" onclick="go('stars')">
-                    <img src="https://img.icons8.com/color/96/star--v1.png" width="32">
-                    <div><b>Telegram Stars ⭐</b><br><small id="ln-stars-s">Оплата в чате</small></div>
+                    <div><b>TON Wallet</b><br><small>Мгновенно (от 0.1 TON)</small></div>
                 </div>
                 <div class="option" onclick="go('gifts')">
                     <div style="font-size:30px; width:32px; text-align:center;">🎁</div>
-                    <div><b>Gifts</b><br><small id="ln-gifts-s">NFT подарки</small></div>
+                    <div><b>Gifts</b><br><small>NFT подарки</small></div>
                 </div>
             </div>
 
             <div id="p-ton" style="display:none; text-align:center;">
-                <h3 id="ln-ton-t">Сумма TON</h3>
+                <h3>Сумма TON</h3>
                 <input type="number" id="in-ton" class="input-box" placeholder="0.1" step="0.1">
                 <button class="btn btn-main" onclick="doTon()">Оплатить через TON</button>
             </div>
 
-            <div id="p-stars" style="display:none; text-align:center;">
-                <h3 id="ln-stars-t">Пополнение Stars</h3>
-                <input type="number" id="in-stars" class="input-box" placeholder="100" oninput="calc(this.value)">
-                <div id="calc-res" style="color:var(--sub); font-size:13px; margin-bottom:20px;">Введите сумму (мин. 10)</div>
-                <button class="btn btn-main" style="background:#ffbc00" onclick="doStars()" id="ln-stars-b">Оплатить в чате</button>
-            </div>
-
             <div id="p-gifts" style="display:none;">
                 <h3 style="margin-top:0">Gifts 🎁</h3>
-                <div class="gift-step">
-                    <div class="step-n">1</div>
-                    <div class="step-t"><b id="ln-g1">Перейдите в нашего бота</b><span>@casemonk_relayer</span></div>
-                </div>
-                <div class="gift-step">
-                    <div class="step-n">2</div>
-                    <div class="step-t"><b id="ln-g2">Отправьте ему NFT подарок</b><span id="ln-g2s">Модель, фон и символ не учитываются!</span></div>
-                </div>
-                <div class="gift-step">
-                    <div class="step-n">3</div>
-                    <div class="step-t"><b id="ln-g3">Баланс пополнится</b><span id="ln-g3s">В течение нескольких секунд</span></div>
-                </div>
-                <div class="alert-red" id="ln-g-warn">Отправляйте подарки только напрямую со своего аккаунта!</div>
-                <button class="btn btn-blue" style="margin:0" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
+                <div class="gift-step"><div class="step-n">1</div><div class="step-t"><b>Перейдите в бота</b><span>@casemonk_relayer</span></div></div>
+                <div class="gift-step"><div class="step-n">2</div><div class="step-t"><b>Отправьте NFT подарок</b><span>Модель и фон не важны!</span></div></div>
+                <div class="gift-step"><div class="step-n">3</div><div class="step-t"><b>Баланс обновится</b><span>В течение минуты</span></div></div>
+                <button class="btn btn-blue" onclick="window.open('https://t.me/casemonk_relayer')">Открыть релей-бота</button>
             </div>
 
-            <button onclick="reset()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;" id="ln-back">⬅ Назад</button>
+            <button onclick="reset()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;">⬅ Назад</button>
         </div>
     </div>
 
@@ -181,7 +156,7 @@
         tg.expand();
         const user = tg.initDataUnsafe.user;
 
-        // ИСПРАВЛЕНИЕ ОШИБКИ МАНИФЕСТА
+        // Исправленный манифест для твоей репы
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://casemonkbot-sudo.github.io/casemonk-bot/tonconnect-manifest.json',
             buttonRootId: 'ton-trigger'
@@ -191,51 +166,6 @@
             document.getElementById('u-display').innerText = user.username ? `@${user.username}` : user.first_name;
             document.getElementById('u-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?background=2ecc71&color=fff&name=' + user.first_name;
         }
-
-        const translations = {
-            ru: {
-                support: "🎧 Поддержка", deposit: "➕ Пополнить баланс", inv: "Инвентарь", prof: "Профиль",
-                pay_t: "Пополнение", ton_s: "Мгновенно (от 0.1 TON)", stars_s: "Оплата в чате", gifts_s: "NFT подарки",
-                ton_title: "Сумма TON", stars_title: "Пополнение Stars", back: "⬅ Назад", stars_btn: "Оплатить в чате",
-                g1: "Перейдите в нашего бота", g2: "Отправьте ему NFT подарок", g2s: "Модель, фон и символ не учитываются!",
-                g3: "Баланс пополнится", g3s: "В течение нескольких секунд", g_warn: "Отправляйте подарки только напрямую со своего аккаунта!",
-                calc: (s, t) => `Вы платите: <b>${s} ⭐</b><br>Получите: <b>${t} TON</b> на баланс`
-            },
-            en: {
-                support: "🎧 Support", deposit: "➕ Top Up Balance", inv: "Inventory", prof: "Profile",
-                pay_t: "Deposit", ton_s: "Instant (from 0.1 TON)", stars_s: "Via Chat", gifts_s: "NFT Gifts",
-                ton_title: "TON Amount", stars_title: "Stars Deposit", back: "⬅ Back", stars_btn: "Pay in Chat",
-                g1: "Go to our bot", g2: "Send him an NFT gift", g2s: "Model, background and symbol are ignored!",
-                g3: "Balance updated", g3s: "Within a few seconds", g_warn: "Send gifts only directly from your account!",
-                calc: (s, t) => `You pay: <b>${s} ⭐</b><br>Receive: <b>${t} TON</b> to balance`
-            }
-        };
-
-        function changeLang(l) {
-            document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            const d = translations[l];
-            document.getElementById('ln-support').innerText = d.support;
-            document.getElementById('ln-deposit').innerText = d.deposit;
-            document.getElementById('ln-inv').innerText = d.inv;
-            document.getElementById('ln-prof-nav').innerText = d.prof;
-            document.getElementById('ln-pay-title').innerText = d.pay_t;
-            document.getElementById('ln-ton-s').innerText = d.ton_s;
-            document.getElementById('ln-stars-s').innerText = d.stars_s;
-            document.getElementById('ln-gifts-s').innerText = d.gifts_s;
-            document.getElementById('ln-ton-t').innerText = d.ton_title;
-            document.getElementById('ln-stars-t').innerText = d.stars_title;
-            document.getElementById('ln-stars-b').innerText = d.stars_btn;
-            document.getElementById('ln-back').innerText = d.back;
-            document.getElementById('ln-g1').innerText = d.g1;
-            document.getElementById('ln-g2').innerText = d.g2;
-            document.getElementById('ln-g2s').innerText = d.g2s;
-            document.getElementById('ln-g3').innerText = d.g3;
-            document.getElementById('ln-g3s').innerText = d.g3s;
-            document.getElementById('ln-g-warn').innerText = d.g_warn;
-            window.currL = l;
-        }
-        changeLang('ru');
 
         function openDeposit() {
             const m = document.getElementById('m-pay');
@@ -255,7 +185,6 @@
         function reset() {
             document.getElementById('p-start').style.display = 'block';
             document.getElementById('p-ton').style.display = 'none';
-            document.getElementById('p-stars').style.display = 'none';
             document.getElementById('p-gifts').style.display = 'none';
         }
 
@@ -268,27 +197,6 @@
                 messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (val * 1000000000).toString() }]
             };
             try { await tonConnect.sendTransaction(tx); closeDeposit(); } catch(e){}
-        }
-
-        function calc(v) {
-            const s = parseInt(v) || 0;
-            const t = (s * 0.01).toFixed(2);
-            document.getElementById('calc-res').innerHTML = translations[window.currL || 'ru'].calc(s, t);
-        }
-
-        // РАБОЧИЕ STARS
-        function doStars() {
-            const val = document.getElementById('in-stars').value;
-            if(val < 10) return tg.showAlert("Min: 10 Stars");
-            
-            // Отправляем данные боту (в index.js)
-            tg.sendData(JSON.stringify({ 
-                action: "buy_stars", 
-                amount: val 
-            }));
-            
-            // Обязательно закрываем приложение
-            tg.close();
         }
     </script>
 </body>
