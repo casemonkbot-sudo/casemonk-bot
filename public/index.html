@@ -1,132 +1,234 @@
-<div id="modal" class="modal-overlay" onclick="closeDeposit()">
-    <div class="modal-sheet" onclick="event.stopPropagation()">
-        <div class="modal-pull-indicator"></div>
-        
-        <div id="step-choice">
-            <h2 class="modal-title">Пополнение баланса</h2>
-            <div class="pay-option" onclick="goToTon()">
-                <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" alt="TON">
-                <div class="pay-info">
-                    <span class="pay-name">TON Wallet</span>
-                    <span class="pay-sub">Мгновенная оплата кошельком</span>
-                </div>
-                <span class="arrow-next">›</span>
-            </div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CaseMonk Premium</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <style>
+        :root {
+            --accent: #2ecc71;
+            --bg: #000000;
+            --card: #121212;
+            --text: #ffffff;
+            --sub-text: #8e8e93;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
 
-            <div class="pay-option" onclick="goToGifts()">
-                <div class="gift-icon-wrap">🎁</div>
-                <div class="pay-info">
-                    <span class="pay-name">Gifts</span>
-                    <span class="pay-sub">Пополнение через NFT подарки</span>
-                </div>
-                <span class="arrow-next">›</span>
-            </div>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+
+        .app { padding: 20px; padding-bottom: 100px; }
+
+        /* Дизайн профиля */
+        .profile-card {
+            background: linear-gradient(180deg, rgba(46, 204, 113, 0.15) 0%, rgba(0, 0, 0, 0) 100%);
+            border: 1px solid var(--glass); border-radius: 35px;
+            padding: 40px 20px; text-align: center; margin-bottom: 25px;
+        }
+        .avatar {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 3px solid var(--accent); margin-bottom: 15px;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.2);
+        }
+        .username { font-size: 24px; font-weight: 800; }
+
+        /* Кнопка пополнения */
+        .btn-deposit {
+            background: var(--accent); color: #000; border: none; border-radius: 22px;
+            width: 100%; padding: 18px; font-size: 17px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        .btn-deposit:active { transform: scale(0.96) translate3d(0,0,0); }
+
+        /* Инвентарь */
+        .inventory-section { background: var(--card); border-radius: 28px; padding: 25px; margin-top: 25px; }
+        .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+        .slot { aspect-ratio: 1/1; background: var(--glass); border: 1px dashed #333; border-radius: 18px; }
+
+        /* Нижняя навигация */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 85px;
+            background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(20px);
+            display: flex; justify-content: center; align-items: center;
+            border-top: 1px solid var(--glass); z-index: 50;
+        }
+        .nav-item { color: var(--accent); display: flex; flex-direction: column; align-items: center; font-size: 12px; font-weight: 600; }
+
+        /* Модальное окно (60+ FPS) */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000;
+        }
+        .modal-sheet {
+            position: absolute; bottom: 0; width: 100%; background: #1c1c1e;
+            border-radius: 35px 35px 0 0; padding: 30px 25px 40px;
+            transform: translate3d(0, 100%, 0); transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+            will-change: transform;
+        }
+        .active .modal-sheet { transform: translate3d(0, 0, 0); }
+
+        /* Опции оплаты */
+        .pay-option {
+            background: rgba(255,255,255,0.04); border-radius: 20px; padding: 18px;
+            display: flex; align-items: center; gap: 15px; margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+        }
+        .pay-option img { width: 35px; height: 35px; }
+
+        /* Gifts инструкция */
+        .gift-card { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+        .step { display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start; }
+        .step-num { background: var(--accent); color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
+        .warning { background: rgba(255, 59, 48, 0.15); color: #ff3b30; padding: 12px; border-radius: 15px; font-size: 12px; text-align: center; margin-bottom: 15px; }
+
+        .input-ton {
+            width: 100%; background: #2c2c2e; border: 2px solid transparent; border-radius: 20px;
+            padding: 20px; color: white; font-size: 28px; text-align: center; font-weight: 800; margin: 20px 0;
+        }
+        .input-ton:focus { border-color: var(--accent); outline: none; }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+        <div class="profile-card">
+            <img src="" id="user-avatar" class="avatar">
+            <div class="username" id="user-name">@username</div>
         </div>
 
-        <div id="step-ton" style="display:none;">
-            <h2 class="modal-title">Сумма в TON</h2>
-            <p class="step-desc">Введите количество (0.1 — 9999)</p>
-            <input type="number" id="ton-input" class="input-ton-premium" placeholder="0.0" step="0.1">
-            <button class="btn-main" onclick="sendTransaction()">Оплатить через кошелек</button>
-            <button class="btn-back" onclick="backToChoice()">⬅ Назад к выбору</button>
-        </div>
+        <button class="btn-deposit" onclick="openModal()">
+            <span>➕</span> Пополнить баланс
+        </button>
 
-        <div id="step-gifts" style="display:none;">
-            <h2 class="modal-title">Пополнение Gifts 🎁</h2>
-            <div class="gift-instruction-card">
-                <div class="instruction-item">
-                    <span class="inst-num">1</span>
-                    <p>Перейдите в нашего бота <span class="accent-text">@casemonk_relayer</span></p>
-                </div>
-                <div class="instruction-item">
-                    <span class="inst-num">2</span>
-                    <p>Отправьте ему <span class="accent-text">NFT подарок</span></p>
-                </div>
-                <div class="instruction-item">
-                    <span class="inst-num">3</span>
-                    <p>Баланс пополнится в течение нескольких секунд</p>
-                </div>
+        <div class="inventory-section">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:700; font-size:18px;">Инвентарь</span>
+                <span style="color:var(--sub-text); font-size:13px;">0 предметов</span>
             </div>
-            <div class="warning-box">
-                Отправляйте подарки только напрямую для своего аккаунта!
+            <div class="slots">
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
             </div>
-            <button class="btn-main" onclick="window.open('https://t.me/casemonk_relayer')">Перейти к боту</button>
-            <button class="btn-back" onclick="backToChoice()">⬅ Назад</button>
         </div>
     </div>
-</div>
 
-<style>
-    /* Дополнительные стили для плавности и дизайна */
-    .modal-pull-indicator {
-        width: 40px; height: 5px; background: #3a3a3c; border-radius: 10px; margin: 0 auto 20px;
-    }
-    .modal-title { margin: 0 0 15px 0; font-size: 22px; font-weight: 800; }
-    .step-desc { color: var(--text-sub); font-size: 14px; margin-bottom: 20px; }
+    <nav class="nav-bar">
+        <div class="nav-item">
+            <div style="font-size: 24px;">👤</div>
+            <span>Профиль</span>
+        </div>
+    </nav>
 
-    .pay-option {
-        background: rgba(255,255,255,0.04); border-radius: 20px; padding: 18px;
-        display: flex; align-items: center; gap: 15px; margin-bottom: 12px;
-        border: 1px solid rgba(255,255,255,0.05); cursor: pointer;
-        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: transform;
-    }
-    .pay-option:active { transform: scale(0.97) translate3d(0,0,0); }
-    .pay-option img, .gift-icon-wrap { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-    .pay-info { display: flex; flex-direction: column; flex-grow: 1; }
-    .pay-name { font-weight: 700; font-size: 16px; }
-    .pay-sub { font-size: 12px; color: var(--text-sub); }
-    .arrow-next { color: #3a3a3c; font-size: 20px; }
+    <div id="modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div style="width:40px; height:5px; background:#3a3a3c; border-radius:10px; margin: 0 auto 25px;"></div>
 
-    /* Инструкция Gifts */
-    .gift-instruction-card { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 15px; margin-bottom: 15px; }
-    .instruction-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
-    .inst-num { background: var(--accent-green); color: #000; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
-    .instruction-item p { margin: 0; font-size: 14px; line-height: 1.4; }
-    .accent-text { color: var(--accent-green); font-weight: 600; }
-    .warning-box { background: rgba(255, 59, 48, 0.15); color: #ff3b30; padding: 12px; border-radius: 15px; font-size: 12px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255, 59, 48, 0.2); }
+            <div id="pane-choice">
+                <h2 style="margin:0 0 20px 0;">Пополнение</h2>
+                <div class="pay-option" onclick="showTon()">
+                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png">
+                    <div><b>TON Wallet</b><br><small style="color:var(--sub-text)">Минимум 0.1 TON</small></div>
+                </div>
+                <div class="pay-option" onclick="showGifts()">
+                    <div style="font-size:30px; width:35px; text-align:center;">🎁</div>
+                    <div><b>Gifts</b><br><small style="color:var(--sub-text)">NFT подарки</small></div>
+                </div>
+            </div>
 
-    .btn-back { background: none; border: none; color: var(--text-sub); width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
+            <div id="pane-ton" style="display:none;">
+                <h2>Сумма TON</h2>
+                <input type="number" id="ton-input" class="input-ton" placeholder="0.1">
+                <button class="btn-deposit" onclick="payTon()">Оплатить</button>
+                <button style="background:none; border:none; color:var(--sub-text); width:100; margin-top:15px;" onclick="resetPanes()">⬅ Назад</button>
+            </div>
 
-    .input-ton-premium {
-        width: 100%; background: #2c2c2e; border: 2px solid transparent; border-radius: 20px;
-        padding: 18px; color: white; font-size: 32px; text-align: center; font-weight: 800; margin-bottom: 20px;
-        transition: 0.3s;
-    }
-    .input-ton-premium:focus { border-color: var(--accent-green); outline: none; }
-</style>
+            <div id="pane-gifts" style="display:none;">
+                <h2 style="margin-bottom:20px;">Инструкция Gifts 🎁</h2>
+                <div class="gift-card">
+                    <div class="step"><span class="step-num">1</span><span>Зайдите в бота <b style="color:var(--accent)">@casemonk_relayer</b></span></div>
+                    <div class="step"><span class="step-num">2</span><span>Отправьте ему <b style="color:var(--accent)">NFT подарок</b></span></div>
+                    <div class="step"><span class="step-num">3</span><span>Баланс пополнится автоматически</span></div>
+                </div>
+                <div class="warning">Отправляйте подарки напрямую со своего аккаунта!</div>
+                <button class="btn-deposit" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
+                <button style="background:none; border:none; color:var(--sub-text); width:100; margin-top:15px;" onclick="resetPanes()">⬅ Назад</button>
+            </div>
+        </div>
+    </div>
 
-<script>
-    // Функции навигации внутри модалки
-    function goToTon() {
-        if (!tonConnectUI.connected) {
-            connectWallet();
-        } else {
-            document.getElementById('step-choice').style.display = 'none';
-            document.getElementById('step-ton').style.display = 'block';
+    <div id="ton-connect-btn" style="display:none"></div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://raw.githubusercontent.com/casemonkbot-sudo/casemonk-bot/main/public/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect-btn'
+        });
+
+        // Данные юзера
+        const user = tg.initDataUnsafe.user;
+        if(user) {
+            document.getElementById('user-name').innerText = user.username ? `@${user.username}` : user.first_name;
+            document.getElementById('user-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?name=U';
+        }
+
+        function openModal() {
+            const m = document.getElementById('modal');
+            m.style.display = 'block';
+            setTimeout(() => m.classList.add('active'), 10);
             tg.HapticFeedback.impactOccurred('medium');
         }
-    }
 
-    function goToGifts() {
-        document.getElementById('step-choice').style.display = 'none';
-        document.getElementById('step-gifts').style.display = 'block';
-        tg.HapticFeedback.impactOccurred('medium');
-    }
+        function closeModal() {
+            const m = document.getElementById('modal');
+            m.classList.remove('active');
+            setTimeout(() => { m.style.display = 'none'; resetPanes(); }, 300);
+        }
 
-    function backToChoice() {
-        document.getElementById('step-ton').style.display = 'none';
-        document.getElementById('step-gifts').style.display = 'none';
-        document.getElementById('step-choice').style.display = 'block';
-    }
+        function showTon() {
+            if (!tonConnectUI.connected) {
+                tonConnectUI.openModal();
+            } else {
+                document.getElementById('pane-choice').style.display = 'none';
+                document.getElementById('pane-ton').style.display = 'block';
+            }
+        }
 
-    // Дополнение к функции закрытия, чтобы сбрасывать шаги
-    function closeDeposit() {
-        const modal = document.getElementById('modal');
-        modal.classList.remove('modal-active');
-        setTimeout(() => {
-            modal.style.display = 'none';
-            backToChoice(); // Сброс к первому экрану
-        }, 300);
-    }
-</script>
+        function showGifts() {
+            document.getElementById('pane-choice').style.display = 'none';
+            document.getElementById('pane-gifts').style.display = 'block';
+        }
+
+        function resetPanes() {
+            document.getElementById('pane-choice').style.display = 'block';
+            document.getElementById('pane-ton').style.display = 'none';
+            document.getElementById('pane-gifts').style.display = 'none';
+        }
+
+        async function payTon() {
+            const val = document.getElementById('ton-input').value;
+            const amount = parseFloat(val);
+            if (!amount || amount < 0.1) return tg.showAlert("Минимум 0.1 TON");
+
+            const tx = {
+                validUntil: Math.floor(Date.now() / 1000) + 300,
+                messages: [{
+                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ",
+                    amount: (amount * 1000000000).toString()
+                }]
+            };
+            try {
+                await tonConnectUI.sendTransaction(tx);
+                tg.showAlert("Готово! Проверьте кошелек.");
+                closeModal();
+            } catch (e) { console.error(e); }
+        }
+    </script>
+</body>
+</html>
