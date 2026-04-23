@@ -3,103 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Caser Monk Premium</title>
+    <title>CaseMonk Profile</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
-            --green: #2ecc71;
-            --bg: #000000;
-            --card: #121212;
-            --text: #ffffff;
-            --sub-text: #8e8e93;
-            --accent: #007aff;
+            --tg-theme-bg-color: #000000;
+            --accent-green: #2ecc71;
+            --card-bg: #121212;
+            --text-main: #ffffff;
+            --text-sub: #8e8e93;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--tg-theme-bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0; overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        .app-container { padding: 20px; max-width: 500px; margin: 0 auto; }
+        .container {
+            height: 100vh;
+            display: flex; flex-direction: column;
+            padding: 20px;
+        }
 
-        /* Профиль */
+        /* Profile Header Area */
         .profile-card {
-            background: linear-gradient(180deg, rgba(46, 204, 113, 0.1) 0%, rgba(18, 18, 18, 0) 100%);
-            border: 1px solid rgba(255,255,255,0.05); border-radius: 30px;
-            padding: 40px 20px; text-align: center; margin-bottom: 25px;
+            background: linear-gradient(180deg, rgba(46, 204, 113, 0.15) 0%, rgba(0, 0, 0, 0) 100%);
+            border-radius: 35px;
+            padding: 40px 20px;
+            text-align: center;
+            border: 1px solid var(--glass);
+            margin-bottom: 25px;
+            will-change: transform;
         }
+
+        .avatar-container {
+            position: relative;
+            width: 110px; height: 110px;
+            margin: 0 auto 15px;
+        }
+
         .avatar {
-            width: 110px; height: 110px; border-radius: 50%;
-            border: 3px solid var(--green); margin-bottom: 15px;
-            box-shadow: 0 0 30px rgba(46, 204, 113, 0.2);
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 3px solid var(--accent-green);
+            object-fit: cover;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.3);
         }
-        .username { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
 
-        /* Кнопка Пополнить */
-        .btn-deposit {
-            background: var(--green); color: #000; border: none; border-radius: 20px;
-            width: 100%; padding: 18px; font-size: 17px; font-weight: 700;
-            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .username {
+            font-size: 24px; font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Action Button */
+        .btn-main {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            border-radius: 22px;
+            width: 100%;
+            padding: 18px;
+            font-size: 17px;
+            font-weight: 700;
             display: flex; align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
         }
-        .btn-deposit:active { transform: scale(0.96); }
 
-        /* Модальное окно */
+        .btn-main:active { transform: scale(0.96) translate3d(0,0,0); }
+
+        /* Inventory */
+        .inventory-box {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 25px;
+            margin-top: 25px;
+            flex-grow: 1;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .slot {
+            aspect-ratio: 1/1;
+            background: var(--glass);
+            border: 1px dashed #333;
+            border-radius: 18px;
+        }
+
+        /* Bottom Nav */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 85px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            display: flex; justify-content: center; align-items: center;
+            border-top: 1px solid var(--glass);
+        }
+
+        .nav-item {
+            color: var(--accent-green);
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 12px; font-weight: 600;
+        }
+
+        /* Modal Sheet */
         .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000;
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
         }
+
         .modal-sheet {
-            position: absolute; bottom: 0; width: 100%; background: #1c1c1e;
-            border-radius: 35px 35px 0 0; padding: 30px 20px;
-            animation: slideUp 0.3s ease-out;
+            position: absolute; bottom: 0; width: 100%;
+            background: #1c1c1e;
+            border-radius: 35px 35px 0 0;
+            padding: 30px 25px 50px;
+            transform: translate3d(0, 100%, 0);
+            transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+            will-change: transform;
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* Выбор оплаты */
-        .pay-option {
-            background: rgba(255,255,255,0.04); border-radius: 20px; padding: 20px;
-            display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+        .modal-active .modal-sheet { transform: translate3d(0, 0, 0); }
+
+        .input-ton {
+            width: 100%;
+            background: #2c2c2e;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            font-size: 28px;
+            text-align: center;
+            font-weight: 800;
+            margin: 20px 0;
+            outline: none;
         }
-        .pay-option img { width: 40px; height: 40px; }
-        .pay-title { font-weight: 700; font-size: 16px; }
 
-        /* Поле ввода суммы */
-        #amount-container { display: none; margin-top: 20px; text-align: center; }
-        .input-group { position: relative; margin-bottom: 20px; }
-        .ton-input {
-            width: 100%; background: #2c2c2e; border: 2px solid transparent;
-            border-radius: 18px; padding: 20px; color: white; font-size: 24px;
-            text-align: center; font-weight: 700; transition: 0.3s;
-        }
-        .ton-input:focus { border-color: var(--green); outline: none; background: #3a3a3c; }
-        .ton-symbol { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-weight: 700; color: var(--sub-text); }
+        .input-ton:focus { border-color: var(--accent-green); }
 
-        /* Инвентарь */
-        .inventory-section { background: var(--card); border-radius: 25px; padding: 25px; margin-top: 25px; }
-        .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
-        .slot { aspect-ratio: 1/1; background: rgba(255,255,255,0.03); border: 1px dashed #333; border-radius: 18px; }
-
-        .ton-connect-hidden { display: none; } /* Кнопка будет невидимой, но рабочей */
+        #ton-connect-trigger { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+    <div class="container">
         <div class="profile-card">
-            <img src="" id="user-avatar" class="avatar" alt="👤">
-            <div class="username" id="user-name">Загрузка...</div>
-            <div id="ton-connect-btn" class="ton-connect-hidden"></div>
+            <div class="avatar-container">
+                <img src="" id="user-pic" class="avatar" alt="">
+            </div>
+            <div class="username" id="user-name">@username</div>
+            <div id="ton-connect-btn" style="display: none;"></div>
         </div>
 
-        <button class="btn-deposit" onclick="toggleModal(true)">
+        <button class="btn-main" onclick="openDeposit()">
             <span>💵</span> Пополнить баланс
         </button>
 
-        <div class="inventory-section">
+        <div class="inventory-box">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-weight:700; font-size:18px;">Инвентарь</span>
-                <span style="color:var(--sub-text); font-size:13px;">0 предметов</span>
+                <span style="color:var(--text-sub); font-size:13px;">0 предметов</span>
             </div>
             <div class="inventory-grid">
                 <div class="slot"></div><div class="slot"></div><div class="slot"></div>
@@ -108,36 +186,30 @@
         </div>
     </div>
 
-    <div id="pay-modal" class="modal-overlay" onclick="toggleModal(false)">
+    <nav class="nav-bar">
+        <div class="nav-item">
+            <div style="font-size: 24px; margin-bottom: 4px;">👤</div>
+            Профиль
+        </div>
+    </nav>
+
+    <div id="modal" class="modal-overlay" onclick="closeDeposit()">
         <div class="modal-sheet" onclick="event.stopPropagation()">
-            <div style="width:40px; height:5px; background:#3a3a3c; border-radius:10px; margin: 0 auto 20px;"></div>
+            <div style="width:40px; height:5px; background:#3a3a3c; border-radius:10px; margin: 0 auto 25px;"></div>
             
-            <div id="method-selector">
-                <h2 style="margin:0 0 20px 5px;">Способ пополнения</h2>
-                <div class="pay-option" onclick="handleTonClick()">
-                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png">
-                    <div>
-                        <div class="pay-title">TON Wallet</div>
-                        <div style="font-size:12px; color:var(--sub-text)">Минимум 0.1 TON</div>
-                    </div>
-                </div>
-                <div class="pay-option" onclick="alert('Stars в разработке')">
-                    <img src="https://img.icons8.com/color/96/star--v1.png">
-                    <div class="pay-title">Telegram Stars</div>
-                </div>
+            <div id="step-connect">
+                <h2 style="margin:0 0 10px 0;">Шаг 1</h2>
+                <p style="color:var(--text-sub); margin-bottom:25px;">Сначала подключите ваш TON кошелек</p>
+                <button class="btn-main" onclick="connectWallet()">Подключить TON</button>
             </div>
 
-            <div id="amount-container">
-                <h2 style="margin-bottom:10px;">Введите сумму</h2>
-                <p style="color:var(--sub-text); margin-bottom:25px; font-size:14px;">Деньги поступят на ваш баланс сразу после оплаты</p>
+            <div id="step-amount" style="display:none;">
+                <h2 style="margin:0;">Сумма пополнения</h2>
+                <p style="color:var(--text-sub); font-size:14px;">Введите количество TON (0.1 - 9999)</p>
                 
-                <div class="input-group">
-                    <input type="number" id="ton-amount" class="ton-input" placeholder="0.00" step="0.1" min="0.1" max="9999">
-                    <span class="ton-symbol">TON</span>
-                </div>
-
-                <button class="btn-deposit" onclick="executeTonPay()">Подтвердить и оплатить</button>
-                <button style="background:none; border:none; color:var(--sub-text); margin-top:15px;" onclick="backToMethods()">⬅ Назад</button>
+                <input type="number" id="ton-input" class="input-ton" placeholder="0.0" step="0.1">
+                
+                <button class="btn-main" onclick="sendTransaction()">Оплатить через кошелек</button>
             </div>
         </div>
     </div>
@@ -146,71 +218,67 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 1. Настройка TonConnect (обязательно RAW ссылка на твой GitHub)
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://raw.githubusercontent.com/casemonkbot-sudo/casemonk-bot/main/public/tonconnect-manifest.json',
             buttonRootId: 'ton-connect-btn'
         });
 
-        // 2. Данные пользователя
+        // Load User Data
         const user = tg.initDataUnsafe.user;
         if(user) {
             document.getElementById('user-name').innerText = user.username ? `@${user.username}` : user.first_name;
-            document.getElementById('user-avatar').src = user.photo_url || `https://ui-avatars.com/api/?name=${user.first_name}&background=2ecc71&color=000`;
+            document.getElementById('user-pic').src = user.photo_url || 'https://ui-avatars.com/api/?name=U';
         }
 
-        function toggleModal(show) {
-            document.getElementById('pay-modal').style.display = show ? 'block' : 'none';
-            if(!show) backToMethods();
-            tg.HapticFeedback.impactOccurred('light');
-        }
-
-        // 3. Логика кнопки TON
-        async function handleTonClick() {
-            if (!tonConnectUI.connected) {
-                // Если не подключен — вызываем окно подключения
-                await tonConnectUI.openModal();
-            } else {
-                // Если уже подключен — переключаем на ввод суммы
-                document.getElementById('method-selector').style.display = 'none';
-                document.getElementById('amount-container').style.display = 'block';
+        function openDeposit() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'block';
+            setTimeout(() => modal.classList.add('modal-active'), 10);
+            
+            if (tonConnectUI.connected) {
+                document.getElementById('step-connect').style.display = 'none';
+                document.getElementById('step-amount').style.display = 'block';
             }
         }
 
-        function backToMethods() {
-            document.getElementById('method-selector').style.display = 'block';
-            document.getElementById('amount-container').style.display = 'none';
+        function closeDeposit() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('modal-active');
+            setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // 4. САМА ОПЛАТА
-        async function executeTonPay() {
-            const amountInput = document.getElementById('ton-amount').value;
-            const amount = parseFloat(amountInput);
+        async function connectWallet() {
+            await tonConnectUI.openModal();
+            // UI auto-updates via TonConnect listeners usually, but we check here
+            if (tonConnectUI.connected) {
+                document.getElementById('step-connect').style.display = 'none';
+                document.getElementById('step-amount').style.display = 'block';
+            }
+        }
 
-            if (isNaN(amount) || amount < 0.1 || amount > 9999) {
-                tg.showAlert("Пожалуйста, введите корректную сумму от 0.1 до 9999 TON");
+        async function sendTransaction() {
+            const val = document.getElementById('ton-input').value;
+            const amount = parseFloat(val);
+
+            if (!amount || amount < 0.1 || amount > 9999) {
+                tg.showAlert("Введите сумму от 0.1 до 9999 TON");
                 return;
             }
 
-            // Переводим в нанотоны (1 TON = 10^9 нанотонов)
-            const nanoAmount = (amount * 1000000000).toString();
-
             const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 360,
+                validUntil: Math.floor(Date.now() / 1000) + 300,
                 messages: [{
-                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", // Твой кошелек
-                    amount: nanoAmount
+                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ",
+                    amount: (amount * 1000000000).toString() // Convert to NanoTON
                 }]
             };
 
             try {
-                tg.HapticFeedback.notificationOccurred('success');
                 await tonConnectUI.sendTransaction(transaction);
-                tg.showAlert("Транзакция отправлена в кошелек!");
-                toggleModal(false);
+                tg.showAlert("Запрос отправлен! Подтвердите в кошельке.");
+                closeDeposit();
             } catch (e) {
                 console.error(e);
-                tg.showAlert("Оплата отменена или произошла ошибка");
             }
         }
     </script>
