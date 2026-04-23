@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CaseMonk Final</title>
+    <title>CaseMonk App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
@@ -43,7 +43,7 @@
         .btn-blue { background: var(--blue); color: white; text-decoration: none; margin-top: 15px; }
         .btn-main { background: var(--green); color: #000; margin-bottom: 20px; }
 
-        /* Модалка 60 FPS */
+        /* Модальное окно (BottomSheet) */
         .modal {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
             backdrop-filter: blur(10px); z-index: 1000;
@@ -131,7 +131,7 @@
                 </div>
                 <div class="option" onclick="go('stars')">
                     <img src="https://img.icons8.com/color/96/star--v1.png" width="32">
-                    <div><b>Telegram Stars ⭐</b><br><small id="ln-stars-s">Через бота</small></div>
+                    <div><b>Telegram Stars ⭐</b><br><small id="ln-stars-s">Оплата в чате</small></div>
                 </div>
                 <div class="option" onclick="go('gifts')">
                     <div style="font-size:30px; width:32px; text-align:center;">🎁</div>
@@ -149,7 +149,7 @@
                 <h3 id="ln-stars-t">Пополнение Stars</h3>
                 <input type="number" id="in-stars" class="input-box" placeholder="100" oninput="calc(this.value)">
                 <div id="calc-res" style="color:var(--sub); font-size:13px; margin-bottom:20px;">Введите сумму (мин. 10)</div>
-                <button class="btn btn-main" style="background:#ffbc00" onclick="doStars()" id="ln-stars-b">Оплатить в боте</button>
+                <button class="btn btn-main" style="background:#ffbc00" onclick="doStars()" id="ln-stars-b">Оплатить в чате</button>
             </div>
 
             <div id="p-gifts" style="display:none;">
@@ -181,8 +181,9 @@
         tg.expand();
         const user = tg.initDataUnsafe.user;
 
+        // ИСПРАВЛЕНИЕ ОШИБКИ МАНИФЕСТА
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://raw.githubusercontent.com/casemonkbot-sudo/casemonk-bot/main/public/tonconnect-manifest.json',
+            manifestUrl: 'https://casemonkbot-sudo.github.io/casemonk-bot/tonconnect-manifest.json',
             buttonRootId: 'ton-trigger'
         });
 
@@ -191,19 +192,19 @@
             document.getElementById('u-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?background=2ecc71&color=fff&name=' + user.first_name;
         }
 
-        const lang = {
+        const translations = {
             ru: {
                 support: "🎧 Поддержка", deposit: "➕ Пополнить баланс", inv: "Инвентарь", prof: "Профиль",
-                pay_t: "Пополнение", ton_s: "Мгновенно (от 0.1 TON)", stars_s: "Через бота", gifts_s: "NFT подарки",
-                ton_title: "Сумма TON", stars_title: "Пополнение Stars", back: "⬅ Назад", stars_btn: "Оплатить в боте",
+                pay_t: "Пополнение", ton_s: "Мгновенно (от 0.1 TON)", stars_s: "Оплата в чате", gifts_s: "NFT подарки",
+                ton_title: "Сумма TON", stars_title: "Пополнение Stars", back: "⬅ Назад", stars_btn: "Оплатить в чате",
                 g1: "Перейдите в нашего бота", g2: "Отправьте ему NFT подарок", g2s: "Модель, фон и символ не учитываются!",
                 g3: "Баланс пополнится", g3s: "В течение нескольких секунд", g_warn: "Отправляйте подарки только напрямую со своего аккаунта!",
                 calc: (s, t) => `Вы платите: <b>${s} ⭐</b><br>Получите: <b>${t} TON</b> на баланс`
             },
             en: {
                 support: "🎧 Support", deposit: "➕ Top Up Balance", inv: "Inventory", prof: "Profile",
-                pay_t: "Deposit", ton_s: "Instant (from 0.1 TON)", stars_s: "Via Bot", gifts_s: "NFT Gifts",
-                ton_title: "TON Amount", stars_title: "Stars Deposit", back: "⬅ Back", stars_btn: "Pay in Bot",
+                pay_t: "Deposit", ton_s: "Instant (from 0.1 TON)", stars_s: "Via Chat", gifts_s: "NFT Gifts",
+                ton_title: "TON Amount", stars_title: "Stars Deposit", back: "⬅ Back", stars_btn: "Pay in Chat",
                 g1: "Go to our bot", g2: "Send him an NFT gift", g2s: "Model, background and symbol are ignored!",
                 g3: "Balance updated", g3s: "Within a few seconds", g_warn: "Send gifts only directly from your account!",
                 calc: (s, t) => `You pay: <b>${s} ⭐</b><br>Receive: <b>${t} TON</b> to balance`
@@ -213,7 +214,7 @@
         function changeLang(l) {
             document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-            const d = lang[l];
+            const d = translations[l];
             document.getElementById('ln-support').innerText = d.support;
             document.getElementById('ln-deposit').innerText = d.deposit;
             document.getElementById('ln-inv').innerText = d.inv;
@@ -272,20 +273,21 @@
         function calc(v) {
             const s = parseInt(v) || 0;
             const t = (s * 0.01).toFixed(2);
-            document.getElementById('calc-res').innerHTML = lang[window.currL || 'ru'].calc(s, t);
+            document.getElementById('calc-res').innerHTML = translations[window.currL || 'ru'].calc(s, t);
         }
 
-        // РАБОЧИЕ ЗВЕЗДЫ
+        // РАБОЧИЕ STARS
         function doStars() {
             const val = document.getElementById('in-stars').value;
             if(val < 10) return tg.showAlert("Min: 10 Stars");
             
-            // Передаем боту команду через sendData
+            // Отправляем данные боту (в index.js)
             tg.sendData(JSON.stringify({ 
                 action: "buy_stars", 
                 amount: val 
             }));
-            // Обязательно закрываем приложение, чтобы бот мог обработать данные
+            
+            // Обязательно закрываем приложение
             tg.close();
         }
     </script>
