@@ -3,248 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Caser Monk Premium</title>
+    <title>CaseMonk Ultimate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
-            --green: #2ecc71; --blue: #007aff; --bg: #000000; --card: #121212;
-            --text: #ffffff; --sub: #8e8e93; --glass: rgba(255, 255, 255, 0.05);
+            --green: #2ecc71; --blue: #007aff; --bg: #0b0b0c; --card: #1c1c1e;
+            --text: #ffffff; --sub: #8e8e93; --glass: rgba(255, 255, 255, 0.06);
+            --red-bg: rgba(255, 59, 48, 0.15); --red-text: #ff453a;
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { 
-            background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; 
+            background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; 
             margin: 0; padding: 0; overflow: hidden; height: 100vh;
         }
 
-        .app { padding: 20px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 100px; }
+        .app-container { padding: 20px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 100px; }
 
-        /* Profile Section */
-        .profile-card {
-            background: linear-gradient(180deg, rgba(46, 204, 113, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-            border: 1px solid var(--glass); border-radius: 30px; padding: 25px; text-align: center; margin-bottom: 20px;
-            will-change: transform;
+        /* Профиль */
+        .profile-box {
+            background: linear-gradient(180deg, rgba(46, 204, 113, 0.12) 0%, rgba(0, 0, 0, 0) 100%);
+            border: 1px solid var(--glass); border-radius: 32px; padding: 30px 20px; text-align: center; margin-bottom: 20px;
         }
-        .avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--green); margin-bottom: 10px; }
-        .username { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
-        .lang-switcher { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-        .lang-btn { background: var(--glass); border: 1px solid var(--glass); color: white; padding: 5px 12px; border-radius: 10px; font-size: 12px; cursor: pointer; }
-        .lang-btn.active { border-color: var(--green); color: var(--green); }
+        .avatar { width: 95px; height: 95px; border-radius: 50%; border: 3px solid var(--green); margin-bottom: 12px; object-fit: cover; }
+        .u-name { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+        
+        .lang-bar { display: flex; justify-content: center; gap: 8px; margin: 12px 0; }
+        .l-btn { background: var(--glass); border: 1px solid transparent; color: var(--sub); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .l-btn.active { border-color: var(--green); color: var(--green); background: rgba(46, 204, 113, 0.1); }
 
-        /* Buttons */
+        /* Кнопки */
         .btn {
-            border: none; border-radius: 20px; width: 100%; padding: 18px; 
+            border: none; border-radius: 22px; width: 100%; padding: 18px; 
             font-size: 16px; font-weight: 700; display: flex; align-items: center; 
-            justify-content: center; gap: 10px; cursor: pointer; transition: 0.2s;
-            will-change: transform; margin-bottom: 12px;
-        }
-        .btn:active { transform: scale(0.97) translate3d(0,0,0); }
-        .btn-support { background: var(--blue); color: white; text-decoration: none; }
-        .btn-deposit { background: var(--green); color: black; }
-
-        /* Modal 60 FPS */
-        .modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-            backdrop-filter: blur(10px); z-index: 1000;
-        }
-        .modal-sheet {
-            position: absolute; bottom: 0; width: 100%; background: #1c1c1e;
-            border-radius: 30px 30px 0 0; padding: 25px 25px 40px;
-            transform: translate3d(0, 100%, 0); transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+            justify-content: center; gap: 10px; cursor: pointer; transition: transform 0.15s cubic-bezier(0.2, 0, 0.2, 1);
             will-change: transform;
         }
-        .modal-active .modal-sheet { transform: translate3d(0, 0, 0); }
+        .btn:active { transform: scale(0.96) translate3d(0,0,0); }
+        .btn-blue { background: var(--blue); color: white; text-decoration: none; margin-top: 15px; }
+        .btn-main { background: var(--green); color: #000; margin-bottom: 20px; }
 
-        .pay-option {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass);
-            border-radius: 18px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px;
+        /* Модалка 60 FPS */
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(12px); z-index: 1000;
+        }
+        .sheet {
+            position: absolute; bottom: 0; width: 100%; background: #171719;
+            border-radius: 35px 35px 0 0; padding: 25px 25px 45px;
+            transform: translate3d(0, 100%, 0); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform; border-top: 1px solid var(--glass);
+        }
+        .modal-active .sheet { transform: translate3d(0, 0, 0); }
+
+        .option {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--glass);
+            border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
         }
 
-        .input-premium {
-            width: 100%; background: #2c2c2e; border: 2px solid transparent; border-radius: 18px;
-            padding: 15px; color: white; font-size: 24px; text-align: center; font-weight: 800; margin: 15px 0;
+        .input-box {
+            width: 100%; background: #242426; border: 2px solid transparent; border-radius: 20px;
+            padding: 18px; color: white; font-size: 26px; text-align: center; font-weight: 800; margin: 15px 0;
         }
-        .input-premium:focus { border-color: var(--green); outline: none; }
+        .input-box:focus { border-color: var(--green); }
 
-        .calc-info { font-size: 13px; color: var(--sub); margin-bottom: 15px; text-align: center; line-height: 1.4; }
+        /* Дизайн Gifts */
+        .gift-step { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; text-align: left; }
+        .step-n { background: #2c2c2e; color: var(--text); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; font-size: 14px; }
+        .step-t b { color: var(--text); display: block; }
+        .step-t span { color: var(--sub); font-size: 13px; display: block; margin-top: 2px; }
+        
+        .alert-red {
+            background: var(--red-bg); color: var(--red-text); padding: 14px; border-radius: 18px;
+            font-size: 12px; font-weight: 600; text-align: center; margin-bottom: 20px; line-height: 1.4;
+        }
 
-        /* Nav */
-        .nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
-            background: rgba(10,10,10,0.8); backdrop-filter: blur(15px);
+        /* Инвентарь */
+        .inv-card { background: var(--card); border-radius: 28px; padding: 20px; }
+        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+        .inv-slot { aspect-ratio: 1; background: var(--glass); border-radius: 16px; border: 1px dashed #3a3a3c; }
+
+        .nav-fixed {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
+            background: rgba(10,10,10,0.85); backdrop-filter: blur(20px);
             display: flex; justify-content: center; align-items: center; border-top: 1px solid var(--glass);
         }
     </style>
 </head>
 <body>
 
-    <div class="app">
-        <div class="profile-card">
-            <img src="" id="user-avatar" class="avatar" alt="👤">
-            <div class="username" id="user-name">Loading...</div>
-            <div class="lang-switcher">
-                <div class="lang-btn active" onclick="setLang('ru')">RU</div>
-                <div class="lang-btn" onclick="setLang('en')">EN</div>
+    <div class="app-container">
+        <div class="profile-box">
+            <img src="" id="u-avatar" class="avatar">
+            <div class="u-name" id="u-display">@username</div>
+            <div class="lang-bar">
+                <div class="l-btn active" onclick="changeLang('ru')">РУССКИЙ</div>
+                <div class="l-btn" onclick="changeLang('en')">ENGLISH</div>
             </div>
-            <a href="https://t.me/casemonk_sup_robot" class="btn btn-support" id="txt-support" style="margin-top:15px;">
-                <span>🎧</span> Поддержка
-            </a>
+            <a href="https://t.me/casemonk_sup_robot" class="btn btn-blue" id="ln-support">🎧 Поддержка</a>
         </div>
 
-        <button class="btn btn-deposit" onclick="openModal()" id="txt-deposit-btn">
-            <span>➕</span> Пополнить баланс
-        </button>
+        <button class="btn btn-main" onclick="openDeposit()" id="ln-deposit">➕ Пополнить баланс</button>
 
-        <div class="profile-card" style="text-align: left; padding: 20px;">
-            <div style="font-weight: 800; margin-bottom: 10px;" id="txt-inv">Инвентарь</div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                <div style="aspect-ratio:1; background:var(--glass); border-radius:12px; border:1px dashed #333;"></div>
-                <div style="aspect-ratio:1; background:var(--glass); border-radius:12px; border:1px dashed #333;"></div>
-                <div style="aspect-ratio:1; background:var(--glass); border-radius:12px; border:1px dashed #333;"></div>
+        <div class="inv-card">
+            <div style="display:flex; justify-content:space-between;">
+                <b id="ln-inv">Инвентарь</b>
+                <span style="color:var(--sub); font-size:12px;">0 предметов</span>
+            </div>
+            <div class="inv-grid">
+                <div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div>
+                <div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div>
             </div>
         </div>
     </div>
 
-    <nav class="nav">
-        <div style="color:var(--green); text-align:center; font-size:11px;">
-            <div style="font-size:22px;">👤</div><span id="txt-nav-prof">Профиль</span>
+    <nav class="nav-fixed">
+        <div style="color:var(--green); text-align:center; font-size:11px; font-weight:700;">
+            <div style="font-size:24px;">👤</div><span id="ln-prof-nav">Профиль</span>
         </div>
     </nav>
 
-    <div id="modal" class="modal-overlay" onclick="closeModal()">
-        <div class="modal-sheet" onclick="event.stopPropagation()">
-            <div style="width:40px; height:4px; background:#333; border-radius:10px; margin:0 auto 20px;"></div>
+    <div id="m-pay" class="modal" onclick="closeDeposit()">
+        <div class="sheet" onclick="event.stopPropagation()">
+            <div style="width:45px; height:5px; background:#333; border-radius:10px; margin:0 auto 25px;"></div>
             
-            <div id="pane-main">
-                <h3 id="txt-choose-pay">Выберите способ</h3>
-                <div class="pay-option" onclick="showPane('ton')">
-                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="30">
-                    <div><b>TON Coin</b><br><small id="txt-ton-sub">Мгновенно (от 0.1 TON)</small></div>
+            <div id="p-start">
+                <h3 id="ln-pay-title">Пополнение</h3>
+                <div class="option" onclick="go('ton')">
+                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="32">
+                    <div><b>TON Wallet</b><br><small id="ln-ton-s">Мгновенно (от 0.1 TON)</small></div>
                 </div>
-                <div class="pay-option" onclick="showPane('stars')">
-                    <img src="https://img.icons8.com/color/96/star--v1.png" width="30">
-                    <div><b>Telegram Stars</b><br><small id="txt-stars-sub">Оплата звездами</small></div>
+                <div class="option" onclick="go('stars')">
+                    <img src="https://img.icons8.com/color/96/star--v1.png" width="32">
+                    <div><b>Telegram Stars ⭐</b><br><small id="ln-stars-s">Через бота</small></div>
+                </div>
+                <div class="option" onclick="go('gifts')">
+                    <div style="font-size:30px; width:32px; text-align:center;">🎁</div>
+                    <div><b>Gifts</b><br><small id="ln-gifts-s">NFT подарки</small></div>
                 </div>
             </div>
 
-            <div id="pane-ton" style="display:none; text-align:center;">
-                <h3 id="txt-ton-title">Сумма TON</h3>
-                <input type="number" id="ton-input" class="input-premium" placeholder="0.1" min="0.1">
-                <button class="btn btn-deposit" onclick="payTON()" id="txt-pay-btn">Оплатить</button>
+            <div id="p-ton" style="display:none; text-align:center;">
+                <h3 id="ln-ton-t">Сумма TON</h3>
+                <input type="number" id="in-ton" class="input-box" placeholder="0.1" step="0.1">
+                <button class="btn btn-main" onclick="doTon()">Оплатить через TON</button>
             </div>
 
-            <div id="pane-stars" style="display:none; text-align:center;">
-                <h3 id="txt-stars-title">Пополнение Stars</h3>
-                <input type="number" id="stars-input" class="input-premium" placeholder="10" oninput="calcStars(this.value)">
-                <div class="calc-info" id="stars-calc">
-                    Введите сумму. Минимально: 10 Stars.
+            <div id="p-stars" style="display:none; text-align:center;">
+                <h3 id="ln-stars-t">Пополнение Stars</h3>
+                <input type="number" id="in-stars" class="input-box" placeholder="100" oninput="calc(this.value)">
+                <div id="calc-res" style="color:var(--sub); font-size:13px; margin-bottom:20px; line-height:1.5;">
+                    Введите сумму (мин. 10)
                 </div>
-                <button class="btn btn-deposit" style="background:#ffbc00" onclick="payStars()" id="txt-stars-btn">Получить ссылку</button>
+                <button class="btn btn-main" style="background:#ffbc00" onclick="doStars()" id="ln-stars-b">Оплатить в боте</button>
             </div>
 
-            <button onclick="resetPanes()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:15px; font-weight:600;" id="txt-back">⬅ Назад</button>
+            <div id="p-gifts" style="display:none;">
+                <h3 style="margin-bottom:25px;">Gifts 🎁</h3>
+                <div class="gift-step">
+                    <div class="step-n">1</div>
+                    <div class="step-t"><b id="ln-g1">Перейдите в нашего бота</b><span>@casemonk_relayer</span></div>
+                </div>
+                <div class="gift-step">
+                    <div class="step-n">2</div>
+                    <div class="step-t"><b id="ln-g2">Отправьте ему NFT подарок</b><span id="ln-g2s">Фон, номер и модель не оцениваются!</span></div>
+                </div>
+                <div class="gift-step">
+                    <div class="step-n">3</div>
+                    <div class="step-t"><b id="ln-g3">Баланс пополнится</b><span id="ln-g3s">В течение нескольких секунд</span></div>
+                </div>
+                <div class="alert-red" id="ln-g-warn">Отправляйте подарки только напрямую со своего аккаунта!</div>
+                <button class="btn btn-blue" style="margin:0" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
+            </div>
+
+            <button onclick="reset()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;" id="ln-back">⬅ Назад</button>
         </div>
     </div>
 
-    <div id="ton-connect-trigger" style="display:none"></div>
+    <div id="ton-trigger" style="display:none"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         const user = tg.initDataUnsafe.user;
 
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        const tonConnect = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://raw.githubusercontent.com/casemonkbot-sudo/casemonk-bot/main/public/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect-trigger'
+            buttonRootId: 'ton-trigger'
         });
 
-        // 1. Аватарка и Имя
         if(user) {
-            document.getElementById('user-name').innerText = user.username ? `@${user.username}` : user.first_name;
-            document.getElementById('user-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?name=' + user.first_name;
+            document.getElementById('u-display').innerText = user.username ? `@${user.username}` : user.first_name;
+            document.getElementById('u-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?background=2ecc71&color=fff&name=' + user.first_name;
         }
 
-        // 2. Локализация
-        const i18n = {
+        const lang = {
             ru: {
-                support: "<span>🎧</span> Поддержка", deposit: "<span>➕</span> Пополнить баланс", inv: "Инвентарь", nav_prof: "Профиль",
-                choose: "Выберите способ", ton_sub: "Мгновенно (от 0.1 TON)", stars_sub: "Оплата звездами", ton_title: "Сумма TON",
-                stars_title: "Пополнение Stars", back: "⬅ Назад", pay: "Оплатить", stars_btn: "Получить ссылку",
-                calc: (s, t) => `Вы платите: ${s} ⭐<br>Получаете на баланс: ${t} TON<br><small style="color:#ff3b30">Вывод доступен через 21 день</small>`
+                support: "🎧 Поддержка", deposit: "➕ Пополнить баланс", inv: "Инвентарь", prof: "Профиль",
+                pay_t: "Пополнение", ton_s: "Мгновенно (от 0.1 TON)", stars_s: "Через бота", gifts_s: "NFT подарки",
+                ton_title: "Сумма TON", stars_title: "Пополнение Stars", back: "⬅ Назад", stars_btn: "Оплатить в боте",
+                g1: "Перейдите в нашего бота", g2: "Отправьте ему NFT подарок", g2s: "Фон, номер и модель не оцениваются!",
+                g3: "Баланс пополнится", g3s: "В течение нескольких секунд", g_warn: "Отправляйте подарки только напрямую со своего аккаунта!",
+                calc: (s, t) => `Вы платите: <b>${s} ⭐</b><br>Получаете: <b>${t} TON</b> на баланс<br><small style="color:#ff453a">Вывод через 21 день</small>`
             },
             en: {
-                support: "<span>🎧</span> Support", deposit: "<span>➕</span> Deposit Balance", inv: "Inventory", nav_prof: "Profile",
-                choose: "Choose method", ton_sub: "Instant (from 0.1 TON)", stars_sub: "Pay with Stars", ton_title: "TON Amount",
-                stars_title: "Stars Deposit", back: "⬅ Back", pay: "Pay", stars_btn: "Get Link",
-                calc: (s, t) => `You pay: ${s} ⭐<br>Receive to balance: ${t} TON<br><small style="color:#ff3b30">Withdrawal available in 21 days</small>`
+                support: "🎧 Support", deposit: "➕ Top Up Balance", inv: "Inventory", prof: "Profile",
+                pay_t: "Deposit", ton_s: "Instant (from 0.1 TON)", stars_s: "Via Bot", gifts_s: "NFT Gifts",
+                ton_title: "TON Amount", stars_title: "Stars Deposit", back: "⬅ Back", stars_btn: "Pay in Bot",
+                g1: "Go to our bot", g2: "Send him an NFT gift", g2s: "Background, number, and model are not evaluated!",
+                g3: "Balance will be updated", g3s: "Within a few seconds", g_warn: "Send gifts only directly from your account!",
+                calc: (s, t) => `You pay: <b>${s} ⭐</b><br>Receive: <b>${t} TON</b> to balance<br><small style="color:#ff453a">Withdraw in 21 days</small>`
             }
         };
 
-        function setLang(l) {
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        function changeLang(l) {
+            document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-            const d = i18n[l];
-            document.getElementById('txt-support').innerHTML = d.support;
-            document.getElementById('txt-deposit-btn').innerHTML = d.deposit;
-            document.getElementById('txt-inv').innerText = d.inv;
-            document.getElementById('txt-nav-prof').innerText = d.nav_prof;
-            document.getElementById('txt-choose-pay').innerText = d.choose;
-            document.getElementById('txt-ton-sub').innerText = d.ton_sub;
-            document.getElementById('txt-stars-sub').innerText = d.stars_sub;
-            document.getElementById('txt-ton-title').innerText = d.ton_title;
-            document.getElementById('txt-stars-title').innerText = d.stars_title;
-            document.getElementById('txt-back').innerText = d.back;
-            document.getElementById('txt-pay-btn').innerText = d.pay;
-            document.getElementById('txt-stars-btn').innerText = d.stars_btn;
-            window.currentLang = l;
+            const d = lang[l];
+            document.getElementById('ln-support').innerText = d.support;
+            document.getElementById('ln-deposit').innerText = d.deposit;
+            document.getElementById('ln-inv').innerText = d.inv;
+            document.getElementById('ln-prof-nav').innerText = d.prof;
+            document.getElementById('ln-pay-title').innerText = d.pay_t;
+            document.getElementById('ln-ton-s').innerText = d.ton_s;
+            document.getElementById('ln-stars-s').innerText = d.stars_s;
+            document.getElementById('ln-gifts-s').innerText = d.gifts_s;
+            document.getElementById('ln-ton-t').innerText = d.ton_title;
+            document.getElementById('ln-stars-t').innerText = d.stars_title;
+            document.getElementById('ln-stars-b').innerText = d.stars_btn;
+            document.getElementById('ln-back').innerText = d.back;
+            document.getElementById('ln-g1').innerText = d.g1;
+            document.getElementById('ln-g2').innerText = d.g2;
+            document.getElementById('ln-g2s').innerText = d.g2s;
+            document.getElementById('ln-g3').innerText = d.g3;
+            document.getElementById('ln-g3s').innerText = d.g3s;
+            document.getElementById('ln-g-warn').innerText = d.g_warn;
+            window.currL = l;
         }
-        setLang('ru');
+        changeLang('ru');
 
-        // 3. Логика Модалки
-        function openModal() {
-            const m = document.getElementById('modal');
+        function openDeposit() {
+            const m = document.getElementById('m-pay');
             m.style.display = 'block';
             setTimeout(() => m.classList.add('modal-active'), 10);
             tg.HapticFeedback.impactOccurred('medium');
         }
-        function closeModal() {
-            const m = document.getElementById('modal');
+        function closeDeposit() {
+            const m = document.getElementById('m-pay');
             m.classList.remove('modal-active');
-            setTimeout(() => { m.style.display = 'none'; resetPanes(); }, 300);
+            setTimeout(() => { m.style.display = 'none'; reset(); }, 350);
         }
-        function showPane(p) {
-            document.getElementById('pane-main').style.display = 'none';
-            document.getElementById('pane-' + p).style.display = 'block';
+        function go(p) {
+            document.getElementById('p-start').style.display = 'none';
+            document.getElementById('p-' + p).style.display = 'block';
         }
-        function resetPanes() {
-            document.getElementById('pane-main').style.display = 'block';
-            document.getElementById('pane-ton').style.display = 'none';
-            document.getElementById('pane-stars').style.display = 'none';
+        function reset() {
+            document.getElementById('p-start').style.display = 'block';
+            document.getElementById('p-ton').style.display = 'none';
+            document.getElementById('p-stars').style.display = 'none';
+            document.getElementById('p-gifts').style.display = 'none';
         }
 
-        // 4. Оплата TON
-        async function payTON() {
-            const val = document.getElementById('ton-input').value;
-            if (val < 0.1) return tg.showAlert("Min: 0.1 TON");
-            if (!tonConnectUI.connected) return tonConnectUI.openModal();
-            
+        async function doTon() {
+            const val = document.getElementById('in-ton').value;
+            if(val < 0.1) return tg.showAlert("Min: 0.1 TON");
+            if(!tonConnect.connected) return tonConnect.openModal();
             const tx = {
-                validUntil: Math.floor(Date.now() / 1000) + 300,
+                validUntil: Math.floor(Date.now()/1000) + 300,
                 messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (val * 1000000000).toString() }]
             };
-            try { await tonConnectUI.sendTransaction(tx); closeModal(); } catch(e) {}
+            try { await tonConnect.sendTransaction(tx); closeDeposit(); } catch(e){}
         }
 
-        // 5. Умный калькулятор Stars
-        function calcStars(val) {
-            const s = parseInt(val) || 0;
-            const t = (s * 0.01).toFixed(2); // 10 Stars = 0.10 TON
-            document.getElementById('stars-calc').innerHTML = i18n[window.currentLang].calc(s, t);
+        function calc(v) {
+            const s = parseInt(v) || 0;
+            const t = (s * 0.01).toFixed(2);
+            document.getElementById('calc-res').innerHTML = lang[window.currL || 'ru'].calc(s, t);
         }
 
-        function payStars() {
-            const val = document.getElementById('stars-input').value;
-            if (val < 10) return tg.showAlert("Min: 10 Stars");
+        function doStars() {
+            const val = document.getElementById('in-stars').value;
+            if(val < 10) return tg.showAlert("Min: 10 Stars");
             tg.sendData(JSON.stringify({ action: "buy_stars", amount: val }));
             tg.close();
         }
