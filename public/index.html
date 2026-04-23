@@ -34,7 +34,7 @@
             background: var(--green); color: #000; border: none;
             width: 26px; height: 26px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; font-weight: 800; cursor: pointer; transition: 0.1s;
+            font-size: 20px; font-weight: 800; cursor: pointer;
         }
 
         .app-container { 
@@ -60,15 +60,17 @@
         }
         .promo-card h4 { margin: 0 0 8px 0; font-size: 18px; font-weight: 700; }
         .promo-card p { margin: 0 0 16px 0; color: var(--sub); font-size: 13px; line-height: 1.4; }
-        .promo-row { display: flex; gap: 10px; }
+        .promo-row { display: flex; gap: 8px; }
         .promo-input {
             flex: 1; background: #242426; border: 1px solid var(--glass);
-            border-radius: 14px; padding: 12px; color: white; font-size: 14px;
+            border-radius: 14px; padding: 12px; color: white; font-size: 14px; min-width: 0;
         }
         .promo-btn {
             background: var(--green); color: #000; border: none;
-            border-radius: 14px; padding: 0 20px; font-weight: 700; cursor: pointer;
+            border-radius: 14px; padding: 0 15px; font-weight: 700; font-size: 13px;
+            cursor: pointer; transition: 0.1s; white-space: nowrap;
         }
+        .promo-btn:active { transform: scale(0.95); }
 
         /* Инвентарь */
         .inv-card { background: var(--card); border-radius: 28px; padding: 20px; }
@@ -87,11 +89,6 @@
             border-top: 1px solid var(--glass);
         }
         .modal-active .sheet { transform: translateY(0); }
-
-        .option {
-            background: rgba(255,255,255,0.04); border: 1px solid var(--glass);
-            border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
-        }
 
         .nav-fixed {
             position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
@@ -119,7 +116,7 @@
                 <div class="l-btn active" id="l-ru" onclick="changeLang('ru')">РУССКИЙ</div>
                 <div class="l-btn" id="l-en" onclick="changeLang('en')">ENGLISH</div>
             </div>
-            <a href="https://t.me/casemonk_sup_robot" class="btn" style="background:var(--blue); color:white; border-radius:22px; width:100%; padding:18px; font-weight:700; text-decoration:none; display:block;" id="txt-support">🎧 Поддержка</a>
+            <a href="https://t.me/casemonk_sup_robot" class="btn" style="background:var(--blue); color:white; border-radius:22px; width:100%; padding:18px; font-weight:700; text-decoration:none; display:block; text-align:center;" id="txt-support">🎧 Поддержка</a>
         </div>
 
         <div class="promo-card">
@@ -154,24 +151,24 @@
             <div style="width:40px; height:4px; background:#333; border-radius:10px; margin:0 auto 20px;"></div>
             <div id="p-start">
                 <h3 style="margin-top:0" id="txt-pay-head">Пополнение</h3>
-                <div class="option" onclick="go('ton')">
+                <div style="background:rgba(255,255,255,0.04); border:1px solid var(--glass); border-radius:20px; padding:16px; display:flex; align-items:center; gap:16px; margin-bottom:12px;" onclick="go('ton')">
                     <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="32">
-                    <div><b>TON Wallet</b><br><small id="txt-ton-sub">Мгновенно (от 0.1 TON)</small></div>
+                    <div><b>TON Wallet</b><br><small style="color:var(--sub)" id="txt-ton-sub">Мгновенно (от 0.1 TON)</small></div>
                 </div>
-                <div class="option" onclick="go('gifts')">
+                <div style="background:rgba(255,255,255,0.04); border:1px solid var(--glass); border-radius:20px; padding:16px; display:flex; align-items:center; gap:16px; margin-bottom:12px;" onclick="go('gifts')">
                     <div style="font-size:30px; width:32px; text-align:center;">🎁</div>
-                    <div><b>Gifts</b><br><small id="txt-gifts-sub">NFT подарки</small></div>
+                    <div><b>Gifts</b><br><small style="color:var(--sub)" id="txt-gifts-sub">NFT подарки</small></div>
                 </div>
             </div>
             <div id="p-ton" style="display:none; text-align:center;">
                 <h3 id="txt-ton-q">Сумма TON</h3>
                 <input type="number" id="in-ton" style="width:100%; background:#242426; border:none; border-radius:20px; padding:18px; color:white; font-size:26px; text-align:center; margin-bottom:15px;" placeholder="0.1" step="0.1">
-                <button class="btn" style="background:var(--green); color:#000; border:none; border-radius:22px; width:100%; padding:18px; font-weight:700;" onclick="doTon()" id="txt-ton-btn">Оплатить через TON</button>
+                <button style="background:var(--green); color:#000; border:none; border-radius:22px; width:100%; padding:18px; font-weight:700;" onclick="doTon()" id="txt-ton-btn">Оплатить через TON</button>
             </div>
             <div id="p-gifts" style="display:none;">
                 <h3 style="margin-top:0">Gifts 🎁</h3>
-                <p id="txt-g-btn" style="color:var(--sub)">Инструкция по пополнению через NFT подарки...</p>
-                <button class="btn" style="background:var(--blue); color:white; border:none; border-radius:22px; width:100%; padding:18px; font-weight:700;" onclick="window.open('https://t.me/casemonk_relayer')">Открыть бота</button>
+                <p style="color:var(--sub); font-size:14px;">Отправьте NFT подарок нашему боту @casemonk_relayer для автоматического пополнения.</p>
+                <button style="background:var(--blue); color:white; border:none; border-radius:22px; width:100%; padding:18px; font-weight:700;" onclick="window.open('https://t.me/casemonk_relayer')">Открыть бота</button>
             </div>
             <button onclick="reset()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;" id="txt-back">⬅ Назад</button>
         </div>
@@ -187,12 +184,9 @@
             document.getElementById('u-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?background=2ecc71&color=fff&name=' + user.first_name;
         }
 
-        // Логика промокодов
         function applyPromo() {
             const val = document.getElementById('promo-input').value.trim();
             if(!val) return;
-
-            // Заглушка логики для примера
             if(val === "CASEMONK") {
                 tg.showPopup({ message: "Успешно промокод активирован!", buttons: [{type: 'ok'}] });
             } else if(val === "OLD") {
@@ -237,6 +231,7 @@
             const m = document.getElementById('m-pay');
             m.style.display = 'block';
             setTimeout(() => m.classList.add('modal-active'), 10);
+            tg.HapticFeedback.impactOccurred('medium');
         }
         function closeDeposit() {
             const m = document.getElementById('m-pay');
