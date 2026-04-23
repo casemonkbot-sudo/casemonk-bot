@@ -8,8 +8,8 @@
     <style>
         :root {
             --green: #2ecc71; --blue: #007aff; --bg: #0b0b0c; --card: #1c1c1e;
-            --text: #ffffff; --sub: #8e8e93; --glass: rgba(255, 255, 255, 0.06);
-            --glass-heavy: rgba(255, 255, 255, 0.12);
+            --text: #ffffff; --sub: #8e8e93; --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { 
@@ -17,205 +17,222 @@
             margin: 0; padding: 0; overflow: hidden; height: 100vh;
         }
 
-        /* Анимации и Оптимизация */
-        .section { display: none; opacity: 0; transform: translateY(10px); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .section.active { display: block; opacity: 1; transform: translateY(0); }
-
-        /* Стекло (Glassmorphism) */
-        .glass-box {
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 32px;
+        /* Общие стили Стекла */
+        .glass {
+            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 28px;
         }
 
-        /* Header */
         .header {
             position: fixed; top: 0; left: 0; right: 0; height: 60px;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 20px; z-index: 100;
         }
         .balance-chip {
-            background: var(--glass-heavy); border-radius: 20px; padding: 6px 6px 6px 14px;
+            background: rgba(255,255,255,0.1); border-radius: 18px; padding: 5px 5px 5px 12px;
             display: flex; align-items: center; gap: 8px; font-weight: 700;
         }
         .add-btn {
             background: var(--green); color: #000; border: none;
-            width: 28px; height: 28px; border-radius: 10px;
+            width: 26px; height: 26px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px; font-weight: 800; cursor: pointer;
+            font-size: 20px; font-weight: 800; cursor: pointer;
         }
 
-        .app-container { padding: 70px 16px 110px; height: 100vh; overflow-y: auto; overflow-x: hidden; }
+        .app-container { padding: 70px 16px 110px; height: 100vh; overflow-y: auto; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Раздел БОНУСЫ */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
-        .stat-card { background: var(--glass); padding: 20px; border-radius: 24px; text-align: center; border: 1px solid var(--glass); }
-        .stat-card small { color: var(--sub); font-size: 11px; display: block; margin-bottom: 4px; }
-        .stat-card b { font-size: 20px; }
+        /* БОНУСЫ */
+        .ref-card { padding: 20px; margin-bottom: 16px; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .stat-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--glass-border); }
+        .stat-item small { color: var(--sub); font-size: 11px; display: block; margin-bottom: 4px; }
+        .stat-item b { font-size: 18px; }
 
-        .btn-main { background: var(--blue); color: white; border: none; border-radius: 22px; padding: 18px; width: 100%; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.1s; }
-        .btn-main:active { transform: scale(0.97); }
+        .btn-blue { background: var(--blue); color: #fff; border: none; border-radius: 20px; padding: 16px; width: 100%; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .btn-blue:active { transform: scale(0.98); }
 
-        .promo-edit-line {
-            background: rgba(0,0,0,0.3); border-radius: 20px; padding: 8px 8px 8px 18px;
-            display: flex; align-items: center; gap: 10px; margin-top: 12px;
-        }
-        .promo-edit-line input { flex: 1; background: none; border: none; color: white; font-weight: 700; font-size: 17px; }
+        .promo-create { background: rgba(0,0,0,0.3); border-radius: 18px; padding: 8px 8px 8px 16px; display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+        .promo-create input { flex: 1; background: none; border: none; color: #fff; font-weight: 600; font-size: 15px; }
 
-        /* Задания */
-        .task-row {
-            background: var(--glass); padding: 16px; border-radius: 24px;
-            display: flex; align-items: center; gap: 14px; margin-bottom: 12px;
-        }
-        .task-circle { width: 44px; height: 44px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        /* ЗАДАНИЯ */
+        .task-box { padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .task-img { width: 42px; height: 42px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; }
 
-        /* Навигация */
-        .nav-bottom {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
-            background: rgba(10,10,10,0.85); backdrop-filter: blur(25px);
-            display: flex; border-top: 1px solid var(--glass); z-index: 100;
-        }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--sub); font-size: 11px; font-weight: 600; }
-        .nav-item.active { color: white; }
-        .nav-icon { font-size: 26px; margin-bottom: 4px; opacity: 0.5; transition: 0.2s; }
-        .nav-item.active .nav-icon { opacity: 1; transform: scale(1.1); }
+        /* ПРОФИЛЬ */
+        .profile-main { padding: 30px 20px; text-align: center; margin-bottom: 16px; background: linear-gradient(180deg, rgba(46, 204, 113, 0.1) 0%, rgba(0,0,0,0) 100%); }
+        .avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--green); margin-bottom: 12px; object-fit: cover; }
+        .lang-bar { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
+        .l-btn { background: var(--glass); color: var(--sub); padding: 7px 15px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid transparent; }
+        .l-btn.active { border-color: var(--green); color: var(--green); background: rgba(46,204,113,0.1); }
 
-        /* Модалки */
+        .act-card { padding: 20px; }
+        .act-row { display: flex; gap: 8px; margin-top: 12px; }
+        .act-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; color: #fff; font-size: 14px; min-width: 0; }
+        .act-btn { background: var(--green); color: #000; border: none; border-radius: 14px; padding: 0 15px; font-weight: 700; font-size: 13px; }
+
+        /* NAV */
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: rgba(10,10,10,0.9); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; z-index: 100; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--sub); font-size: 10px; text-decoration: none; }
+        .nav-item.active { color: #fff; }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; opacity: 0.5; }
+        .nav-item.active .nav-icon { opacity: 1; }
+
+        /* MODAL */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 1000; }
-        .sheet { position: absolute; bottom: 0; width: 100%; background: #171719; border-radius: 32px 32px 0 0; padding: 24px 24px 44px; transform: translateY(100%); transition: 0.3s; }
+        .sheet { position: absolute; bottom: 0; width: 100%; background: #171719; border-radius: 30px 30px 0 0; padding: 25px 25px 45px; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .modal-active .sheet { transform: translateY(0); }
-
-        .pay-option { background: var(--glass-heavy); border-radius: 20px; padding: 18px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+        .pay-opt { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 18px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; border: 1px solid var(--glass-border); }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <div style="font-weight: 900; letter-spacing: -0.5px;">CASEMONK</div>
+        <div style="font-weight: 900; font-size: 18px;">CASEMONK</div>
         <div class="balance-chip">
             <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
             <span id="u-balance">0.10</span>
-            <button class="add-btn" onclick="openPay()">+</button>
+            <button class="add-btn" onclick="openDeposit()">+</button>
         </div>
     </header>
 
     <div class="app-container">
-        
         <div id="sec-bonuses" class="section active">
-            <div class="glass-box" style="padding: 24px; margin-bottom: 16px;">
-                <h3 style="margin:0" id="t-friends">Друзья</h3>
-                <div class="stat-grid">
-                    <div class="stat-card"><small id="t-total">Всего</small><b>0</b></div>
-                    <div class="stat-card"><small id="t-earn">Заработок</small><b>💎 0</b></div>
+            <div class="glass ref-card">
+                <h3 style="margin:0" id="txt-friends">Друзья</h3>
+                <div class="stats-row">
+                    <div class="stat-item"><small id="txt-total">Всего</small><b>0</b></div>
+                    <div class="stat-item"><small id="txt-earn">Заработок</small><b>💎 0</b></div>
                 </div>
-                <button class="btn-main" style="background:#2b65d9; margin-bottom:16px;" onclick="withdraw()">Вывести</button>
-                <p style="color:var(--sub); font-size:12px; line-height:1.5;" id="t-ref-desc">Приглашайте друзей — получайте 15% от их депозита! Поделитесь ссылкой:</p>
+                <button class="btn-blue" style="background:#2b65d9; margin-bottom:12px;" onclick="withdrawRef()">Вывести</button>
+                <p style="color:var(--sub); font-size:12px; line-height:1.4;" id="txt-ref-desc">Приглашайте друзей — получайте 15% от их депозита! Поделитесь ссылкой:</p>
                 <div style="display:flex; gap:10px; margin-top:12px;">
-                    <button class="btn-main" style="flex:1" onclick="shareRef()">Пригласить друга</button>
-                    <button style="background:var(--glass-heavy); border:none; border-radius:22px; width:56px;" onclick="copyRef()">📋</button>
+                    <button class="btn-blue" style="flex:1" onclick="shareRef()">Пригласить друга</button>
+                    <button style="background:var(--glass); border:1px solid var(--glass-border); border-radius:20px; width:55px;" onclick="copyRef()">📋</button>
                 </div>
             </div>
 
-            <div class="glass-box" style="padding: 24px; margin-bottom: 24px;">
-                <h3 style="margin:0" id="t-promo-title">Промокод</h3>
-                <p style="color:var(--sub); font-size:12px; margin-top:8px;" id="t-promo-desc">Создайте свой промокод. Тот кто его введет, станет вашим рефералом!</p>
-                <div class="promo-edit-line">
-                    <input type="text" id="my-promo-input" placeholder="Создать промокод...">
-                    <button style="background:var(--blue); border:none; border-radius:12px; width:38px; height:38px; color:white;" onclick="savePromo()">💾</button>
+            <div class="glass ref-card">
+                <h3 style="margin:0" id="txt-promo-title">Промокод</h3>
+                <p style="color:var(--sub); font-size:12px; margin-top:8px;" id="txt-promo-desc">Создайте свой промокод. Тот кто его введет, станет вашим рефералом!</p>
+                <div class="promo-create">
+                    <input type="text" id="my-promo" placeholder="Придумайте код...">
+                    <button style="background:var(--blue); border:none; border-radius:12px; width:38px; height:38px; color:#fff;" onclick="saveMyPromo()">💾</button>
                 </div>
             </div>
 
-            <h3 style="margin:0 0 16px 8px;" id="t-tasks">Задания</h3>
-            <div class="task-row glass-box" onclick="openTaskModal()">
-                <div class="task-circle">✈️</div>
-                <div style="flex:1"><b id="t-task-name">Подпишись на Наш канал</b><br><span style="color:var(--blue); font-size:12px; font-weight:700;">💎 0.10 TON</span></div>
+            <h3 style="margin:20px 0 12px 10px;" id="txt-tasks">Задания</h3>
+            <div class="glass task-box" onclick="openTask()">
+                <div class="task-img">✈️</div>
+                <div style="flex:1"><b id="txt-task-name">Подпишись на Наш канал</b><br><span style="color:var(--blue); font-size:12px; font-weight:700;">💎 0.10 TON</span></div>
                 <div id="status-icon" style="color:var(--sub)">❯</div>
             </div>
         </div>
 
         <div id="sec-profile" class="section">
-            <div class="glass-box" style="padding: 30px 20px; text-align: center; margin-bottom: 16px;">
-                <img src="" id="u-avatar" style="width:95px; height:95px; border-radius:50%; border:3px solid var(--green); margin-bottom:12px;">
-                <div class="u-name" id="u-display">@user</div>
+            <div class="glass profile-main">
+                <img src="" id="u-avatar" class="avatar">
+                <div style="font-size:24px; font-weight:800;" id="u-display">@user</div>
                 <div class="lang-bar">
-                    <div class="l-btn active" id="l-ru" onclick="changeLang('ru')">РУССКИЙ</div>
-                    <div class="l-btn" id="l-en" onclick="changeLang('en')">ENGLISH</div>
+                    <button class="l-btn active" id="l-ru" onclick="changeLang('ru')">РУССКИЙ</button>
+                    <button class="l-btn" id="l-en" onclick="changeLang('en')">ENGLISH</button>
                 </div>
-                <button class="btn-main" onclick="window.open('https://t.me/casemonk_sup_robot')" id="t-support">🎧 Поддержка</button>
+                <button class="btn-blue" onclick="window.open('https://t.me/casemonk_sup_robot')" id="txt-support">🎧 Поддержка</button>
             </div>
 
-            <div class="glass-box" style="padding: 24px;">
-                <h4 style="margin:0" id="t-act-promo">Активировать промокод</h4>
-                <p style="color:var(--sub); font-size:12px; margin:8px 0 16px;" id="t-act-sub">Вводите промокод и получайте бонусы</p>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" id="act-input" style="flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--glass); border-radius:14px; padding:12px; color:white;" placeholder="Промокод">
-                    <button style="background:var(--green); color:#000; border:none; border-radius:14px; padding:0 18px; font-weight:700; font-size:13px;" onclick="applyPromo()" id="t-apply">Применить</button>
+            <div class="glass act-card">
+                <h4 style="margin:0" id="txt-act-head">Активировать промокод</h4>
+                <p style="color:var(--sub); font-size:12px; margin-top:8px;" id="txt-act-sub">Вводите промокод и получайте бонусы</p>
+                <div class="act-row">
+                    <input type="text" id="act-input" class="act-input" placeholder="Введите код">
+                    <button class="act-btn" onclick="applyPromo()" id="txt-apply">Применить</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <nav class="nav-bottom">
-        <div class="nav-item active" onclick="showSection('bonuses', this)">
-            <span class="nav-icon">🎁</span><span id="nav-bon">Бонусы</span>
-        </div>
-        <div class="nav-item" onclick="showSection('profile', this)">
-            <span class="nav-icon">👤</span><span id="nav-prof">Профиль</span>
-        </div>
+    <nav class="nav">
+        <a href="#" class="nav-item active" onclick="showSec('bonuses', this)"><span class="nav-icon">🎁</span><span id="nav-bon">Бонусы</span></a>
+        <a href="#" class="nav-item" onclick="showSec('profile', this)"><span class="nav-icon">👤</span><span id="nav-prof">Профиль</span></a>
     </nav>
 
-    <div id="m-pay" class="modal" onclick="closePay()">
+    <div id="m-pay" class="modal" onclick="closeDeposit()">
         <div class="sheet" onclick="event.stopPropagation()">
-            <div id="pay-list">
-                <h3 id="t-pay-title">Пополнение</h3>
-                <div class="pay-option" onclick="goPay('ton')">
+            <div id="p-list">
+                <h3 id="txt-pay-head">Пополнение</h3>
+                <div class="pay-opt" onclick="goPay('ton')">
                     <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="32">
-                    <div><b>TON Wallet</b><br><small style="color:var(--sub)" id="t-ton-sub">Мгновенно (от 0.1 TON)</small></div>
+                    <div><b>TON Wallet</b><br><small style="color:var(--sub)" id="txt-ton-sub">Мгновенно (от 0.1 TON)</small></div>
                 </div>
-                <div class="pay-option" onclick="goPay('gifts')">
-                    <div style="font-size:30px; width:32px; text-align:center;">🎁</div>
-                    <div><b>Gifts</b><br><small style="color:var(--sub)" id="t-gifts-sub">NFT подарки</small></div>
+                <div class="pay-opt" onclick="goPay('gifts')">
+                    <div style="font-size:28px; width:32px; text-align:center;">🎁</div>
+                    <div><b>Gifts</b><br><small style="color:var(--sub)" id="txt-gift-sub">NFT подарки</small></div>
                 </div>
             </div>
-            <div id="pay-ton" style="display:none; text-align:center;">
-                <h3 id="t-ton-title">Сумма TON</h3>
-                <input type="number" id="ton-sum" style="width:100%; background:#242426; border:none; border-radius:18px; padding:18px; color:white; font-size:24px; text-align:center; margin-bottom:16px;" placeholder="0.1" step="0.1">
-                <button class="btn-main" style="background:var(--green); color:#000;" onclick="doDeposit()" id="t-pay-btn">Оплатить через TON</button>
+            <div id="p-ton" style="display:none; text-align:center;">
+                <h3 id="txt-ton-q">Сумма TON</h3>
+                <input type="number" style="width:100%; background:#242426; border:none; border-radius:18px; padding:18px; color:#fff; font-size:24px; text-align:center; margin-bottom:15px;" placeholder="0.1" id="ton-val">
+                <button class="btn-blue" style="background:var(--green); color:#000;" onclick="doTon()" id="txt-pay-btn">Оплатить через TON</button>
             </div>
-            <div id="pay-gifts" style="display:none;">
+            <div id="p-gifts" style="display:none;">
                 <h3>Gifts 🎁</h3>
-                <p style="color:var(--sub); font-size:14px;" id="t-gifts-desc">Отправьте NFT подарок нашему боту @casemonk_relayer для автоматического пополнения.</p>
-                <button class="btn-main" onclick="window.open('https://t.me/casemonk_relayer')">Открыть бота</button>
+                <p style="color:var(--sub); font-size:14px; line-height:1.5;" id="txt-gift-desc">Отправьте NFT подарок нашему боту @casemonk_relayer для автоматического пополнения.</p>
+                <button class="btn-blue" onclick="window.open('https://t.me/casemonk_relayer')" id="txt-gift-btn">Перейти к боту</button>
             </div>
-            <button onclick="resetPay()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;" id="t-back">⬅ Назад</button>
+            <button onclick="resetPay()" style="background:none; border:none; color:var(--sub); width:100%; margin-top:20px; font-weight:700;" id="txt-back">⬅ Назад</button>
         </div>
     </div>
 
     <div id="m-task" class="modal" style="align-items:center; justify-content:center; padding:30px;" onclick="this.style.display='none'">
-        <div class="task-sheet" onclick="event.stopPropagation()">
+        <div class="glass" style="background:#1c1c1e; width:100%; max-width:320px; padding:30px 20px; text-align:center;" onclick="event.stopPropagation()">
             <div style="font-size:50px;">✈️</div>
-            <h3 id="t-task-head">Подпишись на Наш канал</h3>
-            <button class="btn-main" style="margin-bottom:10px;" onclick="window.open('https://t.me/CaseMonk')">Начать</button>
-            <button class="btn-main" style="background:var(--green); color:#000;" onclick="checkSub()">Проверить</button>
+            <h3 id="txt-task-h">Подпишись на Наш канал</h3>
+            <button class="btn-blue" style="margin-bottom:10px;" onclick="window.open('https://t.me/CaseMonk')">Начать</button>
+            <button class="btn-blue" style="background:var(--green); color:#000;" onclick="checkTask()">Проверить</button>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-
-        // Данные и Язык
         const user = tg.initDataUnsafe.user;
-        const lang = {
-            ru: { bon: "Бонусы", prof: "Профиль", friends: "Друзья", total: "Всего", earn: "Заработок", refD: "Приглашайте друзей — получайте 15% от их депозита!", promoT: "Промокод", tasks: "Задания", support: "🎧 Поддержка", apply: "Применить", back: "⬅ Назад", tonS: "Мгновенно (от 0.1 TON)", giftD: "Отправьте NFT подарок нашему боту @casemonk_relayer для автоматического пополнения." },
-            en: { bon: "Bonuses", prof: "Profile", friends: "Friends", total: "Total", earn: "Earned", refD: "Invite friends — get 15% of their deposits!", promoT: "Promo Code", tasks: "Tasks", support: "🎧 Support", apply: "Apply", back: "⬅ Back", tonS: "Instant (from 0.1 TON)", giftD: "Send an NFT gift to our bot @casemonk_relayer for automatic recharge." }
-        };
 
         if(user) {
             document.getElementById('u-display').innerText = user.username ? `@${user.username}` : user.first_name;
-            document.getElementById('u-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?name=' + user.first_name;
+            document.getElementById('u-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?background=2ecc71&color=fff&name=' + user.first_name;
         }
 
-        function showSection(id, el) {
+        const langData = {
+            ru: { friends:"Друзья", total:"Всего", earn:"Заработок", refDesc:"Приглашайте друзей — получайте 15% от их депозита!", promoT:"Промокод", promoD:"Создайте свой промокод. Тот кто его введет, станет вашим рефералом!", tasks:"Задания", support:"🎧 Поддержка", actH:"Активировать промокод", apply:"Применить", payH:"Пополнение", tonS:"Мгновенно (от 0.1 TON)", giftS:"NFT подарки", giftD:"Отправьте NFT подарок нашему боту @casemonk_relayer для автоматического пополнения.", back:"⬅ Назад", bon:"Бонусы", prof:"Профиль" },
+            en: { friends:"Friends", total:"Total", earn:"Earned", refDesc:"Invite friends — get 15% of their deposits!", promoT:"Promo Code", promoD:"Create your promo. Anyone who enters it becomes your referral!", tasks:"Tasks", support:"🎧 Support", actH:"Activate Promo", apply:"Apply", payH:"Deposit", tonS:"Instant (from 0.1 TON)", giftS:"NFT Gifts", giftD:"Send an NFT gift to our bot @casemonk_relayer for automatic deposit.", back:"⬅ Back", bon:"Bonuses", prof:"Profile" }
+        };
+
+        function changeLang(l) {
+            document.getElementById('l-ru').classList.toggle('active', l === 'ru');
+            document.getElementById('l-en').classList.toggle('active', l === 'en');
+            const d = langData[l];
+            document.getElementById('txt-friends').innerText = d.friends;
+            document.getElementById('txt-total').innerText = d.total;
+            document.getElementById('txt-earn').innerText = d.earn;
+            document.getElementById('txt-ref-desc').innerText = d.refDesc;
+            document.getElementById('txt-promo-title').innerText = d.promoT;
+            document.getElementById('txt-promo-desc').innerText = d.promoD;
+            document.getElementById('txt-tasks').innerText = d.tasks;
+            document.getElementById('txt-support').innerText = d.support;
+            document.getElementById('txt-act-head').innerText = d.actH;
+            document.getElementById('txt-apply').innerText = d.apply;
+            document.getElementById('txt-pay-head').innerText = d.payH;
+            document.getElementById('txt-ton-sub').innerText = d.tonS;
+            document.getElementById('txt-gift-sub').innerText = d.giftS;
+            document.getElementById('txt-gift-desc').innerText = d.giftD;
+            document.getElementById('txt-back').innerText = d.back;
+            document.getElementById('nav-bon').innerText = d.bon;
+            document.getElementById('nav-prof').innerText = d.prof;
+        }
+
+        function showSec(id, el) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -223,71 +240,40 @@
             tg.HapticFeedback.selectionChanged();
         }
 
-        function changeLang(l) {
-            document.getElementById('l-ru').classList.toggle('active', l === 'ru');
-            document.getElementById('l-en').classList.toggle('active', l === 'en');
-            const d = lang[l];
-            document.getElementById('nav-bon').innerText = d.bon;
-            document.getElementById('nav-prof').innerText = d.prof;
-            document.getElementById('t-friends').innerText = d.friends;
-            document.getElementById('t-total').innerText = d.total;
-            document.getElementById('t-earn').innerText = d.earn;
-            document.getElementById('t-ref-desc').innerText = d.refD;
-            document.getElementById('t-promo-title').innerText = d.promoT;
-            document.getElementById('t-tasks').innerText = d.tasks;
-            document.getElementById('t-support').innerText = d.support;
-            document.getElementById('t-apply').innerText = d.apply;
-            document.getElementById('t-back').innerText = d.back;
-            document.getElementById('t-ton-sub').innerText = d.tonS;
-            document.getElementById('t-gifts-desc').innerText = d.giftD;
-        }
-
-        function savePromo() {
-            const val = document.getElementById('my-promo-input').value;
-            if(val) tg.showAlert("Промокод " + val + " успешно создан!");
-        }
-
-        function applyPromo() {
-            const val = document.getElementById('act-input').value;
-            if(val === "CASE") tg.showPopup({message:"Успешно активирован!"});
-            else tg.showPopup({message:"Промокод не существует"});
-        }
-
-        function openPay() { 
+        function openDeposit() { 
             const m = document.getElementById('m-pay');
             m.style.display = 'block';
             setTimeout(() => m.classList.add('modal-active'), 10);
         }
-        function closePay() {
+        function closeDeposit() {
             const m = document.getElementById('m-pay');
             m.classList.remove('modal-active');
             setTimeout(() => { m.style.display = 'none'; resetPay(); }, 300);
         }
-        function goPay(p) {
-            document.getElementById('pay-list').style.display = 'none';
-            document.getElementById('pay-' + p).style.display = 'block';
-        }
-        function resetPay() {
-            document.getElementById('pay-list').style.display = 'block';
-            document.getElementById('pay-ton').style.display = 'none';
-            document.getElementById('pay-gifts').style.display = 'none';
+        function goPay(p) { document.getElementById('p-list').style.display = 'none'; document.getElementById('p-' + p).style.display = 'block'; }
+        function resetPay() { document.getElementById('p-list').style.display = 'block'; document.getElementById('p-ton').style.display = 'none'; document.getElementById('p-gifts').style.display = 'none'; }
+        
+        function applyPromo() {
+            const v = document.getElementById('act-input').value;
+            if(!v) return;
+            tg.showPopup({ message: v === "CASE" ? "Успешно активирован!" : "Промокод не существует" });
         }
 
-        function openTaskModal() { document.getElementById('m-task').style.display = 'flex'; }
-        function checkSub() {
+        function openTask() { document.getElementById('m-task').style.display = 'flex'; }
+        function checkTask() {
             tg.showConfirm("Вы подписались?", (ok) => {
                 if(ok) {
-                    document.getElementById('m-task').style.display = 'none';
                     document.getElementById('status-icon').innerText = "✅";
-                    tg.showAlert("0.10 TON зачислено!");
+                    document.getElementById('m-task').style.display = 'none';
+                    tg.showAlert("0.10 TON начислено!");
                 }
             });
         }
-        
+        function saveMyPromo() { tg.showAlert("Промокод сохранен!"); }
         function shareRef() { tg.openTelegramLink("https://t.me/share/url?url=https://t.me/CaseMonkBot?start=" + user.id); }
         function copyRef() { tg.showAlert("Ссылка скопирована!"); }
-        function withdraw() { tg.showAlert("Минимальный вывод: 5 TON"); }
-        function doDeposit() { tg.showAlert("Счет для оплаты TON выставлен!"); }
+        function withdrawRef() { tg.showAlert("Минимальный вывод: 5 TON"); }
+        function doTon() { tg.showAlert("Запрос на оплату отправлен!"); }
     </script>
 </body>
 </html>
