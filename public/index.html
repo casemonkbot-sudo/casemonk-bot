@@ -3,236 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Caser Premium Profile</title>
+    <title>Caser Profile</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
-        :root {
-            --accent: #007aff;
-            --bg: #000000;
-            --card: #1c1c1e;
-            --card-light: #2c2c2e;
-            --text: #ffffff;
-            --sub-text: #8e8e93;
-            --glass: rgba(28, 28, 30, 0.7);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        :root { --accent: #007aff; --bg: #0b0b0b; --card: #1c1c1e; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 0; }
+        .app { padding: 20px; padding-bottom: 100px; }
         
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; height: 100vh; overflow: hidden;
+        .profile-header {
+            background: linear-gradient(180deg, rgba(0, 122, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+            border-radius: 28px; padding: 30px 20px; text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 20px;
         }
+        .avatar { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; }
+        
+        #ton-connect-btn { display: flex; justify-content: center; margin: 15px 0; }
 
-        /* Главный контейнер со скроллом */
-        .app-content {
-            height: calc(100vh - 85px);
-            overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 40px;
+        .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .pay-card {
+            background: var(--card); border-radius: 20px; padding: 15px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.2s;
         }
+        .pay-card:active { transform: scale(0.95); }
+        .pay-icon { width: 30px; height: 30px; margin-bottom: 8px; }
 
-        /* Секция профиля */
-        .profile-hero {
-            background: linear-gradient(180deg, rgba(0, 122, 255, 0.15) 0%, rgba(0, 0, 0, 0) 100%);
-            border-radius: 32px;
-            padding: 40px 20px;
-            text-align: center;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        .inventory { background: var(--card); border-radius: 24px; padding: 20px; }
+        .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .slot { aspect-ratio: 1/1; background: rgba(255,255,255,0.02); border: 1px dashed #3a3a3c; border-radius: 15px; }
 
-        .avatar-wrapper {
-            position: relative;
-            width: 120px; height: 120px;
-            margin: 0 auto 20px;
-        }
-
-        .avatar-main {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 3px solid var(--accent);
-            object-fit: cover;
-            box-shadow: 0 0 40px rgba(0, 122, 255, 0.3);
-        }
-
-        .premium-badge {
-            position: absolute; bottom: 5px; right: 5px;
-            background: var(--accent); border-radius: 50%;
-            width: 28px; height: 28px; display: flex;
-            align-items: center; justify-content: center;
-            border: 2px solid var(--bg); font-size: 14px;
-        }
-
-        .user-nick {
-            font-size: 26px; font-weight: 800;
-            margin: 0 0 16px 0; letter-spacing: -0.5px;
-        }
-
-        .btn-support {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            color: var(--accent);
-            padding: 12px 24px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 15px; font-weight: 600;
-            border: 1px solid rgba(0, 122, 255, 0.2);
-            transition: 0.3s;
-        }
-        .btn-support:active { transform: scale(0.95); background: rgba(0, 122, 255, 0.1); }
-
-        /* Кнопки действий */
-        .actions-row {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 12px; margin-bottom: 30px;
-        }
-
-        .btn-action {
-            height: 58px; border-radius: 18px; border: none;
-            font-size: 16px; font-weight: 700;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: 0.2s;
-        }
-        .btn-deposit { background: var(--accent); color: white; box-shadow: 0 10px 20px rgba(0,122,255,0.2); }
-        .btn-withdraw { background: var(--card); color: white; border: 1px solid #333; }
-        .btn-action:active { transform: scale(0.96); opacity: 0.9; }
-
-        /* Инвентарь */
-        .inventory-card {
-            background: var(--card);
-            border-radius: 28px;
-            padding: 24px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .inventory-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px;
-        }
-        .inventory-title { font-size: 19px; font-weight: 700; }
-        .inventory-count { font-size: 13px; color: var(--sub-text); background: #2c2c2e; padding: 4px 10px; border-radius: 10px; }
-
-        .grid-6 {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .slot {
-            aspect-ratio: 1/1;
-            background: rgba(255,255,255,0.02);
-            border: 1.5px dashed rgba(255,255,255,0.1);
-            border-radius: 20px;
-            position: relative;
-        }
-
-        /* Нижнее меню */
-        .tab-bar {
-            position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(25px);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex; justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .tab-item {
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-            color: var(--sub-text); font-size: 11px; font-weight: 500;
-            flex: 1; transition: 0.3s;
-        }
-        .tab-item.active { color: var(--accent); }
-        .tab-icon { font-size: 24px; }
-
+        .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(20,20,20,0.9); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; }
+        .nav-item { font-size: 10px; color: #8e8e93; text-align: center; text-decoration: none; }
+        .nav-item.active { color: var(--accent); }
     </style>
 </head>
 <body>
-
-    <div class="app-content">
-        <div class="profile-hero">
-            <div class="avatar-wrapper">
-                <img src="" id="user-avatar" class="avatar-main" alt="👤">
-                <div class="premium-badge">✓</div>
-            </div>
-            <h1 class="user-nick" id="user-nick">@USERNAME</h1>
-            
-            <a href="https://t.me/casemonk_sup_robot" class="btn-support">
-                <span>🎧</span> Поддержка
-            </a>
+    <div class="app">
+        <div class="profile-header">
+            <img src="" id="user-avatar" class="avatar">
+            <div id="user-name" style="font-size: 20px; font-weight: 700;">@username</div>
+            <div id="ton-connect-btn"></div>
         </div>
 
-        <div class="actions-row">
-            <button class="btn-action btn-deposit">
-                <span>💸</span> Пополнить
-            </button>
-            <button class="btn-action btn-withdraw">
-                <span>💰</span> Вывести
-            </button>
+        <div class="pay-grid">
+            <div class="pay-card" onclick="payStars()">
+                <img src="https://img.icons8.com/color/96/star--v1.png" class="pay-icon">
+                <div style="font-weight:600;">STARS</div>
+            </div>
+            <div class="pay-card" onclick="payTon()">
+                <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="pay-icon">
+                <div style="font-weight:600;">0.1 TON</div>
+            </div>
         </div>
 
-        <div class="inventory-card">
-            <div class="inventory-header">
-                <span class="inventory-title">Ваш инвентарь</span>
-                <span class="inventory-count">0 / 6</span>
-            </div>
-            <div class="grid-6">
-                <div class="slot"></div>
-                <div class="slot"></div>
-                <div class="slot"></div>
-                <div class="slot"></div>
-                <div class="slot"></div>
-                <div class="slot"></div>
+        <div class="inventory">
+            <div style="font-weight:700;">Инвентарь</div>
+            <div class="slots">
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
             </div>
         </div>
+        
+        <center><a href="https://t.me/casemonk_sup_robot" style="color:var(--accent); text-decoration:none; font-size:12px; display:block; margin-top:20px;">🎧 Поддержка</a></center>
     </div>
 
-    <nav class="tab-bar">
-        <div class="tab-item">
-            <span class="tab-icon">💸</span>
-            <span>Заработок</span>
-        </div>
-        <div class="tab-item">
-            <span class="tab-icon">🚀</span>
-            <span>Играть</span>
-        </div>
-        <div class="tab-item active">
-            <span class="tab-icon">👤</span>
-            <span>Профиль</span>
-        </div>
+    <nav class="nav">
+        <a href="#" class="nav-item"><div>💸</div>Заработок</a>
+        <a href="#" class="nav-item"><div>🚀</div>Играть</a>
+        <a href="#" class="nav-item active"><div>👤</div>Профиль</a>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#000000');
-        tg.setBackgroundColor('#000000');
 
-        // Подгружаем реальные данные из Телеграм
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://casemonkbot-sudo.github.io/casemonk-bot/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect-btn'
+        });
+
         const user = tg.initDataUnsafe.user;
         if(user) {
-            const nickDisplay = document.getElementById('user-nick');
-            const avatarImg = document.getElementById('user-avatar');
-
-            // Устанавливаем ник с собачкой
-            nickDisplay.innerText = user.username ? `@${user.username}` : user.first_name;
-
-            // Устанавливаем фото, если оно есть
-            if(user.photo_url) {
-                avatarImg.src = user.photo_url;
-            } else {
-                // Если нет фото, ставим заглушку с инициалами
-                avatarImg.src = `https://ui-avatars.com/api/?name=${user.first_name}&background=007aff&color=fff`;
-            }
+            document.getElementById('user-name').innerText = user.username ? `@${user.username}` : user.first_name;
+            document.getElementById('user-avatar').src = user.photo_url || 'https://ui-avatars.com/api/?name=U';
         }
 
-        // Легкая вибрация при кликах
-        document.querySelectorAll('button, .tab-item').forEach(el => {
-            el.addEventListener('click', () => {
-                tg.HapticFeedback.impactOccurred('light');
+        async function payTon() {
+            if (!tonConnectUI.connected) {
+                tg.showAlert("Сначала подключи кошелек!");
+                return;
+            }
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 300,
+                messages: [{
+                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ",
+                    amount: "100000000" // 0.1 TON
+                }]
+            };
+            try {
+                await tonConnectUI.sendTransaction(transaction);
+                tg.showAlert("Платеж отправлен!");
+            } catch (e) { tg.showAlert("Ошибка оплаты"); }
+        }
+
+        function payStars() {
+            tg.showPopup({
+                title: "Оплата Stars",
+                message: "Бот выставит вам счет в личные сообщения.",
+                buttons: [{type: "ok"}]
             });
-        });
+            tg.sendData(JSON.stringify({action: "buy_stars"}));
+        }
     </script>
 </body>
 </html>
