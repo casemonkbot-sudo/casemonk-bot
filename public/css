@@ -1,0 +1,56 @@
+/* Увеличенная ракета и красивое поле */
+.rocket-game-area {
+    background: #050505 url('https://www.transparenttextures.com/patterns/stardust.png'); /* Текстура звезд */
+    height: 350px; /* Увеличили высоту поля */
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #2a2a2a;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
+}
+
+.rocket-object {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 100px; /* Увеличили размер ракетки */
+    z-index: 5;
+    filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.5));
+    transition: filter 0.3s;
+}
+
+/* Эффект взрыва */
+.explosion {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, #ff5722, #ff9800, transparent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 6;
+    pointer-events: none;
+}
+
+@keyframes blowUp {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+.animate-explosion {
+    animation: blowUp 0.6s ease-out forwards;
+}
+
+/* Мерцание коэффициента */
+.multi-text {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 56px;
+    font-weight: 900;
+    z-index: 10;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+    pointer-events: none;
+}
