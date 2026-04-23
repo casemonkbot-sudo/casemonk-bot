@@ -3,263 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Caser Monk Classic</title>
+    <title>Telegram Casino App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* БАЗА И СТАРЫЙ АККУРАТНЫЙ ДИЗАЙН */
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #252525;
+            --accent-blue: #007bff;
+            --text-main: #ffffff;
+            --text-gray: #888888;
+        }
+
         body {
-            background-color: #0d0d0d;
-            color: #ffffff;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0; padding: 0; overflow-x: hidden;
-            display: flex; flex-direction: column; height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 0; overflow: hidden;
         }
 
-        /* ПРИВЕТСТВИЕ */
-        #welcome-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0d0d0d; z-index: 10000; display: flex; 
-            flex-direction: column; justify-content: center; align-items: center;
+        /* ШАПКА (КАК НА СКРИНЕ) */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; background: var(--bg-color);
         }
+        .user-block { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 35px; height: 35px; border-radius: 50%; background: #333; }
+        .user-name { font-weight: bold; font-size: 16px; }
+        
+        .balance-block {
+            background: #2b2b2b; padding: 5px 12px; border-radius: 20px;
+            display: flex; align-items: center; gap: 8px; border: 1px solid #3d3d3d;
+        }
+        .balance-icon { width: 18px; height: 18px; }
+        .balance-plus { color: #888; font-size: 18px; margin-left: 5px; }
 
-        /* НАВИГАЦИЯ */
-        .nav-header {
-            background: #1a1a1a; display: flex; justify-content: space-around;
-            border-bottom: 2px solid #2a2a2a; padding: 10px 0;
-        }
-        .nav-btn {
-            background: none; border: none; color: #777;
-            font-size: 14px; text-transform: uppercase; padding: 10px; cursor: pointer;
-        }
-        .nav-btn.active { color: #4caf50; border-bottom: 2px solid #4caf50; font-weight: bold; }
-
-        .screen { display: none; padding: 15px; overflow-y: auto; flex: 1; }
+        /* ОСНОВНОЙ КОНТЕНТ */
+        .content { height: calc(100vh - 140px); overflow-y: auto; padding: 10px 15px; }
+        .screen { display: none; }
         .screen.active { display: block; }
 
-        /* ПРОФИЛЬ */
-        .profile-block {
-            display: flex; align-items: center; background: #1a1a1a;
-            padding: 15px; border-radius: 12px; border: 1px solid #2a2a2a; margin-bottom: 20px;
+        /* КАРТОЧКИ И КОНТЕЙНЕРЫ (ИЗ ТВОИХ СКРИНОВ) */
+        .card {
+            background: var(--card-bg); border-radius: 18px;
+            padding: 20px; margin-bottom: 15px; border: 1px solid #333;
         }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #4caf50; margin-right: 15px; }
-        .balance { font-size: 20px; font-weight: 800; color: #4caf50; }
+        .card-title { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 10px; }
 
-        /* РЕЖИМ РАКЕТА (КОСМИЧЕСКОЕ ПОЛЕ) */
-        .rocket-game-area {
-            background: #050505 radial-gradient(circle at center, #1a2a44 0%, #000000 100%);
-            height: 350px; border-radius: 20px; position: relative; overflow: hidden;
-            border: 2px solid #2a2a2a; margin-top: 10px;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        /* СПЕЦИАЛЬНО ДЛЯ ROCKET (КОСМОС) */
+        .rocket-game-container {
+            background: radial-gradient(circle at center, #1e2a44 0%, #0d0d0d 100%);
+            height: 300px; border-radius: 20px; position: relative; overflow: hidden;
+            border: 1px solid #333; margin-bottom: 20px;
         }
-        
-        /* Звезды на фоне */
-        .stars {
-            position: absolute; width: 100%; height: 100%;
-            background-image: radial-gradient(white 1px, transparent 1px);
-            background-size: 50px 50px; opacity: 0.3;
+        .rocket-sprite { position: absolute; bottom: 20px; left: 20px; width: 90px; z-index: 2; }
+        .multiplier-val {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 50px; font-weight: 900; z-index: 3;
         }
 
-        .multi-text {
-            position: absolute; top: 25%; left: 50%; transform: translateX(-50%);
-            font-size: 60px; font-weight: 900; z-index: 10;
-            text-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+        /* КНОПКИ (КАК НА СКРИНЕ) */
+        .main-btn {
+            background: var(--accent-blue); border: none; color: white;
+            width: 100%; padding: 16px; border-radius: 14px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
         }
 
-        .rocket-object {
-            position: absolute; bottom: 30px; left: 30px; 
-            width: 110px; /* УВЕЛИЧЕННЫЙ РАЗМЕР */
-            z-index: 5;
-            filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.4));
-            will-change: transform;
+        /* НИЖНЯЯ НАВИГАЦИЯ (ТОЧНО КАК НА СКРИНЕ) */
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            background: rgba(26, 26, 26, 0.95); display: flex;
+            justify-content: space-around; align-items: center;
+            border-top: 1px solid #333; backdrop-filter: blur(10px);
         }
+        .nav-item {
+            text-align: center; color: var(--text-gray); font-size: 11px;
+            text-decoration: none; display: flex; flex-direction: column; gap: 4px;
+        }
+        .nav-item.active { color: var(--accent-blue); }
+        .nav-icon { font-size: 24px; }
 
-        /* ВЗРЫВ */
-        .explosion {
-            position: absolute; width: 160px; height: 160px;
-            background: radial-gradient(circle, #ff5722, #ff9800, transparent);
-            border-radius: 50%; transform: translate(-50%, -50%) scale(0);
-            z-index: 6; pointer-events: none; opacity: 0;
+        /* ИНВЕНТАРЬ (ПРОФИЛЬ) */
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .inventory-slot {
+            background: #2a2a2a; border: 1px dashed #444; border-radius: 12px;
+            aspect-ratio: 1/1.2; display: flex; align-items: center; justify-content: center;
         }
-        .animate-explosion { animation: blowUp 0.6s ease-out forwards; }
-        @keyframes blowUp {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.8; }
-            100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
-        }
-
-        /* КЕЙСЫ */
-        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .case-card {
-            background: #1a1a1a; border-radius: 10px; padding: 15px; text-align: center;
-            border: 1px solid #2a2a2a;
-        }
-        .case-card img { width: 100%; max-width: 100px; margin-bottom: 10px; }
-        .farm-case { border: 2px solid #8bc34a; }
-
-        .btn-green {
-            background: #4caf50; border: none; color: white; padding: 12px;
-            width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer;
-        }
-        .btn-bet { background: #ff9800; margin-top: 15px; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <div id="welcome-overlay">
-        <h1 style="color: #4caf50;">WELCOME</h1>
-        <button class="btn-green" style="width: 150px;" onclick="closeWelcome()">НАЧАТЬ</button>
-    </div>
-
-    <div class="nav-header">
-        <button class="nav-btn active" onclick="showScreen('cases-screen', this)">Кейсы</button>
-        <button class="nav-btn" onclick="showScreen('modes-screen', this)">Режимы</button>
-    </div>
-
-    <div id="cases-screen" class="screen active">
-        <div class="profile-block">
-            <div id="user-avatar" class="avatar"></div>
-            <div class="user-stats">
-                <span style="color: #888;">Мой баланс</span>
-                <div class="balance" id="balance-val">1,000 ₽</div>
-            </div>
+    <div class="header">
+        <div class="user-block">
+            <div id="avatar-img" class="user-avatar"></div>
+            <span class="user-name" id="user-nick">НИК</span>
         </div>
-
-        <div class="cases-grid">
-            <div class="case-card farm-case">
-                <img src="case_farm.png">
-                <div style="font-weight:bold; margin-bottom:8px;">FARM CASE</div>
-                <button class="btn-green" onclick="openFarm()">89 ₽</button>
-            </div>
-            <div class="case-card">
-                <img src="case_farm.png" style="filter: contrast(1.5);">
-                <div style="margin-bottom:8px;">WOOD CASE</div>
-                <button class="btn-green">49 ₽</button>
-            </div>
+        <div class="balance-block">
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="balance-icon">
+            <span id="balance-num">0.017</span>
+            <span class="balance-plus">+</span>
         </div>
     </div>
 
-    <div id="modes-screen" class="screen">
-        <div class="rocket-game-area" id="rocket-field">
-            <div class="stars"></div>
-            <div class="multi-text" id="multi-val">x1.00</div>
-            <img src="rocket_fly.png" id="rocket-sprite" class="rocket-object">
-            <div id="exp-effect" class="explosion"></div>
+    <div class="content">
+        
+        <div id="screen-play" class="screen active">
+            <div class="rocket-game-container" id="field">
+                <div class="multiplier-val" id="multi">x1.00</div>
+                <img src="rocket_fly.png" id="rocket" class="rocket-sprite">
+            </div>
+            <button class="main-btn" id="action-btn" onclick="rocketAction()">Сделать ставку</button>
         </div>
-        <button class="btn-green btn-bet" id="bet-btn" onclick="handleRocket()">ПОСТАВИТЬ 100 ₽</button>
+
+        <div id="screen-profile" class="screen">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="user-avatar" style="width: 80px; height: 80px; margin: 0 auto 10px;"></div>
+                <h2>НИК</h2>
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="main-btn">Пополнить</button>
+                <button class="main-btn" style="background:#333;">Вывести</button>
+            </div>
+            <h3>Ваши подарки</h3>
+            <div class="inventory-grid">
+                <div class="inventory-slot">📦</div>
+                <div class="inventory-slot">📦</div>
+                <div class="inventory-slot">📦</div>
+            </div>
+        </div>
+
+        <div id="screen-tourney" class="screen">
+            <div class="card">
+                <div class="card-title">Ежедневный турнир</div>
+                <p style="text-align: center; color: #888;">До подведения итогов осталось:</p>
+                <h2 style="text-align: center; color: #ffc107;">15:02:03</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-bar">
+        <a href="#" class="nav-item" onclick="nav('screen-earn', this)">
+            <span class="nav-icon">💸</span><span>Заработок</span>
+        </a>
+        <a href="#" class="nav-item" onclick="nav('screen-tourney', this)">
+            <span class="nav-icon">🏆</span><span>Турнир</span>
+        </a>
+        <a href="#" class="nav-item active" onclick="nav('screen-play', this)">
+            <span class="nav-icon">🎮</span><span>Играть</span>
+        </a>
+        <a href="#" class="nav-item" onclick="nav('screen-bonus', this)">
+            <span class="nav-icon">🎁</span><span>Бонусы</span>
+        </a>
+        <a href="#" class="nav-item" onclick="nav('screen-profile', this)">
+            <span class="nav-icon">👤</span><span>Профиль</span>
+        </a>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        let balance = 1000;
+        let balance = 0.017;
         let playing = false;
         let x = 1.0;
-        let animId;
-        let startTime;
+        let loop;
 
         // Инициализация
-        document.getElementById('user-avatar').style.background = `url(${tg.initDataUnsafe.user?.photo_url || ''}) center/cover`;
-        function closeWelcome() { document.getElementById('welcome-overlay').style.display = 'none'; }
-        function showScreen(id, btn) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        function updateUI() { document.getElementById('balance-val').innerText = balance.toLocaleString() + " ₽"; }
-
-        // КЕЙС FARM
-        function openFarm() {
-            if(balance >= 89) {
-                balance -= 89; updateUI();
-                tg.showAlert("Вы открыли Farm Case!");
-            }
-        }
-
-        // ЛОГИКА РАКЕТЫ
-        function handleRocket() {
-            if(!playing) {
-                if(balance < 100) return;
-                balance -= 100; updateUI();
-                startRocket();
-            } else {
-                cashOut();
-            }
-        }
-
-        function startRocket() {
-            playing = true; x = 1.0; startTime = Date.now();
-            const btn = document.getElementById('bet-btn');
-            const rocket = document.getElementById('rocket-sprite');
-            const exp = document.getElementById('exp-effect');
-            
-            btn.innerText = "ЗАБРАТЬ"; btn.style.background = "#4caf50";
-            exp.classList.remove('animate-explosion');
-            rocket.style.opacity = "1";
-
-            let crashPoint = (Math.random() * 6 + 1.1).toFixed(2);
-
-            function step() {
-                if(!playing) return;
-                let elapsed = (Date.now() - startTime) / 1000;
-                x = Math.pow(1.07, elapsed * 6);
-                
-                document.getElementById('multi-val').innerText = `x${x.toFixed(2)}`;
-                
-                let mX = (x - 1) * 35;
-                let mY = (x - 1) * 30 + Math.sin(Date.now()/200)*5;
-                rocket.style.transform = `translate(${mX}px, -${mY}px) rotate(${-mY/6}deg)`;
-
-                if(x >= crashPoint) {
-                    doCrash(rocket, mX, mY);
-                } else {
-                    animId = requestAnimationFrame(step);
-                }
-            }
-            animId = requestAnimationFrame(step);
-        }
-
-        function doCrash(rocket, lx, ly) {
-            playing = false; cancelAnimationFrame(animId);
-            const exp = document.getElementById('exp-effect');
-            const multi = document.getElementById('multi-val');
-            
-            // Взрыв на месте ракеты
-            exp.style.left = (lx + 80) + 'px';
-            exp.style.top = (350 - ly - 80) + 'px';
-            exp.classList.add('animate-explosion');
-            
-            rocket.style.opacity = "0";
-            multi.innerText = "CRASH!"; multi.style.color = "#ff4444";
-            
-            resetBtn();
-            setTimeout(resetField, 2500);
-        }
-
-        function cashOut() {
-            playing = false; cancelAnimationFrame(animId);
-            balance += Math.floor(100 * x);
-            tg.showScanQrPopup; // Просто для виброотклика или звука если нужно
-            tg.showAlert(`Выигрыш: ${Math.floor(100 * x)} ₽`);
-            resetBtn();
-            setTimeout(resetField, 1000);
-        }
-
-        function resetBtn() {
-            const btn = document.getElementById('bet-btn');
-            btn.innerText = "ПОСТАВИТЬ 100 ₽"; btn.style.background = "#ff9800";
-        }
-
-        function resetField() {
-            const rocket = document.getElementById('rocket-sprite');
-            const multi = document.getElementById('multi-val');
-            rocket.style.opacity = "1";
-            rocket.style.transform = "translate(0,0)";
-            multi.innerText = "x1.00"; multi.style.color = "white";
-            updateUI();
-        }
-
         tg.expand();
+        const user = tg.initDataUnsafe.user;
+        if(user) {
+            document.getElementById('user-nick').innerText = user.first_name.toUpperCase();
+            if(user.photo_url) document.getElementById('avatar-img').style.background = `url(${user.photo_url}) center/cover`;
+        }
+
+        // Навигация
+        function nav(screenId, el) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            el.classList.add('active');
+        }
+
+        // Логика Ракеты
+        function rocketAction() {
+            const btn = document.getElementById('action-btn');
+            if(!playing) {
+                playing = true;
+                x = 1.0;
+                btn.innerText = "ЗАБРАТЬ";
+                btn.style.background = "#ffc107";
+                
+                let crash = (Math.random() * 5 + 1.1).toFixed(2);
+                
+                loop = setInterval(() => {
+                    x += 0.02;
+                    document.getElementById('multi').innerText = `x${x.toFixed(2)}`;
+                    
+                    let move = (x - 1) * 40;
+                    document.getElementById('rocket').style.transform = `translate(${move}px, -${move}px)`;
+
+                    if(x >= crash) {
+                        clearInterval(loop);
+                        playing = false;
+                        document.getElementById('multi').innerText = "CRASH!";
+                        document.getElementById('multi').style.color = "#ff4444";
+                        setTimeout(reset, 2000);
+                    }
+                }, 100);
+            } else {
+                clearInterval(loop);
+                playing = false;
+                balance += (0.01 * x);
+                document.getElementById('balance-num').innerText = balance.toFixed(3);
+                tg.showAlert(`Вы выиграли! Новый баланс: ${balance.toFixed(3)} TON`);
+                reset();
+            }
+        }
+
+        function reset() {
+            const btn = document.getElementById('action-btn');
+            btn.innerText = "Сделать ставку";
+            btn.style.background = "#007bff";
+            document.getElementById('multi').style.color = "white";
+            document.getElementById('multi').innerText = "x1.00";
+            document.getElementById('rocket').style.transform = "translate(0,0)";
+        }
     </script>
 </body>
 </html>
