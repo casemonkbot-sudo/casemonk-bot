@@ -1,98 +1,18 @@
-let animationId;
-let startTime;
-
-function startRound() {
-    playingRocket = true;
-    x = 1.0;
-    startTime = Date.now();
+// Слушаем данные из Mini App
+bot.on('web_app_data', async (ctx) => {
+    const data = JSON.parse(ctx.webAppData.data());
     
-    const btn = document.getElementById('bet-btn');
-    const rocket = document.getElementById('rocket-sprite');
-    const multi = document.getElementById('multi-display');
-    const explosion = document.getElementById('explosion-effect');
-    
-    btn.innerText = "ЗАБРАТЬ";
-    btn.style.background = "#4caf50";
-    explosion.classList.remove('animate-explosion');
-    
-    let crashPoint = (Math.random() * 7 + 1.1).toFixed(2);
-
-    function animate() {
-        if (!playingRocket) return;
-
-        // Плавный рост коэффициента
-        let elapsed = (Date.now() - startTime) / 1000;
-        x = Math.pow(1.08, elapsed * 5); // Экспоненциальный рост
+    if (data.action === 'buy_stars') {
+        const amount = parseInt(data.amount);
         
-        multi.innerText = `x${x.toFixed(2)}`;
-
-        // Плавное движение ракеты (синусоида для эффекта "левитации")
-        let moveX = (x - 1) * 40;
-        let moveY = (x - 1) * 35 + Math.sin(Date.now() / 200) * 5;
-        
-        rocket.style.transform = `translate(${moveX}px, -${moveY}px) rotate(${-moveY/5}deg)`;
-
-        if (x >= crashPoint) {
-            triggerCrash(rocket, moveX, moveY);
-        } else {
-            animationId = requestAnimationFrame(animate);
-        }
+        // Отправляем счет на Stars (Invoice)
+        await ctx.replyWithInvoice(
+            "Пополнение баланса", // Название
+            `Пополнение на ${amount} Stars`, // Описание
+            "stars_payload", // Полезная нагрузка
+            "", // Токен провайдера (для Stars оставляем пустым)
+            "XTR", // Валюта Stars
+            [{ label: "Stars", amount: amount }] // Цена
+        );
     }
-
-    animationId = requestAnimationFrame(animate);
-}
-
-function triggerCrash(rocket, lastX, lastY) {
-    playingRocket = false;
-    cancelAnimationFrame(animationId);
-    
-    const multi = document.getElementById('multi-display');
-    const explosion = document.getElementById('explosion-effect');
-    const btn = document.getElementById('bet-btn');
-
-    // Позиционируем взрыв там, где была ракета
-    const rocketRect = rocket.getBoundingClientRect();
-    const fieldRect = document.getElementById('rocket-field').getBoundingClientRect();
-    
-    explosion.style.left = (rocketRect.left - fieldRect.left + 50) + 'px';
-    explosion.style.top = (rocketRect.top - fieldRect.top + 40) + 'px';
-    
-    // Запускаем анимацию взрыва
-    explosion.classList.add('animate-explosion');
-    rocket.style.opacity = '0'; // Скрываем ракету при взрыве
-    
-    multi.innerText = "CRASH!";
-    multi.style.color = "#ff4444";
-    
-    btn.innerText = "ПОСТАВИТЬ 100 ₽";
-    btn.style.background = "#ff9800";
-
-    setTimeout(() => {
-        resetRocket();
-    }, 2500);
-}
-
-function resetRocket() {
-    const rocket = document.getElementById('rocket-sprite');
-    const multi = document.getElementById('multi-display');
-    
-    rocket.style.opacity = '1';
-    rocket.style.transform = "translate(0,0)";
-    multi.innerText = "x1.00";
-    multi.style.color = "white";
-    updateUI();
-}
-
-function cashOut() {
-    playingRocket = false;
-    cancelAnimationFrame(animationId);
-    
-    balance += Math.floor(100 * x);
-    tg.showAlert(`Вы успешно забрали ${Math.floor(100 * x)} ₽!`);
-    
-    const btn = document.getElementById('bet-btn');
-    btn.innerText = "ПОСТАВИТЬ 100 ₽";
-    btn.style.background = "#ff9800";
-    
-    setTimeout(resetRocket, 1000);
-}
+});
