@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Caser Premium App</title>
+    <title>Caser Profile</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -12,277 +12,123 @@
             --card: #1c1c1e;
             --text: #ffffff;
             --sub-text: #8e8e93;
-            --success: #34c759;
-            --error: #ff3b30;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             background-color: var(--bg); color: var(--text);
             font-family: -apple-system, system-ui, sans-serif;
-            margin: 0; padding: 0; height: 100vh; overflow: hidden;
+            margin: 0; padding: 0; height: 100vh; overflow-y: auto;
         }
 
-        /* HEADER */
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 20px; background: rgba(11,11,11,0.8);
-            backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100;
-        }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar-small { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--accent); }
-        .balance-chip {
-            background: #1c1c1e; border-radius: 24px; padding: 6px 14px;
-            display: flex; align-items: center; gap: 8px; border: 1px solid #333;
-        }
-        .balance-chip img { width: 16px; height: 16px; }
+        .profile-container { padding: 20px; }
 
-        /* NAVIGATION & SCREENS */
-        .main-container { height: calc(100vh - 150px); overflow-y: auto; padding: 16px; }
-        .screen { display: none; animation: fadeIn 0.3s ease; }
-        .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ROCKET GAME (SCREEN 1) */
-        .game-area {
-            background: radial-gradient(circle at 50% 50%, #1a2a44 0%, #000 100%);
-            height: 350px; border-radius: 28px; position: relative; overflow: hidden; border: 1px solid #2c2c2e;
+        /* HEADER CARD */
+        .profile-card {
+            text-align: center; padding: 40px 20px;
+            background: linear-gradient(180deg, rgba(28, 28, 30, 0.6) 0%, rgba(11, 11, 11, 0) 100%);
+            border-radius: 28px; margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .multiplier {
-            position: absolute; width: 100%; text-align: center; top: 30%;
-            font-size: 60px; font-weight: 900; z-index: 10;
+        .avatar-big {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 3px solid var(--accent); margin-bottom: 15px;
+            box-shadow: 0 0 30px rgba(0, 122, 255, 0.2);
+            object-fit: cover;
         }
-        .rocket { position: absolute; bottom: 30px; left: 30px; width: 130px; z-index: 5; will-change: transform; }
-        .boom {
-            position: absolute; width: 200px; height: 200px; border-radius: 50%;
-            background: radial-gradient(circle, #ffcc00, #ff3b30, transparent);
-            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 20;
-        }
-        .boom.active { animation: explode 0.6s ease-out forwards; }
-        @keyframes explode { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; } }
+        .username { font-size: 24px; font-weight: 800; margin-bottom: 15px; }
 
-        .bet-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .input-card { background: var(--card); padding: 10px; border-radius: 14px; border: 1px solid #333; }
-        .input-card span { font-size: 10px; color: var(--sub-text); display: block; margin-bottom: 4px; }
-        .input-card input { background: transparent; border: none; color: #fff; width: 100%; font-size: 18px; font-weight: 700; }
-
-        /* EARN (SCREEN 2) */
-        .ref-banner {
-            background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
-            border-radius: 24px; padding: 25px; text-align: center;
-        }
-        .ref-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .stat-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px; }
-
-        /* PROFILE (SCREEN 3) */
-        .profile-card { text-align: center; padding: 30px 20px; background: var(--card); border-radius: 24px; margin-bottom: 20px; }
-        .avatar-big { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; }
+        /* SUPPORT BUTTON */
         .support-btn {
-            display: inline-flex; align-items: center; gap: 8px; background: rgba(0,122,255,0.1);
-            color: var(--accent); padding: 8px 16px; border-radius: 10px; text-decoration: none; font-size: 14px;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(0, 122, 255, 0.1); color: var(--accent);
+            padding: 10px 20px; border-radius: 12px;
+            text-decoration: none; font-size: 14px; font-weight: 600;
+            border: 1px solid rgba(0, 122, 255, 0.2);
         }
-        .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .slot { background: #252527; border: 1.5px dashed #444; aspect-ratio: 1/1.1; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
-        .slot img { width: 70%; opacity: 0.5; }
 
-        /* HISTORY */
-        .history-row { display: flex; justify-content: space-between; padding: 12px; background: #1c1c1e; border-radius: 12px; margin-bottom: 8px; }
-        .win-txt { color: var(--success); } .loss-txt { color: var(--error); }
-
-        /* NAV BAR */
-        .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 80px;
-            background: rgba(15,15,15,0.9); backdrop-filter: blur(20px);
-            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222;
+        /* ACTIONS */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+        .btn {
+            padding: 16px; border-radius: 16px; border: none;
+            font-weight: 700; font-size: 16px; transition: 0.2s;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--sub-text); font-size: 10px; flex: 1; }
-        .nav-item.active { color: var(--accent); }
+        .btn-blue { background: var(--accent); color: white; }
+        .btn-gray { background: var(--card); color: white; border: 1px solid #333; }
+        .btn:active { transform: scale(0.97); }
 
-        .btn-main {
-            background: var(--accent); border: none; color: white; padding: 18px;
-            border-radius: 18px; width: 100%; font-size: 18px; font-weight: 800; margin-top: 15px;
+        /* INVENTORY */
+        .inventory-section { background: var(--card); border-radius: 24px; padding: 20px; }
+        .inventory-head { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .slot {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px dashed #3a3a3c;
+            aspect-ratio: 1/1.1; border-radius: 18px;
+            position: relative;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="user-info">
-            <img src="" id="u-avatar-s" class="avatar-small">
-            <span id="u-nick-s" class="nick">@USER</span>
-        </div>
-        <div class="balance-chip">
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png">
-            <span id="u-bal">0.017</span>
-        </div>
-    </div>
-
-    <div class="main-container">
-        <div id="scr-play" class="screen active">
-            <div class="game-area">
-                <div class="multiplier" id="m-val">x1.00</div>
-                <img src="rocket_fly.png" id="r-node" class="rocket">
-                <div id="b-node" class="boom"></div>
-            </div>
-            <div class="bet-box">
-                <div class="input-card"><span>Ставка (TON)</span><input type="number" id="bet-val" value="0.01"></div>
-                <div class="input-card"><span>Авто-вывод</span><input type="number" id="auto-val" value="2.0"></div>
-            </div>
-            <button class="btn-main" id="btn-play" onclick="handleGame()">СДЕЛАТЬ СТАВКУ</button>
+    <div class="profile-container">
+        <div class="profile-card">
+            <img src="" id="u-avatar" class="avatar-big" alt="👤">
+            <div id="u-nick" class="username">@USER</div>
+            
+            <a href="https://t.me/casemonk_sup_robot" class="support-btn">
+                🎧 Поддержка
+            </a>
         </div>
 
-        <div id="scr-earn" class="screen">
-            <div class="ref-banner">
-                <div style="font-size: 44px; margin-bottom: 10px;">💰</div>
-                <h3>Реферальная система</h3>
-                <p style="color: var(--sub-text); font-size: 13px;">Получай 0.1 TON за каждого друга</p>
-                <div class="ref-stats">
-                    <div class="stat-item"><small>Друзья</small><div id="ref-count">8</div></div>
-                    <div class="stat-item"><small>Доход</small><div id="ref-earned">0.8 TON</div></div>
-                </div>
-                <button class="btn-main" onclick="tg.showAlert('Ссылка скопирована!')">ПРИГЛАСИТЬ</button>
-            </div>
+        <div class="action-grid">
+            <button class="btn btn-blue">Пополнить</button>
+            <button class="btn btn-gray">Вывести</button>
         </div>
 
-        <div id="scr-prof" class="screen">
-            <div class="profile-card">
-                <img src="" id="u-avatar-b" class="avatar-big">
-                <h2 id="u-nick-b" style="margin: 0 0 15px 0;">@USER</h2>
-                <a href="https://t.me/casemonksupport" class="support-btn">🎧 Поддержка</a>
+        <div class="inventory-section">
+            <div class="inventory-head">
+                <span style="font-weight: 700; font-size: 18px;">Ваши подарки</span>
+                <span style="color: var(--sub-text); font-size: 14px;">Продать всё</span>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <button class="btn-main" style="margin:0;">Пополнить</button>
-                <button class="btn-main" style="margin:0; background:#333;">Вывести</button>
-            </div>
-            <h4 style="margin: 25px 0 10px;">Ваши подарки</h4>
             <div class="inventory-grid">
-                <div class="slot"><img src="case_farm.png"></div>
-                <div class="slot"><img src="case_farm.png"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
                 <div class="slot"></div>
             </div>
-            <h4 style="margin: 25px 0 10px;">История</h4>
-            <div id="hist-list"></div>
         </div>
     </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item" onclick="switchTab('scr-earn', this)"><span>💸</span>Заработок</div>
-        <div class="nav-item active" onclick="switchTab('scr-play', this)"><span>🚀</span>Играть</div>
-        <div class="nav-item" onclick="switchTab('scr-prof', this)"><span>👤</span>Профиль</div>
-    </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let balance = 0.017;
-        let isPlaying = false;
-        let x = 1.0;
-        let raf, startT;
-
-        // Init User
+        // Данные из Telegram
         const user = tg.initDataUnsafe.user;
         if(user) {
-            const name = user.username ? `@${user.username}` : user.first_name;
-            document.getElementById('u-nick-s').innerText = name;
-            document.getElementById('u-nick-b').innerText = name;
-            if(user.photo_url) {
-                document.getElementById('u-avatar-s').src = user.photo_url;
-                document.getElementById('u-avatar-b').src = user.photo_url;
-            }
-        }
-
-        function switchTab(id, el) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-            tg.HapticFeedback.selectionChanged();
-        }
-
-        function handleGame() {
-            if(!isPlaying) {
-                const bet = parseFloat(document.getElementById('bet-val').value);
-                if(balance < bet) return tg.showAlert("Недостаточно TON!");
-                balance -= bet;
-                updateBal();
-                startRound(bet);
-            } else {
-                cashout();
-            }
-        }
-
-        function startRound(bet) {
-            isPlaying = true; x = 1.0; startT = Date.now();
-            const btn = document.getElementById('btn-play');
-            const rocket = document.getElementById('r-node');
-            const autoX = parseFloat(document.getElementById('auto-val').value);
+            const nickElement = document.getElementById('u-nick');
+            const avatarElement = document.getElementById('u-avatar');
             
-            btn.innerText = "ЗАБРАТЬ"; btn.style.background = "#ffcc00"; btn.style.color = "#000";
-            document.getElementById('b-node').classList.remove('active');
-            rocket.style.opacity = "1";
-
-            let crash = (Math.random() * 6 + 1.1).toFixed(2);
-
-            function frame() {
-                if(!isPlaying) return;
-                let elapsed = (Date.now() - startT) / 1000;
-                x = Math.pow(1.08, elapsed * 5);
-                document.getElementById('m-val').innerText = `x${x.toFixed(2)}`;
-                
-                let posX = (x - 1) * 40;
-                let posY = (x - 1) * 35 + Math.sin(Date.now()/200)*5;
-                rocket.style.transform = `translate(${posX}px, -${posY}px) rotate(${-posY/6}deg)`;
-
-                if(autoX > 1 && x >= autoX) return cashout(bet);
-                if(x >= crash) return explode(posX, posY, bet);
-                raf = requestAnimationFrame(frame);
+            // Ник с @
+            nickElement.innerText = user.username ? `@${user.username}` : user.first_name;
+            
+            // Аватарка
+            if(user.photo_url) {
+                avatarElement.src = user.photo_url;
+            } else {
+                avatarElement.style.display = 'none'; // Скрыть если нет фото
             }
-            raf = requestAnimationFrame(frame);
         }
 
-        function explode(px, py, bet) {
-            isPlaying = false; cancelAnimationFrame(raf);
-            tg.HapticFeedback.notificationOccurred('error');
-            const b = document.getElementById('b-node');
-            b.style.left = (px + 90) + 'px'; b.style.top = (350 - py - 70) + 'px';
-            b.classList.add('active');
-            document.getElementById('r-node').style.opacity = "0";
-            document.getElementById('m-val').innerText = "CRASH!";
-            addHist(bet, 0, false);
-            resetGame();
-        }
-
-        function cashout(bet) {
-            if(!isPlaying) return;
-            isPlaying = false; cancelAnimationFrame(raf);
-            tg.HapticFeedback.notificationOccurred('success');
-            let win = (bet || parseFloat(document.getElementById('bet-val').value)) * x;
-            balance += win;
-            addHist(bet || 0, x, true);
-            tg.showAlert(`Выигрыш: ${win.toFixed(3)} TON`);
-            resetGame();
-        }
-
-        function addHist(bet, coeff, win) {
-            const list = document.getElementById('hist-list');
-            const el = document.createElement('div');
-            el.className = 'history-row';
-            el.innerHTML = `<span>${bet.toFixed(2)} TON</span><span class="${win?'win-txt':'loss-txt'}">${win?'x'+coeff.toFixed(2):'CRASH'}</span>`;
-            list.prepend(el);
-            updateBal();
-        }
-
-        function updateBal() { document.getElementById('u-bal').innerText = balance.toFixed(3); }
-        function resetGame() {
-            setTimeout(() => {
-                const btn = document.getElementById('btn-play');
-                btn.innerText = "СДЕЛАТЬ СТАВКУ"; btn.style.background = "var(--accent)"; btn.style.color = "#fff";
-                document.getElementById('m-val').innerText = "x1.00";
-                document.getElementById('r-node').style.transform = "translate(0,0)";
-                document.getElementById('r-node').style.opacity = "1";
-            }, 1500);
-        }
+        // Кнопки для фидбека
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', () => {
+                tg.HapticFeedback.impactOccurred('medium');
+            });
+        });
     </script>
 </body>
 </html>
