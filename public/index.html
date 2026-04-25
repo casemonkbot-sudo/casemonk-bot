@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CaseMonk Releyer</title>
+    <title>CaseMonk</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -13,17 +13,12 @@
             --card: #0a0a0a;
             --accent-blue: #007aff;
             --accent-green: #34c759;
-            --text-secondary: #8e8e93;
-            --border: 1px solid rgba(255, 255, 255, 0.08);
+            --text-sec: #8e8e93;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            margin: 0; padding: 0;
-            backface-visibility: hidden;
-        }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body {
             background-color: var(--bg);
             color: #fff;
@@ -34,115 +29,85 @@
 
         /* Шапка */
         .header {
-            display: flex;
-            justify-content: flex-end;
-            padding: 15px 20px;
-            position: fixed;
-            top: 0; width: 100%; z-index: 50;
+            display: flex; justify-content: flex-end;
+            padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 50;
         }
-
         .balance-chip {
-            background: rgba(28, 28, 30, 0.8);
-            backdrop-filter: blur(15px);
-            padding: 8px 14px;
-            border-radius: 22px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: var(--border);
-            transform: translateZ(0); /* 120fps acceleration */
+            background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(15px);
+            padding: 8px 14px; border-radius: 22px; border: var(--border);
+            display: flex; align-items: center; gap: 8px;
         }
 
-        .plus-icon { color: var(--accent-blue); font-size: 16px; cursor: pointer; }
-
-        /* Профиль */
-        .content {
-            padding: 80px 20px 100px;
-            height: 100vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Контент */
+        .main {
+            padding: 70px 20px 120px; height: 100vh; overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         .avatar-glow {
-            width: 105px; height: 105px;
-            border-radius: 50%;
+            width: 100px; height: 100px; border-radius: 50%;
             background: linear-gradient(180deg, var(--accent-green), transparent);
-            padding: 3px;
-            margin-bottom: 15px;
+            padding: 3px; margin-bottom: 12px;
         }
         .avatar-glow img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; }
+        .username { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .user-tag { color: var(--text-sec); font-size: 14px; margin-bottom: 20px; }
 
-        .username { font-size: 24px; font-weight: 700; margin-bottom: 25px; }
-
-        .btn-blue {
-            width: 100%; max-width: 400px;
-            background: var(--accent-blue);
-            color: #fff; border: none;
-            padding: 18px; border-radius: 16px;
-            font-size: 16px; font-weight: 600;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            margin-bottom: 20px;
+        .btn-full {
+            width: 100%; max-width: 100%; background: var(--accent-blue);
+            color: #fff; border: none; padding: 16px; border-radius: 16px;
+            font-size: 16px; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px;
         }
 
-        .inventory {
-            background: var(--card);
-            width: 100%; border-radius: 24px;
-            padding: 20px; border: var(--border);
+        /* Переключатель языка */
+        .lang-switcher {
+            margin-top: 15px; display: flex; background: #111; padding: 4px; border-radius: 12px; border: var(--border);
         }
+        .lang-opt {
+            padding: 6px 15px; border-radius: 9px; font-size: 12px; cursor: pointer; color: var(--text-sec); transition: 0.2s;
+        }
+        .lang-opt.active { background: var(--accent-blue); color: #fff; }
 
+        /* Инвентарь */
+        .inv-box { background: var(--card); width: 100%; border-radius: 20px; padding: 18px; border: var(--border); margin-top: 25px; }
         .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .slot { aspect-ratio: 1; background: #121212; border-radius: 15px; border: 1px dashed #222; }
+        .slot { aspect-ratio: 1; background: #121212; border-radius: 12px; border: 1px dashed #222; }
+
+        /* Навигация "Жидкое стекло" */
+        .glass-nav {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 10px 40px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-nav i { font-size: 20px; color: #fff; }
+        .glass-nav span { font-size: 11px; font-weight: 500; }
 
         /* Модалки */
-        .modal {
-            position: fixed; inset: 0; background: #000; z-index: 1000;
-            display: none; flex-direction: column; padding: 20px;
-        }
-        .modal.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; }
+        .modal.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.1, 0.7, 0.1, 1); }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .modal-head { display: flex; align-items: center; height: 60px; font-size: 18px; font-weight: 600; }
-        .back { padding-right: 20px; font-size: 22px; cursor: pointer; }
+        .m-head { display: flex; align-items: center; height: 50px; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+        .back { margin-right: 15px; font-size: 20px; cursor: pointer; }
 
-        .pay-card {
-            background: #111; padding: 20px; border-radius: 18px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px; border: var(--border);
+        .item-row {
+            background: #111; padding: 18px; border-radius: 16px; border: var(--border);
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
         }
 
-        /* Пополнение TON */
-        .wallet-status {
-            text-align: center;
-            padding: 20px;
-            background: #0a0a0a;
-            border-radius: 20px;
-            border: 1px dashed #222;
-            margin-bottom: 20px;
+        input {
+            width: 100%; background: #111; border: var(--border); padding: 16px; border-radius: 14px;
+            color: #fff; font-size: 18px; text-align: center; margin: 20px 0;
         }
 
-        #ton-connect-btn { margin: 15px 0; display: flex; justify-content: center; }
-
-        .input-area { margin-top: 10px; }
-        .input-area input {
-            width: 100%; background: #111; border: var(--border);
-            padding: 18px; border-radius: 16px; color: #fff; font-size: 20px;
-            text-align: center; margin-top: 10px;
+        .alert-box {
+            background: rgba(255, 59, 48, 0.1); color: #ff3b30; padding: 15px; border-radius: 14px;
+            font-size: 13px; text-align: center; margin-top: auto; margin-bottom: 20px;
         }
-
-        .footer { margin-top: auto; padding-bottom: 30px; display: flex; flex-direction: column; gap: 10px; }
-        .btn-dis { background: none; border: none; color: #ff3b30; font-size: 14px; padding: 10px; cursor: pointer; }
-
-        /* Навигация */
-        .nav {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(20px);
-            padding: 12px 40px; border-radius: 35px; border: var(--border);
-            display: flex; gap: 50px;
-        }
-        .nav i { color: #444; font-size: 20px; }
-        .nav i.active { color: #fff; }
     </style>
 </head>
 <body>
@@ -150,25 +115,29 @@
     <div class="header">
         <div class="balance-chip" onclick="openM('m-sel')">
             <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
-            <span id="bal-text">0.00</span>
-            <i class="fa-solid fa-plus-circle plus-icon"></i>
+            <span>0.00</span>
+            <i class="fa-solid fa-plus-circle" style="color: var(--accent-blue); margin-left: 5px;"></i>
         </div>
     </div>
 
-    <div class="content">
-        <div class="avatar-glow">
-            <img id="u-img" src="">
-        </div>
-        <div class="username" id="u-nick">@loading...</div>
+    <div class="main">
+        <div class="avatar-glow"><img id="u-photo" src=""></div>
+        <div class="username" id="u-name">User</div>
+        <div class="user-tag" id="u-tag">@username</div>
 
-        <button class="btn-blue" onclick="window.open('https://t.me/casemonk_sup_robot')">
-            <i class="fa-solid fa-headset"></i> Поддержка
+        <button class="btn-full" onclick="window.open('https://t.me/casemonk_sup_robot')">
+            <i class="fa-solid fa-headset"></i> <span data-ru="Поддержка" data-en="Support">Поддержка</span>
         </button>
 
-        <div class="inventory">
+        <div class="lang-switcher">
+            <div class="lang-opt active" onclick="setL('ru', this)">Русский</div>
+            <div class="lang-opt" onclick="setL('en', this)">English</div>
+        </div>
+
+        <div class="inv-box">
             <div style="display:flex; justify-content:space-between; font-size:14px;">
-                <b>Инвентарь</b>
-                <span style="color:var(--text-secondary)">0 предметов</span>
+                <b data-ru="Инвентарь" data-en="Inventory">Инвентарь</b>
+                <span style="color:var(--text-sec)" data-ru="0 предметов" data-en="0 items">0 предметов</span>
             </div>
             <div class="inv-grid">
                 <div class="slot"></div><div class="slot"></div><div class="slot"></div>
@@ -177,120 +146,76 @@
         </div>
     </div>
 
-    <div class="nav">
-        <i class="fa-solid fa-box-open"></i>
-        <i class="fa-solid fa-user active"></i>
+    <div class="glass-nav">
+        <i class="fa-solid fa-circle-user"></i>
+        <span data-ru="Профиль" data-en="Profile">Профиль</span>
     </div>
 
     <div id="m-sel" class="modal">
-        <div class="modal-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-sel')"></i> Пополнение</div>
-        <div class="pay-card" onclick="openM('m-ton')">
-            <span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="24">
-        </div>
-        <div class="pay-card" onclick="openM('m-gift')">
-            <span>Gifts 🎁</span>
-        </div>
+        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-sel')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
+        <div class="item-row" onclick="openM('m-ton')"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22"></div>
+        <div class="item-row" onclick="openM('m-gift')"><span>Gifts 🎁</span></div>
     </div>
 
     <div id="m-ton" class="modal">
-        <div class="modal-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-ton')"></i> Пополнение TON</div>
-        
-        <div id="wallet-auth-section" class="wallet-status">
-            <p style="font-size: 14px; color: var(--text-secondary);">Для оплаты необходимо <br> привязать кошелек</p>
-            <div id="ton-connect-btn"></div>
-        </div>
-
-        <div id="payment-section" style="display: none;">
-            <div class="pay-card" style="opacity: 0.5; margin-bottom: 25px;">
-                <span>Способ оплаты</span> <span>TON <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="16"></span>
-            </div>
-            <div class="input-area">
-                <p style="color: var(--text-secondary); font-size: 14px; text-align: center;">Введите сумму (TON)</p>
-                <input type="number" id="ton-val" value="0.1" step="0.1">
-            </div>
-        </div>
-
-        <div class="footer">
-            <button id="dis-btn" class="btn-dis" style="display: none;" onclick="disconnect()">Disconnect wallet</button>
-            <button id="pay-btn" class="btn-blue" style="display: none;" onclick="sendPay()">Пополнить</button>
+        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-ton')"></i> TON</div>
+        <div id="ton-connect-btn" style="margin: 20px auto;"></div>
+        <div id="pay-ui" style="display:none;">
+            <input type="number" id="t-val" value="0.1">
+            <button class="btn-full" onclick="sendT()" data-ru="Пополнить" data-en="Deposit">Пополнить</button>
+            <button class="btn-full" style="background:none; color:#ff3b30; margin-top:10px;" onclick="tonConnect.disconnect()">Disconnect</button>
         </div>
     </div>
 
     <div id="m-gift" class="modal">
-        <div class="modal-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-gift')"></i> Gifts 🎁</div>
-        <div style="padding: 10px; line-height: 1.6;">
-            <p style="margin-bottom: 20px;">1. Перейдите в бота <b>@casemonk_relayer</b></p>
-            <p style="margin-bottom: 20px;">2. Отправьте любой NFT подарок</p>
-            <p style="margin-bottom: 30px;">3. Баланс пополнится автоматически</p>
-            <div style="background: rgba(255,59,48,0.1); color: #ff3b30; padding: 15px; border-radius: 12px; font-size: 13px; text-align: center;">
-                Отправляйте подарки только напрямую!
-            </div>
-        </div>
-        <div class="footer">
-            <button class="btn-blue" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
-        </div>
+        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-gift')"></i> Gifts 🎁</div>
+        <p style="margin-bottom:20px;">1. <span data-ru="Перейдите в нашего бота" data-en="Go to our bot">Перейдите в нашего бота</span> <b>@casemonk_relayer</b></p>
+        <p style="margin-bottom:20px;">2. <span data-ru="Отправьте ему NFT подарок" data-en="Send him an NFT gift">Отправьте ему NFT подарок</span></p>
+        <p style="margin-bottom:30px;">3. <span data-ru="Баланс пополнится мгновенно" data-en="Balance will update instantly">Баланс пополнится мгновенно</span></p>
+        <div class="alert-box" data-ru="Отправляйте подарки только напрямую!" data-en="Send gifts only directly!">Отправляйте подарки только напрямую!</div>
+        <button class="btn-full" onclick="window.open('https://t.me/casemonk_relayer')" data-ru="Перейти" data-en="Go to bot">Перейти</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Данные пользователя
-        const user = tg.initDataUnsafe.user;
-        if(user) {
-            document.getElementById('u-nick').innerText = '@' + (user.username || 'user');
-            if(user.photo_url) document.getElementById('u-img').src = user.photo_url;
+        // Данные юзера
+        const u = tg.initDataUnsafe.user;
+        if(u) {
+            document.getElementById('u-name').innerText = u.first_name + (u.last_name ? ' ' + u.last_name : '');
+            document.getElementById('u-tag').innerText = '@' + (u.username || 'user');
+            if(u.photo_url) document.getElementById('u-photo').src = u.photo_url;
         }
 
-        function openM(id) { document.getElementById(id).classList.add('active'); tg.HapticFeedback.impactOccurred('medium'); }
-        function closeM(id) { document.getElementById(id).classList.remove('active'); }
+        function openM(id){ document.getElementById(id).classList.add('active'); tg.HapticFeedback.impactOccurred('medium'); }
+        function closeM(id){ document.getElementById(id).classList.remove('active'); }
 
-        // TON Connect
+        // Язык
+        function setL(l, b){
+            document.querySelectorAll('[data-ru]').forEach(el => {
+                el.innerText = l === 'ru' ? el.dataset.ru : el.dataset.en;
+            });
+            document.querySelectorAll('.lang-opt').forEach(opt => opt.classList.remove('active'));
+            b.classList.add('active');
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        // TON
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json',
             buttonRootId: 'ton-connect-btn'
         });
 
-        // Мониторинг подключения кошелька
-        tonConnect.onStatusChange(wallet => {
-            const authSec = document.getElementById('wallet-auth-section');
-            const paySec = document.getElementById('payment-section');
-            const payBtn = document.getElementById('pay-btn');
-            const disBtn = document.getElementById('dis-btn');
-
-            if (wallet) {
-                authSec.style.display = 'none';
-                paySec.style.display = 'block';
-                payBtn.style.display = 'flex';
-                disBtn.style.display = 'block';
-            } else {
-                authSec.style.display = 'block';
-                paySec.style.display = 'none';
-                payBtn.style.display = 'none';
-                disBtn.style.display = 'none';
-            }
+        tonConnect.onStatusChange(w => {
+            document.getElementById('pay-ui').style.display = w ? 'block' : 'none';
+            document.getElementById('ton-connect-btn').style.display = w ? 'none' : 'flex';
         });
 
-        async function disconnect() {
-            await tonConnect.disconnect();
-            tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        async function sendPay() {
-            const amount = document.getElementById('ton-val').value;
-            const tx = {
-                validUntil: Math.floor(Date.now() / 1000) + 60,
-                messages: [{
-                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ",
-                    amount: (parseFloat(amount) * 1000000000).toString()
-                }]
-            };
-            try { 
-                await tonConnect.sendTransaction(tx);
-                tg.showAlert("Транзакция отправлена!");
-            } catch(e) { 
-                console.log(e); 
-            }
+        async function sendT(){
+            const v = document.getElementById('t-val').value;
+            const tx = { validUntil: Math.floor(Date.now()/1000)+60, messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (v*1e9).toString() }] };
+            try { await tonConnect.sendTransaction(tx); } catch(e){}
         }
     </script>
 </body>
