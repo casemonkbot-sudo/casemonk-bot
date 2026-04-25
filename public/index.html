@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CaseMonk Final Build</title>
+    <title>CaseMonk Full Version</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -19,7 +19,6 @@
         .content { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: none; }
         .content.active { display: block; }
 
-        /* ROULETTE */
         .roulette-box { position: relative; width: 100%; height: 140px; background: #080808; border-radius: 24px; border: var(--border); overflow: hidden; margin: 20px 0; }
         .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: #fff; z-index: 10; transform: translateX(-50%); box-shadow: 0 0 10px #fff; }
         #track { display: flex; align-items: center; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
@@ -30,12 +29,12 @@
         .case-card img { width: 95px; margin-bottom: 12px; }
         
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .grid-item { aspect-ratio: 1; background: var(--glass); border-radius: 18px; border: var(--border); display: flex; align-items: center; justify-content: center; }
+        .grid-item { aspect-ratio: 1; background: var(--glass); border-radius: 18px; border: var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .grid-item img { width: 75%; }
 
         .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; padding: 25px; }
         .modal.active { display: flex; }
-        .step-num { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+        .step-num { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
 
         .nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: var(--glass); backdrop-filter: blur(30px); padding: 12px 35px; border-radius: 40px; border: var(--border); display: flex; gap: 40px; z-index: 100; }
         .nav-item { color: rgba(255,255,255,0.3); text-align: center; font-size: 10px; }
@@ -44,8 +43,9 @@
 
         .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; border-radius: 20px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; }
         .btn-sec { background: #1a1a1c; border: var(--border); }
-        .ton-icon { width: 14px; vertical-align: middle; }
-        .ton-icon-small { width: 11px; vertical-align: middle; margin-left: 2px; }
+        
+        .ton-icon { width: 14px; vertical-align: middle; margin-bottom: 2px; }
+        .ton-icon-small { width: 11px; vertical-align: middle; margin-left: 2px; margin-bottom: 1px; }
     </style>
 </head>
 <body>
@@ -66,7 +66,7 @@
     <div class="header">
         <div class="logo">CASE MONK</div>
         <div class="bal-chip" onclick="openM('m-refill')">
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon"> <span id="bal-val">100.00</span>
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon"> <span id="bal-val">100.00</span> <i class="fa-solid fa-plus-circle" style="color:var(--accent); font-size: 12px; margin-left: 5px;"></i>
         </div>
     </div>
 
@@ -88,6 +88,7 @@
             <div class="roulette-box"><div class="pointer"></div><div id="track"></div></div>
             <button class="btn" id="b-open" onclick="spin(false)">ОТКРЫТЬ ЗА 10 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon"></button>
             <button class="btn btn-sec" id="b-demo" onclick="spin(true)">ДЕМО РЕЖИМ</button>
+            <h4 style="margin:25px 0 15px; opacity:0.4;" id="t-cont">Содержимое:</h4>
             <div id="preview-grid" class="grid-container"></div>
         </div>
     </div>
@@ -125,12 +126,17 @@
         <div class="nav-item" onclick="nav('profile', this)"><i class="fa-solid fa-user"></i><span id="n3">Профиль</span></div>
     </div>
 
+    <div id="m-refill" class="modal">
+        <div style="display:flex; align-items:center; margin-bottom:30px;"><i class="fa-solid fa-xmark" onclick="closeM('m-refill')"></i><span style="margin-left:20px; font-weight:800;">Пополнение</span></div>
+        <button class="btn btn-sec" onclick="openM('m-gifts')">Gifts 🎁</button>
+    </div>
+
     <div id="m-gifts" class="modal">
         <div style="display:flex; align-items:center; margin-bottom:30px;"><i class="fa-solid fa-chevron-left" onclick="closeM('m-gifts')"></i><span style="margin-left:20px; font-weight:800;">Gifts</span></div>
         <div style="display:flex; flex-direction:column; gap:20px;">
-            <div style="display:flex; gap:15px;"><div class="step-num">1</div><div><p style="font-weight:700;">Перейдите в бота</p><p style="color:var(--accent);">@casemonk_relayer</p></div></div>
-            <div style="display:flex; gap:15px;"><div class="step-num">2</div><div><p style="font-weight:700;">Отправьте NFT подарок</p></div></div>
-            <div style="display:flex; gap:15px;"><div class="step-num">3</div><div><p style="font-weight:700;">Баланс пополнится</p></div></div>
+            <div style="display:flex; gap:15px; align-items:center;"><div class="step-num">1</div><div><p style="font-weight:700;">Перейдите в бота</p><p style="color:var(--accent);">@casemonk_relayer</p></div></div>
+            <div style="display:flex; gap:15px; align-items:center;"><div class="step-num">2</div><div><p style="font-weight:700;">Отправьте NFT подарок</p><p style="opacity:0.4; font-size:12px;">Модель и фон не учитываются!</p></div></div>
+            <div style="display:flex; gap:15px; align-items:center;"><div class="step-num">3</div><div><p style="font-weight:700;">Баланс пополнится</p></div></div>
             <button class="btn" style="background:#2e62f6;" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
         </div>
     </div>
