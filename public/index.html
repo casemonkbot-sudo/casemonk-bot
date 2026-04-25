@@ -55,7 +55,6 @@
 
         .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; }
         .modal.active { display: flex; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .m-head { display: flex; align-items: center; height: 50px; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
         .back { margin-right: 15px; font-size: 20px; cursor: pointer; }
@@ -222,7 +221,7 @@
             try { await tonConnect.sendTransaction(tx); } catch(e){}
         }
 
-        // ИСПРАВЛЕННАЯ ССЫЛКА НА БОТА @casemonk_robot
+        // ИСПРАВЛЕННАЯ ГЕНЕРАЦИЯ ССЫЛКИ
         const refLink = "https://t.me/casemonk_robot?start=" + (u ? u.id : "0");
         
         function inviteFriend() {
