@@ -47,7 +47,6 @@
         .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .slot { aspect-ratio: 1; background: #121212; border-radius: 15px; border: 1px dashed #222; }
 
-        /* Друзья */
         .friends-card { background: var(--card); width: 100%; border-radius: 24px; padding: 20px; border: var(--border); margin-bottom: 15px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
         .stat-item { background: #1c1c1e; padding: 15px; border-radius: 16px; text-align: center; border: var(--border); }
@@ -89,24 +88,24 @@
     </div>
 
     <div id="page-bonus" class="main-container">
-        <h2 style="align-self: flex-start; margin-bottom: 20px;">Друзья</h2>
+        <h2 style="align-self: flex-start; margin-bottom: 20px;" data-ru="Друзья" data-en="Friends">Друзья</h2>
         <div class="friends-card">
             <div class="stats-grid">
                 <div class="stat-item">
-                    <span class="stat-label">Всего</span>
-                    <span class="stat-val">0</span>
+                    <span class="stat-label" data-ru="Всего" data-en="Total">Всего</span>
+                    <span class="stat-val" id="ref-count">0</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Заработок</span>
+                    <span class="stat-label" data-ru="Заработок" data-en="Earnings">Заработок</span>
                     <span class="stat-val">
-                        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="16"> 0
+                        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="16"> <span id="ref-earn">0.00</span>
                     </span>
                 </div>
             </div>
-            <button class="btn-full" onclick="claimEarnings()">Вывести</button>
-            <p style="color:var(--text-sec); font-size:12px; margin: 15px 0;">Приглашайте друзей — получайте 15% от их депозита! Просто поделитесь своей реферальной ссылкой.</p>
+            <button class="btn-full" onclick="claimEarnings()" data-ru="Вывести" data-en="Withdraw">Вывести</button>
+            <p style="color:var(--text-sec); font-size:12px; margin: 15px 0;" data-ru="Приглашайте друзей — получайте 15% от их депозита! Просто поделитесь своей реферальной ссылкой." data-en="Invite friends — get 15% of their deposits! Just share your referral link.">Приглашайте друзей — получайте 15% от их депозита! Просто поделитесь своей реферальной ссылкой.</p>
             <div style="display: flex; gap: 10px;">
-                <button class="btn-full" style="margin-bottom:0;" onclick="inviteFriend()">Пригласить друга</button>
+                <button class="btn-full" style="margin-bottom:0;" onclick="inviteFriend()" data-ru="Пригласить друга" data-en="Invite friend">Пригласить друга</button>
                 <button style="background: #1c1c1e; width: 54px; border-radius: 16px; border: var(--border); color: #fff;" onclick="copyRef()"><i class="fa-regular fa-copy"></i></button>
             </div>
         </div>
@@ -140,16 +139,16 @@
     <div class="nav-glass">
         <div class="nav-item" onclick="switchPage('bonus', this)">
             <i class="fa-solid fa-gift" style="opacity: 0.5;"></i>
-            <span style="font-size: 10px;">Бонусы</span>
+            <span style="font-size: 10px;" data-ru="Бонусы" data-en="Bonuses">Бонусы</span>
         </div>
         <div class="nav-item active" onclick="switchPage('profile', this)">
             <i class="fa-solid fa-user-circle"></i>
-            <span style="font-size: 10px;">Профиль</span>
+            <span style="font-size: 10px;" data-ru="Профиль" data-en="Profile">Профиль</span>
         </div>
     </div>
 
     <div id="m-sel" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-sel')"></i> Пополнение</div>
+        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-sel')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
         <div class="pay-row" onclick="openM('m-ton')"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22"></div>
         <div class="pay-row" onclick="openM('m-gift')"><span>Gifts 🎁</span></div>
     </div>
@@ -158,29 +157,31 @@
         <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-ton')"></i> TON</div>
         <div id="ton-connect-btn" style="display: flex; justify-content: center; margin: 40px 0;"></div>
         <div id="ton-pay-ui" style="display:none; flex-direction: column; height: 100%;">
-            <p style="color:var(--text-sec); font-size:14px; margin-bottom:10px;">Способ оплаты:</p>
+            <p style="color:var(--text-sec); font-size:14px; margin-bottom:10px;" data-ru="Способ оплаты:" data-en="Payment method:">Способ оплаты:</p>
             <div class="pay-row"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20"></div>
+            <p style="color:var(--text-sec); font-size:14px; margin-bottom:5px;" data-ru="Введите сумму" data-en="Enter amount">Введите сумму</p>
             <input type="number" id="t-val" value="100" min="0.1" max="9999">
             <div style="margin-top: auto; padding-bottom: 20px;">
-                <button class="btn-full" style="background: transparent; border: 1px solid #333; margin-bottom: 10px;" onclick="tonConnect.disconnect()">Disconnect wallet</button>
-                <button class="btn-full" onclick="sendT()">Пополнить</button>
+                <button class="btn-full" style="background: transparent; border: 1px solid #333; margin-bottom: 10px;" onclick="tonConnect.disconnect()" data-ru="Отвязать кошелек" data-en="Disconnect wallet">Отвязать кошелек</button>
+                <button class="btn-full" onclick="sendT()" data-ru="Пополнить" data-en="Deposit">Пополнить</button>
             </div>
         </div>
     </div>
 
     <div id="m-gift" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-gift')"></i> Пополнение</div>
-        <div class="step-item"><div class="step-n">1</div><div><b>Перейдите в нашего бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_relayer</p></div></div>
-        <div class="step-item"><div class="step-n">2</div><div><b>Отправьте ему NFT подарок</b><p style="color:var(--text-sec); font-size:14px;">Модель, фон и символ не учитываются!</p></div></div>
-        <div class="step-item"><div class="step-n">3</div><div><b>Баланс пополнится</b><p style="color:var(--text-sec); font-size:14px;">В течении нескольких секунд</p></div></div>
-        <div class="red-box">Отправляйте подарки только напрямую со своего аккаунта!</div>
-        <button class="btn-full" style="margin-top: auto;" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
+        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-gift')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
+        <div class="step-item"><div class="step-n">1</div><div><b data-ru="Перейдите в нашего бота" data-en="Go to our bot">Перейдите в нашего бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_relayer</p></div></div>
+        <div class="step-item"><div class="step-n">2</div><div><b data-ru="Отправьте ему NFT подарок" data-en="Send him NFT gift">Отправьте ему NFT подарок</b><p style="color:var(--text-sec); font-size:14px;" data-ru="Модель, фон и символ не учитываются!" data-en="Model and background don't matter!">Модель, фон и символ не учитываются!</p></div></div>
+        <div class="step-item"><div class="step-n">3</div><div><b data-ru="Баланс пополнится" data-en="Balance updated">Баланс пополнится</b><p style="color:var(--text-sec); font-size:14px;" data-ru="В течении нескольких секунд" data-en="Within a few seconds">В течении нескольких секунд</p></div></div>
+        <div class="red-box" data-ru="Отправляйте подарки только напрямую со своего аккаунта!" data-en="Send gifts only directly from your account!">Отправляйте подарки только напрямую со своего аккаунта!</div>
+        <button class="btn-full" style="margin-top: auto;" onclick="window.open('https://t.me/casemonk_relayer')" data-ru="Перейти" data-en="Go to bot">Перейти</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        let curL = 'ru';
         const u = tg.initDataUnsafe.user;
         if(u) {
             document.getElementById('u-tag').innerText = '@' + (u.username || 'user');
@@ -199,6 +200,7 @@
         function closeM(id){ document.getElementById(id).classList.remove('active'); }
 
         function setL(l){
+            curL = l;
             document.querySelectorAll('[data-ru]').forEach(el => el.innerText = (l === 'ru' ? el.dataset.ru : el.dataset.en));
             tg.HapticFeedback.selectionChanged();
         }
@@ -215,15 +217,33 @@
 
         async function sendT(){
             const v = parseFloat(document.getElementById('t-val').value);
-            if(v < 0.1 || v > 9999) return tg.showAlert("Min 0.1, Max 9999 TON");
+            if(v < 0.1 || v > 9999) return tg.showAlert(curL === 'ru' ? "Мин 0.1, Макс 9999 TON" : "Min 0.1, Max 9999 TON");
             const tx = { validUntil: Math.floor(Date.now()/1000)+60, messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (v*1e9).toString() }] };
             try { await tonConnect.sendTransaction(tx); } catch(e){}
         }
 
         const refLink = "https://t.me/casemonk_bot?start=" + (u ? u.id : "0");
-        function inviteFriend() { window.open(`https://t.me/share/url?url=${refLink}&text=CaseMonk`); }
-        function copyRef() { navigator.clipboard.writeText(refLink); tg.HapticFeedback.notificationOccurred('success'); }
-        function claimEarnings() { tg.showAlert("Минимум 5 TON"); }
+        
+        function inviteFriend() {
+            const adText = "CaseMonk - лучший бот по кейсам с подарками, начни играть прямо сейчас и выигрывай самые дорогие подарки! Пополнения в Gifts уже доступно.\n\n";
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(adText)}`);
+        }
+
+        function copyRef() { 
+            navigator.clipboard.writeText(refLink); 
+            tg.HapticFeedback.notificationOccurred('success'); 
+            tg.showAlert(curL === 'ru' ? "Ссылка скопирована!" : "Link copied!");
+        }
+
+        function claimEarnings() {
+            const earn = parseFloat(document.getElementById('ref-earn').innerText);
+            if(earn < 5) {
+                tg.showAlert(curL === 'ru' ? "Вывод от 5 TON" : "Withdraw from 5 TON");
+            } else {
+                tg.showAlert(curL === 'ru' ? "Средства зачислены на основной баланс!" : "Funds added to your main balance!");
+                document.getElementById('ref-earn').innerText = "0.00";
+            }
+        }
     </script>
 </body>
 </html>
