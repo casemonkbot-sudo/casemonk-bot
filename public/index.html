@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CaseMonk Releyer</title>
+    <title>CaseMonk</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,7 +12,7 @@
             --bg: #000000;
             --card: #0d0d0d;
             --accent: #007aff;
-            --text-gray: #8e8e93;
+            --text-sec: #8e8e93;
             --border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -26,330 +26,371 @@
             display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
 
-        .main-container { padding: 70px 20px 100px; height: 100vh; overflow-y: auto; display: none; flex-direction: column; }
+        .main-container { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: none; flex-direction: column; }
         .main-container.active { display: flex; }
 
-        /* CASE DROP DESIGN */
+        /* КЕЙСЫ */
         .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .case-item { 
-            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
-            border: var(--border); border-radius: 24px; padding: 25px;
-            text-align: center; position: relative;
+        .case-card { 
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: var(--border); border-radius: 24px; padding: 25px; text-align: center;
         }
-        .case-item img { width: 100px; filter: drop-shadow(0 10px 20px rgba(0,122,255,0.3)); }
-        .case-price { color: var(--accent); font-weight: 700; margin-top: 10px; }
+        .case-card img { width: 90px; filter: drop-shadow(0 10px 15px rgba(0,122,255,0.2)); }
 
-        /* ROULETTE & WIN BANNER */
-        .roulette-screen { display: none; flex-direction: column; position: relative; }
-        .roulette-screen.active { display: flex; }
-
-        #win-banner {
-            position: absolute; top: -10px; left: 0; right: 0;
-            background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
-            border: 1px solid var(--accent); border-radius: 20px;
-            padding: 12px 15px; z-index: 100; display: none; align-items: center; gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            animation: slideDown 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
-        #win-banner img { width: 50px; height: 50px; object-fit: contain; }
-        .win-txt { flex: 1; }
-        .win-actions { display: flex; gap: 8px; }
-        .mini-btn { padding: 8px 12px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; }
-
-        .roulette-box {
-            position: relative; width: 100%; height: 130px; background: #080808;
-            border-radius: 20px; border: var(--border); overflow: hidden; margin: 15px 0;
-        }
-        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--accent); }
-        #track { display: flex; align-items: center; height: 100%; transition: transform 7s cubic-bezier(0.15, 0, 0.05, 1); }
-        .slot { min-width: 100px; height: 100px; margin: 0 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .slot img { width: 70px; height: 70px; object-fit: contain; }
-
-        /* BUTTONS */
-        .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; margin-bottom: 10px; }
-        .btn-sec { background: #1c1c1e; border: var(--border); }
-
-        /* PROFILE & ITEMS */
-        .profile-card { text-align: center; margin-bottom: 25px; }
-        .user-avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); margin: 0 auto 10px; overflow: hidden; }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        /* РУЛЕТКА */
+        .roulette-view { display: none; position: relative; }
+        .roulette-view.active { display: block; }
         
-        .items-section { background: var(--card); border-radius: 24px; padding: 20px; border: var(--border); }
-        .items-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .item-box { aspect-ratio: 1; background: #151515; border-radius: 15px; border: var(--border); display: flex; align-items: center; justify-content: center; position: relative; }
-        .item-box img { width: 80%; height: 80%; object-fit: contain; }
+        .roulette-container {
+            position: relative; width: 100%; height: 130px; background: #080808;
+            border-radius: 20px; border: var(--border); overflow: hidden; margin: 20px 0;
+        }
+        .pointer { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--accent); }
+        #track { display: flex; align-items: center; height: 100%; transition: transform 7s cubic-bezier(0.15, 0, 0.05, 1); }
+        .r-slot { min-width: 100px; height: 100px; margin: 0 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .r-slot img { width: 75px; height: 75px; object-fit: contain; }
+
+        /* ЦЕНТРАЛЬНЫЙ БАННЕР ВЫИГРЫША */
+        #win-modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; background: rgba(13, 13, 13, 0.95); backdrop-filter: blur(20px);
+            border: 2px solid var(--accent); border-radius: 25px; padding: 20px;
+            z-index: 1000; display: none; flex-direction: column; align-items: center; text-align: center;
+            box-shadow: 0 0 40px rgba(0, 122, 255, 0.4);
+        }
+        #win-modal img { width: 120px; height: 120px; object-fit: contain; margin-bottom: 15px; }
+
+        /* КНОПКИ */
+        .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-sec { background: #1c1c1e; border: var(--border); }
+        .btn-half { flex: 1; padding: 15px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
+
+        /* ИНВЕНТАРЬ В ПРОФИЛЕ */
+        .inv-section { background: var(--card); border-radius: 20px; padding: 15px; border: var(--border); margin-top: 15px; }
+        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .inv-item { aspect-ratio: 1; background: #151515; border-radius: 12px; border: var(--border); display: flex; align-items: center; justify-content: center; }
+        .inv-item img { width: 80%; }
 
         /* NAV */
-        .nav-bar {
+        .nav-glass {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: rgba(25, 25, 25, 0.7); backdrop-filter: blur(20px);
-            padding: 10px 30px; border-radius: 35px; border: var(--border);
+            background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(25px);
+            padding: 12px 30px; border-radius: 35px; border: var(--border);
             display: flex; gap: 40px; z-index: 100;
         }
-        .nav-tab { color: var(--text-gray); text-align: center; font-size: 10px; }
-        .nav-tab.active { color: #fff; }
-        .nav-tab i { font-size: 18px; display: block; margin-bottom: 3px; }
+        .nav-item { color: var(--text-sec); text-align: center; font-size: 10px; }
+        .nav-item.active { color: #fff; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
 
         /* MODALS */
         .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 25px; }
         .modal.active { display: flex; }
-        .instr-step { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; }
-        .step-id { width: 26px; height: 26px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; }
-        .alert-red { background: rgba(255, 59, 48, 0.1); color: #ff3b30; padding: 15px; border-radius: 15px; font-size: 12px; border: 1px solid rgba(255, 59, 48, 0.2); margin-bottom: 20px; }
+        .red-alert { background: rgba(255, 59, 48, 0.1); color: #ff3b30; padding: 15px; border-radius: 15px; font-size: 13px; text-align: center; border: 1px solid rgba(255, 59, 48, 0.2); margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="balance-chip" onclick="openM('m-refill')">
+        <div class="balance-chip" onclick="openM('m-sel')">
             <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
-            <span id="bal-val">0.00</span>
-            <i class="fa-solid fa-circle-plus" style="color: var(--accent);"></i>
+            <span id="bal-val" style="font-weight:800;">0.00</span>
+            <i class="fa-solid fa-plus-circle" style="color: var(--accent);"></i>
         </div>
     </div>
 
-    <div id="page-cases" class="main-container active">
-        <div id="view-grid" class="case-grid">
-            <div class="case-item" onclick="enterCase()">
+    <div id="p-cases" class="main-container active">
+        <div id="case-list" class="case-grid">
+            <div class="case-card" onclick="openCaseView()">
                 <img src="case_drop.png">
                 <div style="font-weight:800; margin-top:10px;">DROP</div>
-                <div class="case-price">10 TON</div>
+                <div style="color:var(--accent); font-weight:600;">10 TON</div>
             </div>
         </div>
 
-        <div id="view-roulette" class="roulette-screen">
-            <div id="win-banner">
+        <div id="roulette-view" class="roulette-view">
+            <div id="win-modal">
                 <img id="win-img" src="">
-                <div class="win-txt">
-                    <b id="win-name" style="font-size:13px;">Item</b><br>
-                    <span id="win-price" style="color:var(--accent); font-size:11px;">0 TON</span>
+                <h3 id="win-name">Item Name</h3>
+                <div id="win-price" style="color:var(--accent); font-size:20px; font-weight:800; margin:10px 0 20px;">0.00 TON</div>
+                <div id="win-btns" style="display:flex; gap:10px; width:100%;">
+                    <button class="btn-half" style="background:var(--accent); color:#fff;" onclick="claim('sell')" data-ru="ПРОДАТЬ" data-en="SELL">ПРОДАТЬ</button>
+                    <button class="btn-half" style="background:#333; color:#fff;" onclick="claim('keep')" data-ru="ОСТАВИТЬ" data-en="KEEP">ОСТАВИТЬ</button>
                 </div>
-                <div class="win-actions">
-                    <button class="mini-btn" style="background:var(--accent); color:#fff" onclick="handleWin('sell')" data-ru="ПРОДАТЬ" data-en="SELL">ПРОДАТЬ</button>
-                    <button class="mini-btn" style="background:#222; color:#fff" onclick="handleWin('keep')" data-ru="ОСТАВИТЬ" data-en="KEEP">ОСТАВИТЬ</button>
-                </div>
+                <p id="demo-label" style="color:#ff3b30; font-weight:700; margin-top:10px; display:none;">DEMO MODE</p>
             </div>
 
             <div style="display:flex; align-items:center; margin-bottom:15px;">
-                <i class="fa-solid fa-arrow-left" onclick="exitCase()" style="font-size:20px;"></i>
-                <span style="margin-left:15px; font-weight:700;" data-ru="Кейс DROP" data-en="DROP Case">Кейс DROP</span>
+                <i class="fa-solid fa-chevron-left" onclick="closeCaseView()" style="font-size:20px;"></i>
+                <span style="margin-left:15px; font-weight:700; font-size:20px;" data-ru="Кейс DROP" data-en="DROP Case">Кейс DROP</span>
             </div>
 
-            <div class="roulette-box">
+            <div class="roulette-container">
                 <div class="pointer"></div>
                 <div id="track"></div>
             </div>
 
-            <button class="btn" onclick="startSpin(false)" data-ru="ОТКРЫТЬ ЗА 10 TON" data-en="OPEN FOR 10 TON">ОТКРЫТЬ ЗА 10 TON</button>
-            <button class="btn btn-sec" onclick="startSpin(true)" data-ru="ДЕМО РЕЖИМ" data-en="DEMO MODE">ДЕМО РЕЖИМ</button>
+            <button class="btn" id="btn-open-real" onclick="spin(false)" data-ru="ОТКРЫТЬ ЗА 10 TON" data-en="OPEN FOR 10 TON">ОТКРЫТЬ ЗА 10 TON</button>
+            <button class="btn btn-sec" onclick="spin(true)" data-ru="ДЕМО РЕЖИМ" data-en="DEMO MODE">ДЕМО РЕЖИМ</button>
 
-            <h4 style="margin: 20px 0 10px; font-size: 13px; color: var(--text-gray);" data-ru="Содержимое:" data-en="Contains:">Содержимое:</h4>
-            <div id="case-content" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;"></div>
+            <h4 style="margin:25px 0 10px; color:var(--text-sec);" data-ru="Содержимое кейса:" data-en="Case Items:">Содержимое кейса:</h4>
+            <div id="case-preview" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;"></div>
         </div>
     </div>
 
-    <div id="page-profile" class="main-container">
-        <div class="profile-card">
-            <div class="user-avatar"><img id="u-pic" src=""></div>
+    <div id="p-bonus" class="main-container">
+        <h2 data-ru="Бонусы" data-en="Bonuses">Бонусы</h2>
+        <div style="background:var(--card); padding:20px; border-radius:24px; border:var(--border); margin-top:20px;">
+            <p style="color:var(--text-sec); font-size:14px; margin-bottom:20px;" data-ru="Приглашайте друзей и получайте 15% от всех их пополнений на свой баланс!" data-en="Invite friends and get 15% from all their deposits to your balance!">Приглашайте друзей и получайте 15% от всех их пополнений на свой баланс!</p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="margin:0;" onclick="shareRef()" data-ru="Пригласить" data-en="Invite">Пригласить</button>
+                <button class="btn btn-sec" style="width:60px; margin:0;" onclick="copyRef()"><i class="fa-regular fa-copy"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="p-profile" class="main-container">
+        <div style="text-align:center;">
+            <div style="width:85px; height:85px; border-radius:50%; background:var(--accent); margin:0 auto 10px; padding:3px;">
+                <img id="u-pic" src="" style="width:100%; height:100%; border-radius:50%; border:3px solid #000;">
+            </div>
             <h2 id="u-name">User</h2>
-            <p id="u-tag" style="color:var(--text-gray); font-size:14px;">@user</p>
+            <p id="u-tag" style="color:var(--text-sec); font-size:14px; margin-bottom:20px;">@username</p>
         </div>
 
-        <div class="items-section">
-            <h3 style="font-size:16px;" data-ru="Мои предметы" data-en="My Items">Мои предметы</h3>
-            <div id="inventory" class="items-grid">
-                </div>
+        <div class="inv-section">
+            <h3 style="font-size:15px;" data-ru="Мои предметы" data-en="My Items">Мои предметы</h3>
+            <div id="inventory-grid" class="inv-grid"></div>
         </div>
 
         <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-sec" onclick="changeLang('ru')">Русский</button>
-            <button class="btn btn-sec" onclick="changeLang('en')">English</button>
+            <button class="btn btn-sec" onclick="setLang('ru')">Русский</button>
+            <button class="btn btn-sec" onclick="setLang('en')">English</button>
         </div>
         <button class="btn" style="margin-top:10px;" onclick="window.open('https://t.me/casemonk_sup_robot')"><i class="fa-solid fa-headset"></i> <span data-ru="Поддержка" data-en="Support">Поддержка</span></button>
     </div>
 
-    <div id="page-bonus" class="main-container">
-        <h2 data-ru="Рефералы" data-en="Referrals">Рефералы</h2>
-        <div style="background:var(--card); border:var(--border); border-radius:24px; padding:20px; margin-top:20px;">
-            <p style="color:var(--text-gray); line-height:1.4; margin-bottom:20px;" data-ru="Приглашайте друзей и получайте 15% от их пополнений!" data-en="Invite friends and get 15% from their deposits!">Приглашайте друзей и получайте 15% от их пополнений!</p>
-            <button class="btn" onclick="invite()" data-ru="Пригласить" data-en="Invite">Пригласить</button>
-        </div>
+    <div class="nav-glass">
+        <div class="nav-item active" onclick="nav('cases', this)"><i class="fa-solid fa-box-open"></i><span data-ru="Кейсы" data-en="Cases">Кейсы</span></div>
+        <div class="nav-item" onclick="nav('bonus', this)"><i class="fa-solid fa-gift"></i><span data-ru="Бонусы" data-en="Bonus">Бонусы</span></div>
+        <div class="nav-item" onclick="nav('profile', this)"><i class="fa-solid fa-user-circle"></i><span data-ru="Профиль" data-en="Profile">Профиль</span></div>
     </div>
 
-    <div class="nav-bar">
-        <div class="nav-tab active" onclick="nav('cases', this)"><i class="fa-solid fa-box-open"></i><span data-ru="Кейсы" data-en="Cases">Кейсы</span></div>
-        <div class="nav-tab" onclick="nav('bonus', this)"><i class="fa-solid fa-users"></i><span data-ru="Бонусы" data-en="Bonus">Бонусы</span></div>
-        <div class="nav-tab" onclick="nav('profile', this)"><i class="fa-solid fa-user-circle"></i><span data-ru="Профиль" data-en="Profile">Профиль</span></div>
-    </div>
-
-    <div id="m-refill" class="modal">
-        <div style="display:flex; align-items:center; margin-bottom:25px;">
-            <i class="fa-solid fa-xmark" onclick="closeM('m-refill')" style="font-size:20px;"></i>
+    <div id="m-sel" class="modal">
+        <div style="display:flex; align-items:center; margin-bottom:30px;">
+            <i class="fa-solid fa-xmark" onclick="closeM('m-sel')" style="font-size:22px;"></i>
             <span style="margin-left:15px; font-weight:700;" data-ru="Пополнение" data-en="Deposit">Пополнение</span>
         </div>
-        <button class="btn btn-sec" style="display:flex; justify-content:space-between" onclick="openM('m-ton')">TON Coin <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20"></button>
-        <button class="btn btn-sec" style="display:flex; justify-content:space-between" onclick="openM('m-gift')">Gifts 🎁</button>
+        <button class="btn btn-sec" style="justify-content:space-between;" onclick="openM('m-ton')">TON Coin <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20"></button>
+        <button class="btn btn-sec" style="justify-content:space-between;" onclick="openM('m-gift')">Telegram Gifts 🎁</button>
     </div>
 
     <div id="m-ton" class="modal">
-        <div style="display:flex; align-items:center; margin-bottom:25px;">
+        <div style="display:flex; align-items:center; margin-bottom:30px;">
             <i class="fa-solid fa-chevron-left" onclick="closeM('m-ton')"></i>
             <span style="margin-left:15px; font-weight:700;">TON Connect</span>
         </div>
         <div id="ton-connect-btn" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
-        <div id="ton-ui" style="display:none; flex-direction:column;">
-            <input type="number" id="t-input" value="1.0" step="0.1" style="background:#151515; border:1px solid #333; padding:18px; border-radius:15px; color:#fff; text-align:center; font-size:20px; margin-bottom:15px;">
-            <button class="btn" onclick="payTON()" data-ru="Пополнить" data-en="Refill">Пополнить</button>
+        <div id="ton-pay-ui" style="display:none; flex-direction:column;">
+            <input type="number" id="t-amount" value="1.0" step="0.1" style="background:#1c1c1e; border:1px solid #333; padding:20px; border-radius:15px; color:#fff; text-align:center; font-size:20px; margin-bottom:20px;">
+            <button class="btn" onclick="sendTON()" data-ru="Пополнить" data-en="Deposit">Пополнить</button>
             <button class="btn btn-sec" onclick="tonConnect.disconnect()">Logout</button>
         </div>
     </div>
 
     <div id="m-gift" class="modal">
-        <div style="display:flex; align-items:center; margin-bottom:25px;">
+        <div style="display:flex; align-items:center; margin-bottom:30px;">
             <i class="fa-solid fa-chevron-left" onclick="closeM('m-gift')"></i>
-            <span style="margin-left:15px; font-weight:700;">Telegram Gifts</span>
+            <span style="margin-left:15px; font-weight:700;">Gifts Refill</span>
         </div>
-        <div class="instr-step"><div class="step-id">1</div><div data-ru="Перейдите в бота @casemonk_robot" data-en="Go to @casemonk_robot">Перейдите в бота @casemonk_robot</div></div>
-        <div class="instr-step"><div class="step-id">2</div><div data-ru="Отправьте подарок из коллекции" data-en="Send a gift from collection">Отправьте подарок из коллекции</div></div>
-        <div class="instr-step"><div class="step-id">3</div><div data-ru="Баланс обновится мгновенно" data-en="Balance updates instantly">Баланс обновится мгновенно</div></div>
-        <div class="alert-red" data-ru="Отправляйте подарки только напрямую!" data-en="Only direct gift transfers are accepted!">Отправляйте подарки только напрямую!</div>
+        <div style="display:flex; gap:15px; margin-bottom:20px;">
+            <div style="width:28px; height:28px; background:#333; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">1</div>
+            <div data-ru="Зайдите в бота @casemonk_robot" data-en="Go to @casemonk_robot">Зайдите в бота @casemonk_robot</div>
+        </div>
+        <div style="display:flex; gap:15px; margin-bottom:20px;">
+            <div style="width:28px; height:28px; background:#333; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">2</div>
+            <div data-ru="Отправьте NFT подарок из вашей коллекции" data-en="Send an NFT gift from your collection">Отправьте NFT подарок из вашей коллекции</div>
+        </div>
+        <div style="display:flex; gap:15px; margin-bottom:20px;">
+            <div style="width:28px; height:28px; background:#333; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">3</div>
+            <div data-ru="Баланс пополнится автоматически" data-en="Balance will be updated automatically">Баланс пополнится автоматически</div>
+        </div>
+        <div class="red-alert" data-ru="Внимание! Принимаются только прямые переводы подарков." data-en="Attention! Only direct gift transfers are accepted.">Внимание! Принимаются только прямые переводы подарков.</div>
         <button class="btn" onclick="window.open('https://t.me/casemonk_robot')" data-ru="Перейти к боту" data-en="Go to Bot">Перейти к боту</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const user = tg.initDataUnsafe.user;
+        let balance = 0.00;
         let myItems = [];
+        let isDemo = false;
 
-        const DROP_ITEMS = [
-            { name: 'Nail Bracelet', price: 115.83, chance: 0.1, file: '1000002213.png' },
-            { name: 'Bonded Ring', price: 40.10, chance: 0.3, file: '1000002214.png' },
-            { name: 'Signet Ring', price: 32.69, chance: 1, file: '1000002215.png' },
-            { name: 'Diamond Ring', price: 26.59, chance: 2.5, file: '1000002216.png' },
-            { name: 'Cupid Charm', price: 20.19, chance: 3.5, file: '1000002217.png' },
-            { name: 'Crystal Ball', price: 11.87, chance: 35, file: '1000002294.jpg' },
-            { name: 'Love Candle', price: 10.04, chance: 40, file: '1000002295.jpg' },
-            { name: 'Jolly Chimp', price: 6.46, chance: 45, file: '1000002297.jpg' },
-            { name: 'Light Sword', price: 5.40, chance: 50, file: '1000002291.jpg' },
-            { name: 'Snoop Dogg', price: 4.95, chance: 55, file: '1000002223.png' }
+        const ITEMS = [
+            { id: 'nail', name: 'Nail Bracelet', price: 115.83, chance: 1, file: 'NailBracelet-1.png' },
+            { id: 'bonded', name: 'Bonded Ring', price: 40.10, chance: 3, file: 'BondedRing-1.png' },
+            { id: 'signet', name: 'Signet Ring', price: 32.69, chance: 5, file: 'SignetRing-1.png' },
+            { id: 'diamond', name: 'Diamond Ring', price: 26.59, chance: 10, file: 'DiamondRing-1.png' },
+            { id: 'cupid', name: 'Cupid Charm', price: 20.19, chance: 15, file: 'CupidCharm-1.png' },
+            { id: 'ball', name: 'Crystal Ball', price: 11.87, chance: 25, file: 'CrystalBall-1.png' },
+            { id: 'candle', name: 'Love Candle', price: 10.04, chance: 30, file: 'LoveCandle-1.png' },
+            { id: 'chimp', name: 'Jolly Chimp', price: 6.46, chance: 40, file: 'JollyChimp-1.png' },
+            { id: 'sword', name: 'Light Sword', price: 5.40, chance: 50, file: 'LightSword-1.png' },
+            { id: 'snoop', name: 'Snoop Dogg', price: 4.95, chance: 60, file: 'SnoopDogg-1.png' }
         ];
 
-        if(user) {
-            document.getElementById('u-name').innerText = user.first_name;
-            document.getElementById('u-tag').innerText = '@' + (user.username || 'user');
-            if(user.photo_url) document.getElementById('u-pic').src = user.photo_url;
+        // Init User
+        const u = tg.initDataUnsafe.user;
+        if(u) {
+            document.getElementById('u-name').innerText = u.first_name;
+            document.getElementById('u-tag').innerText = '@' + (u.username || 'user');
+            if(u.photo_url) document.getElementById('u-pic').src = u.photo_url;
         }
 
-        function changeLang(l) {
+        function setLang(l) {
             document.querySelectorAll('[data-ru]').forEach(el => {
                 el.innerText = (l === 'ru' ? el.dataset.ru : el.dataset.en);
             });
             tg.HapticFeedback.selectionChanged();
         }
 
-        function enterCase() {
-            document.getElementById('view-grid').style.display = 'none';
-            document.getElementById('view-roulette').classList.add('active');
-            const cont = document.getElementById('case-content');
-            cont.innerHTML = '';
-            DROP_ITEMS.forEach(i => {
-                cont.innerHTML += `<div style="background:var(--card); padding:8px; border-radius:12px; text-align:center; border:var(--border)">
-                    <img src="${i.file}" style="width:40px; height:40px; object-fit:contain"><br>
-                    <span style="font-size:9px; color:var(--accent)">${i.price}</span>
-                </div>`;
+        function openCaseView() {
+            document.getElementById('case-list').style.display = 'none';
+            document.getElementById('roulette-view').classList.add('active');
+            const preview = document.getElementById('case-preview');
+            preview.innerHTML = '';
+            ITEMS.forEach(i => {
+                preview.innerHTML += `
+                    <div style="background:var(--card); padding:10px; border-radius:15px; text-align:center; border:var(--border);">
+                        <img src="${i.file}" style="width:45px; height:45px; object-fit:contain;"><br>
+                        <span style="font-size:10px; font-weight:700; color:var(--accent);">${i.price} <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="8"></span>
+                    </div>`;
             });
         }
 
-        function exitCase() {
-            document.getElementById('view-grid').style.display = 'grid';
-            document.getElementById('view-roulette').classList.remove('active');
-            document.getElementById('win-banner').style.display = 'none';
+        function closeCaseView() {
+            document.getElementById('case-list').style.display = 'grid';
+            document.getElementById('roulette-view').classList.remove('active');
+            document.getElementById('win-modal').style.display = 'none';
         }
 
-        let spinning = false;
+        let isSpinning = false;
         let wonItem = null;
 
-        function startSpin(demo) {
-            if(spinning) return;
-            spinning = true;
-            document.getElementById('win-banner').style.display = 'none';
+        function spin(demo) {
+            if(isSpinning) return;
+            if(!demo && balance < 10) {
+                tg.showAlert("Недостаточно баланса! Пополните счет на 10 TON.");
+                return;
+            }
+
+            isSpinning = true;
+            isDemo = demo;
+            if(!demo) {
+                balance -= 10;
+                document.getElementById('bal-val').innerText = balance.toFixed(2);
+            }
+
+            document.getElementById('win-modal').style.display = 'none';
             const track = document.getElementById('track');
             track.style.transition = 'none';
             track.style.transform = 'translateX(0)';
             track.innerHTML = '';
 
+            // Generate track
             for(let i=0; i<60; i++) {
-                const r = DROP_ITEMS[Math.floor(Math.random()*DROP_ITEMS.length)];
-                track.innerHTML += `<div class="slot"><img src="${r.file}"></div>`;
+                const rand = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+                track.innerHTML += `<div class="r-slot"><img src="${rand.file}"></div>`;
             }
 
-            wonItem = demo ? DROP_ITEMS[0] : getResult();
+            // Logic for winner
+            wonItem = calculateWinner();
             track.children[50].innerHTML = `<img src="${wonItem.file}">`;
 
             setTimeout(() => {
                 track.style.transition = 'transform 7s cubic-bezier(0.15, 0, 0.05, 1)';
-                const shift = (50 * 110) - (track.parentElement.offsetWidth / 2) + 55;
-                track.style.transform = `translateX(-${shift}px)`;
+                const center = track.parentElement.offsetWidth / 2;
+                const target = (50 * 110) - center + 55;
+                track.style.transform = `translateX(-${target}px)`;
             }, 50);
 
-            setTimeout(() => {
-                document.getElementById('win-img').src = wonItem.file;
-                document.getElementById('win-name').innerText = wonItem.name;
-                document.getElementById('win-price').innerText = wonItem.price + ' TON';
-                document.getElementById('win-banner').style.display = 'flex';
-                spinning = false;
-            }, 7200);
+            setTimeout(showWin, 7200);
         }
 
-        function getResult() {
-            const total = DROP_ITEMS.reduce((s, i) => s + i.chance, 0);
-            let r = Math.random() * total;
-            for(let i of DROP_ITEMS) { if(r < i.chance) return i; r -= i.chance; }
-        }
-
-        function handleWin(act) {
-            if(act === 'keep') {
-                myItems.push(wonItem);
-                updateInv();
+        function calculateWinner() {
+            const totalChance = ITEMS.reduce((s, i) => s + i.chance, 0);
+            let r = Math.random() * totalChance;
+            for(let item of ITEMS) {
+                if(r < item.chance) return item;
+                r -= item.chance;
             }
-            document.getElementById('win-banner').style.display = 'none';
-            tg.showAlert(act === 'sell' ? 'Баланс пополнен!' : 'Добавлено в предметы.');
+            return ITEMS[ITEMS.length - 1];
         }
 
-        function updateInv() {
-            const grid = document.getElementById('inventory');
+        function showWin() {
+            document.getElementById('win-img').src = wonItem.file;
+            document.getElementById('win-name').innerText = wonItem.name;
+            document.getElementById('win-price').innerText = wonItem.price + ' TON';
+            document.getElementById('win-modal').style.display = 'flex';
+            document.getElementById('demo-label').style.display = isDemo ? 'block' : 'none';
+            document.getElementById('win-btns').style.display = isDemo ? 'none' : 'flex';
+            
+            if(isDemo) {
+                setTimeout(() => { document.getElementById('win-modal').style.display = 'none'; }, 3000);
+            }
+            isSpinning = false;
+        }
+
+        function claim(act) {
+            if(act === 'sell') {
+                balance += wonItem.price;
+                document.getElementById('bal-val').innerText = balance.toFixed(2);
+                tg.showAlert(`Продано! +${wonItem.price} TON на баланс.`);
+            } else {
+                myItems.push(wonItem);
+                updateInventory();
+                tg.showAlert("Предмет добавлен в ваш профиль!");
+            }
+            document.getElementById('win-modal').style.display = 'none';
+        }
+
+        function updateInventory() {
+            const grid = document.getElementById('inventory-grid');
             grid.innerHTML = '';
             myItems.forEach(i => {
-                grid.innerHTML += `<div class="item-box"><img src="${i.file}"></div>`;
+                grid.innerHTML += `<div class="inv-item"><img src="${i.file}"></div>`;
             });
         }
 
-        // TON
+        // TON Connect
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json',
             buttonRootId: 'ton-connect-btn'
         });
-        tonConnect.onStatusChange(w => { document.getElementById('ton-ui').style.display = w ? 'flex' : 'none'; });
+        tonConnect.onStatusChange(w => {
+            document.getElementById('ton-pay-ui').style.display = w ? 'flex' : 'none';
+        });
 
-        async function payTON() {
-            const val = document.getElementById('t-input').value;
-            const tx = { validUntil: Math.floor(Date.now()/1000)+60, messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (val*1e9).toString() }] };
+        async function sendTON() {
+            const amt = document.getElementById('t-amount').value;
+            const tx = { 
+                validUntil: Math.floor(Date.now()/1000)+60, 
+                messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (amt*1e9).toString() }] 
+            };
             try { await tonConnect.sendTransaction(tx); } catch(e){}
         }
 
         function nav(p, el) {
             document.querySelectorAll('.main-container').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('page-' + p).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('p-' + p).classList.add('active');
             el.classList.add('active');
             tg.HapticFeedback.selectionChanged();
         }
 
         function openM(id){ document.getElementById(id).classList.add('active'); }
         function closeM(id){ document.getElementById(id).classList.remove('active'); }
-        function invite() { window.open("https://t.me/share/url?url=https://t.me/casemonk_robot?start=" + user.id); }
+        function shareRef() { window.open("https://t.me/share/url?url=https://t.me/casemonk_robot?start=" + (u ? u.id : "0")); }
+        function copyRef() { navigator.clipboard.writeText("https://t.me/casemonk_robot?start=" + (u ? u.id : "0")); tg.showAlert("Ссылка скопирована!"); }
     </script>
 </body>
 </html>
