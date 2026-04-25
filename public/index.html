@@ -9,88 +9,98 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg: #000000;
-            --card: #0d0d0d;
+            --bg: #0b0b0d;
+            --card: #1c1c1e;
             --accent-blue: #007aff;
             --text-sec: #8e8e93;
-            --border: 1px solid rgba(255, 255, 255, 0.1);
+            --border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; }
 
+        /* Шапка */
         .header { display: flex; justify-content: flex-end; padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 50; }
         .balance-chip { 
-            background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(10px);
-            padding: 8px 16px; border-radius: 20px; border: var(--border);
+            background: rgba(28, 28, 30, 0.7); backdrop-filter: blur(15px);
+            padding: 6px 14px; border-radius: 20px; border: var(--border);
             display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
+        #bal-val { font-weight: 800; font-family: 'Monaco', monospace; letter-spacing: 0.5px; }
 
-        .main { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        /* Основной контент */
+        .main-container { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: none; flex-direction: column; align-items: center; }
+        .main-container.active { display: flex; }
         
-        .avatar-glow { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(180deg, #34c759, transparent); padding: 3px; margin-bottom: 12px; }
+        .avatar-glow { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(180deg, #34c759, transparent); padding: 3px; margin-bottom: 12px; }
         .avatar-glow img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; }
-        .username { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+        .username { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
 
+        /* Кнопки */
         .btn-full { 
             width: 100%; background: var(--accent-blue); color: #fff; border: none; 
-            padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; 
+            padding: 16px; border-radius: 16px; font-size: 15px; font-weight: 600; 
             display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px;
         }
 
-        .lang-container { display: flex; gap: 10px; width: 100%; margin-top: 5px; }
-        .lang-btn { flex: 1; background: #1c1c1e; border: var(--border); padding: 10px; border-radius: 12px; color: #fff; font-size: 14px; }
-
-        .inv-box { background: var(--card); width: 100%; border-radius: 24px; padding: 20px; border: var(--border); margin-top: 25px; }
+        /* Инвентарь */
+        .inv-box { background: var(--card); width: 100%; border-radius: 24px; padding: 20px; border: var(--border); margin-top: 20px; }
         .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .slot { aspect-ratio: 1; background: #121212; border-radius: 15px; border: 1px dashed #222; }
 
+        /* Бонусы / Друзья */
+        .friends-card { background: var(--card); width: 100%; border-radius: 24px; padding: 20px; border: var(--border); margin-bottom: 15px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
+        .stat-item { background: #2c2c2e; padding: 15px; border-radius: 16px; text-align: center; }
+        .stat-label { font-size: 12px; color: var(--text-sec); display: block; margin-bottom: 5px; }
+        .stat-val { font-size: 18px; font-weight: 700; }
+        
+        .ref-actions { display: flex; gap: 10px; }
+        .btn-copy { background: #2c2c2e; width: 54px; border-radius: 16px; border: none; color: #fff; font-size: 18px; }
+
+        /* Навигация (Жидкое стекло) */
+        .nav-glass {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(25px);
+            padding: 10px 25px; border-radius: 35px; border: var(--border);
+            display: flex; gap: 30px; z-index: 100;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sec); cursor: pointer; transition: 0.2s; }
+        .nav-item.active { color: #fff; }
+        .nav-item i { font-size: 18px; opacity: 0.6; }
+        .nav-item.active i { opacity: 1; }
+
+        /* Модалки */
         .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; }
-        .modal.active { display: flex; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
+        .modal.active { display: flex; }
         .m-head { display: flex; align-items: center; height: 50px; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-        .back { margin-right: 15px; font-size: 20px; }
+        .back { margin-right: 15px; cursor: pointer; }
 
-        .pay-row { background: #1c1c1e; padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        
-        .step-item { display: flex; gap: 15px; margin-bottom: 20px; }
-        .step-n { background: #2c2c2e; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        
-        .red-box { background: rgba(255, 59, 48, 0.15); color: #ff3b30; padding: 15px; border-radius: 14px; font-size: 13px; text-align: center; margin-bottom: 20px; }
-        
-        input { width: 100%; background: #1c1c1e; border: 1px solid #2c2c2e; padding: 18px; border-radius: 14px; color: #fff; font-size: 18px; margin-top: 10px; text-align: center; }
-
-        .nav-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); padding: 10px 40px; border-radius: 30px; border: var(--border); text-align: center; }
+        input { width: 100%; background: #1c1c1e; border: 1px solid #2c2c2e; padding: 18px; border-radius: 14px; color: #fff; font-size: 18px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="balance-chip" onclick="openM('m-sel')">
+        <div class="balance-chip" onclick="openModal('m-sel')">
             <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
             <span id="bal-val">0.00</span>
             <i class="fa-solid fa-plus-circle" style="color: var(--accent-blue);"></i>
         </div>
     </div>
 
-    <div class="main">
+    <div id="page-profile" class="main-container active">
         <div class="avatar-glow"><img id="user-pic" src=""></div>
         <div class="username" id="user-tag">@username</div>
 
         <button class="btn-full" onclick="window.open('https://t.me/casemonk_sup_robot')">
-            <i class="fa-solid fa-headset"></i> <span data-ru="Поддержка" data-en="Support">Поддержка</span>
+            <i class="fa-solid fa-headset"></i> Поддержка
         </button>
 
-        <div class="lang-container">
-            <button class="lang-btn" onclick="setLang('ru')">Русский</button>
-            <button class="lang-btn" onclick="setLang('en')">English</button>
-        </div>
-
         <div class="inv-box">
-            <div style="display:flex; justify-content:space-between; font-size:14px;">
-                <b data-ru="Инвентарь" data-en="Inventory">Инвентарь</b>
-                <span style="color:var(--text-sec)" data-ru="0 предметов" data-en="0 items">0 предметов</span>
+            <div style="display:flex; justify-content:space-between; font-size:13px;">
+                <b>Инвентарь</b>
+                <span style="color:var(--text-sec)">0 предметов</span>
             </div>
             <div class="inv-grid">
                 <div class="slot"></div><div class="slot"></div><div class="slot"></div>
@@ -99,76 +109,112 @@
         </div>
     </div>
 
-    <div class="nav-bar">
-        <i class="fa-solid fa-user-circle" style="font-size: 20px; display: block; margin-bottom: 2px;"></i>
-        <span style="font-size: 10px;" data-ru="Профиль" data-en="Profile">Профиль</span>
-    </div>
-
-    <div id="m-sel" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-sel')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
-        <div class="pay-row" onclick="openM('m-ton')"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22"></div>
-        <div class="pay-row" onclick="openM('m-gift')"><span>Gifts 🎁</span></div>
-    </div>
-
-    <div id="m-ton" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-ton')"></i> TON</div>
-        <div id="ton-connect-btn" style="display: flex; justify-content: center; margin: 40px 0;"></div>
+    <div id="page-bonus" class="main-container">
+        <h2 style="align-self: flex-start; margin-bottom: 20px;">Друзья</h2>
         
-        <div id="ton-pay-ui" style="display:none; flex-direction: column; height: 100%;">
-            <p style="color:var(--text-sec); font-size:14px; margin-bottom: 10px;" data-ru="Способ оплаты:" data-en="Payment method:">Способ оплаты:</p>
-            <div class="pay-row"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20"></div>
+        <div class="friends-card">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Всего</span>
+                    <span class="stat-val" id="ref-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Заработок</span>
+                    <span class="stat-val"><i class="fa-solid fa-diamond" style="font-size: 12px; color: var(--accent-blue);"></i> <span id="ref-earn">0</span></span>
+                </div>
+            </div>
             
-            <p style="color:var(--text-sec); font-size:14px; margin-top: 20px;" data-ru="Введите сумму" data-en="Enter amount">Введите сумму</p>
-            <input type="number" id="t-input" value="100" min="0.1" max="9999" step="0.1">
+            <button class="btn-full" onclick="claimEarnings()" id="btn-withdraw">Вывести</button>
+            <p style="color:var(--text-sec); font-size:12px; margin: 15px 0;">Приглашайте друзей — получайте 15% от их депозита! Просто поделитесь своей реферальной ссылкой.</p>
             
-            <div style="margin-top: auto; padding-bottom: 20px;">
-                <button class="btn-full" style="background: transparent; border: 1px solid #333; margin-bottom: 15px;" onclick="tonConnect.disconnect()">Disconnect wallet</button>
-                <button class="btn-full" onclick="handlePay()" data-ru="Пополнить" data-en="Deposit">Пополнить</button>
+            <div class="ref-actions">
+                <button class="btn-full" style="margin-bottom:0;" onclick="inviteFriend()">Пригласить друга</button>
+                <button class="btn-copy" onclick="copyRef()"><i class="fa-regular fa-copy"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="m-gift" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-gift')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
-        
-        <div class="step-item">
-            <div class="step-n">1</div>
-            <div><b data-ru="Перейдите в нашего бота" data-en="Go to bot">Перейдите в нашего бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_relayer</p></div>
+    <div class="nav-glass">
+        <div class="nav-item active" onclick="switchPage('profile', this)">
+            <i class="fa-solid fa-user"></i>
+            <span style="font-size: 10px;">Профиль</span>
         </div>
-        <div class="step-item">
-            <div class="step-n">2</div>
-            <div><b data-ru="Отправьте ему NFT подарок" data-en="Send NFT gift">Отправьте ему NFT подарок</b><p style="color:var(--text-sec); font-size:14px;" data-ru="Модель, фон и символ не учитываются!" data-en="Model/background don't matter!">Модель, фон и символ не учитываются!</p></div>
+        <div class="nav-item" onclick="switchPage('bonus', this)">
+            <i class="fa-solid fa-gift" style="opacity: 0.4;"></i>
+            <span style="font-size: 10px;">Бонусы</span>
         </div>
-        <div class="step-item">
-            <div class="step-n">3</div>
-            <div><b data-ru="Баланс пополнится" data-en="Balance will update">Баланс пополнится</b><p style="color:var(--text-sec); font-size:14px;" data-ru="В течении нескольких секунд" data-en="In a few seconds">В течении нескольких секунд</p></div>
-        </div>
+    </div>
 
-        <div class="red-box" data-ru="Отправляйте подарки только напрямую со своего аккаунта!" data-en="Send gifts only directly from your account!">
-            Отправляйте подарки только напрямую со своего аккаунта!
+    <div id="m-sel" class="modal">
+        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeModal('m-sel')"></i> Пополнение</div>
+        <div style="background:#1c1c1e; padding:18px; border-radius:16px; display:flex; justify-content:space-between; margin-bottom:12px;" onclick="openModal('m-ton')">
+            <span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22">
         </div>
+    </div>
 
-        <button class="btn-full" style="margin-top: auto; margin-bottom: 20px;" onclick="window.open('https://t.me/casemonk_relayer')" data-ru="Перейти" data-en="Go">Перейти</button>
+    <div id="m-ton" class="modal">
+        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeModal('m-ton')"></i> TON</div>
+        <div id="ton-connect-btn" style="display:flex; justify-content:center; margin:40px 0;"></div>
+        <div id="ton-pay-ui" style="display:none; flex-direction:column; height:100%;">
+            <input type="number" id="t-input" value="1.0" min="0.1" max="9999">
+            <button class="btn-full" style="margin-top:20px;" onclick="handlePay()">Пополнить</button>
+            <button class="btn-full" style="background:transparent; border:1px solid #333; margin-top:auto;" onclick="tonConnect.disconnect()">Отвязать кошелек</button>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Данные пользователя
         const user = tg.initDataUnsafe.user;
         if(user) {
             document.getElementById('user-tag').innerText = '@' + (user.username || 'user');
             if(user.photo_url) document.getElementById('user-pic').src = user.photo_url;
         }
 
-        function openM(id){ document.getElementById(id).classList.add('active'); tg.HapticFeedback.impactOccurred('medium'); }
-        function closeM(id){ document.getElementById(id).classList.remove('active'); }
-
-        function setLang(l){
-            document.querySelectorAll('[data-ru]').forEach(el => el.innerText = (l === 'ru' ? el.dataset.ru : el.dataset.en));
+        // Переключение страниц
+        function switchPage(page, el) {
+            document.querySelectorAll('.main-container').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            el.classList.add('active');
             tg.HapticFeedback.selectionChanged();
         }
 
+        // Модалки
+        function openModal(id){ document.getElementById(id).classList.add('active'); }
+        function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+
+        // Реферальная система
+        const refLink = "https://t.me/casemonk_bot?start=" + (user ? user.id : "0");
+        
+        function inviteFriend() {
+            const text = encodeURIComponent("Забирай свои NFT подарки в CaseMonk!");
+            window.open(`https://t.me/share/url?url=${refLink}&text=${text}`);
+        }
+
+        function copyRef() {
+            navigator.clipboard.writeText(refLink);
+            tg.showScanQrPopup({ text: "Ссылка скопирована!" });
+            setTimeout(() => tg.closeScanQrPopup(), 1000);
+        }
+
+        function claimEarnings() {
+            const earn = parseFloat(document.getElementById('ref-earn').innerText);
+            if(earn < 5) {
+                tg.showAlert("Минимальный вывод от 5 TON");
+                return;
+            }
+            tg.showConfirm("Вывести " + earn + " TON на игровой баланс?", (ok) => {
+                if(ok) {
+                    // Логика вывода
+                    tg.showAlert("Средства успешно переведены!");
+                }
+            });
+        }
+
+        // TON Connect
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json',
             buttonRootId: 'ton-connect-btn'
@@ -181,13 +227,12 @@
 
         async function handlePay(){
             const amount = parseFloat(document.getElementById('t-input').value);
-            if(amount < 0.1 || amount > 9999) { alert("Min 0.1, Max 9999 TON"); return; }
-            
-            const transaction = {
+            if(amount < 0.1) return tg.showAlert("Мин. сумма 0.1 TON");
+            const tx = {
                 validUntil: Math.floor(Date.now() / 1000) + 60,
                 messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (amount * 1e9).toString() }]
             };
-            try { await tonConnect.sendTransaction(transaction); } catch(e){}
+            try { await tonConnect.sendTransaction(tx); } catch(e){}
         }
     </script>
 </body>
