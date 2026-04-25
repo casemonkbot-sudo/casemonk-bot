@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CaseMonk Ultimate</title>
+    <title>CaseMonk Final Build</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #000; --glass: rgba(30, 30, 35, 0.7); --accent: #007aff; --border: 1px solid rgba(255,255,255,0.1); }
+        :root { --bg: #000; --glass: rgba(25, 25, 30, 0.75); --accent: #007aff; --border: 1px solid rgba(255,255,255,0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; }
 
-        /* UI ELEMENTS */
+        /* HEADER */
         .top-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; z-index: 100; }
-        .logo-text { font-size: 18px; font-weight: 900; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
+        .logo-text { font-size: 18px; font-weight: 900; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
         .bal-chip { background: var(--glass); backdrop-filter: blur(20px); padding: 8px 16px; border-radius: 20px; border: var(--border); display: flex; align-items: center; gap: 8px; font-weight: 800; }
 
         .container { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: none; }
@@ -22,58 +22,45 @@
 
         /* ROULETTE */
         .roulette-box { position: relative; width: 100%; height: 130px; background: #080808; border-radius: 24px; border: var(--border); overflow: hidden; margin: 20px 0; }
-        .pointer { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 20px var(--accent); }
+        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: #fff; z-index: 10; transform: translateX(-50%); box-shadow: 0 0 10px #fff; }
         #track { display: flex; align-items: center; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
         .slot { min-width: 110px; display: flex; justify-content: center; flex-shrink: 0; }
         .slot img { width: 80px; height: 80px; object-fit: contain; }
 
-        /* CASE LAYOUT (LEFT) */
-        .case-section { display: flex; flex-direction: column; align-items: flex-start; }
-        .case-card { width: 155px; background: linear-gradient(145deg, #151515, #050505); border-radius: 26px; padding: 20px; border: var(--border); text-align: left; }
+        /* CARDS & GRID */
+        .case-card { width: 155px; background: linear-gradient(145deg, #151515, #050505); border-radius: 26px; padding: 20px; border: var(--border); }
         .case-card img { width: 95px; margin-bottom: 12px; }
+        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .inv-slot { aspect-ratio: 1; background: var(--glass); border-radius: 15px; border: var(--border); display: flex; align-items: center; justify-content: center; }
+        .inv-slot img { width: 70%; }
 
-        /* BANNER */
-        #win-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .win-card { width: 85%; background: #0a0a0a; border-radius: 35px; padding: 35px; text-align: center; border: 2px solid var(--accent); }
-        .win-card img { width: 160px; height: 160px; object-fit: contain; margin-bottom: 20px; }
-
-        /* NAVIGATION */
+        /* NAV */
         .nav-glass { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: var(--glass); backdrop-filter: blur(30px); padding: 12px 35px; border-radius: 40px; border: var(--border); display: flex; gap: 40px; z-index: 100; }
         .nav-item { color: rgba(255,255,255,0.3); text-align: center; font-size: 10px; }
         .nav-item.active { color: #fff; }
         .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
 
-        /* BONUS PAGE (AS PER IMAGE) */
-        .friends-card { background: var(--glass); border-radius: 28px; padding: 25px; border: var(--border); }
-        .bonus-stat { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-sub { background: rgba(255,255,255,0.03); border: var(--border); border-radius: 18px; padding: 15px; text-align: center; }
-        .btn-blue { background: #2e62f6; color: #fff; font-size: 15px; }
-
-        /* MODALS */
-        .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; padding: 25px; }
-        .modal.active { display: flex; }
-        .step-circle { width: 30px; height: 30px; background: rgba(255,255,255,0.06); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; }
-        .warning-box { background: rgba(255,50,50,0.12); color: #ff453a; padding: 15px; border-radius: 15px; border: 1px solid rgba(255,50,50,0.2); font-size: 13px; text-align: center; margin-top: 25px; }
-
-        /* UTILS */
+        /* BUTTONS */
         .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; border-radius: 20px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; }
         .btn-sec { background: #1a1a1c; border: var(--border); }
-        .input-f { width: 100%; background: #080808; border: var(--border); padding: 16px; border-radius: 18px; color: #fff; margin-top: 10px; outline: none; }
-        .inv-slot { aspect-ratio: 1; background: var(--glass); border-radius: 18px; border: var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .inv-slot img { width: 75%; }
+        .btn-blue { background: #2e62f6; }
+        
+        .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; padding: 25px; }
+        .modal.active { display: flex; }
+        #win-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
     </style>
 </head>
 <body>
 
     <div id="win-overlay">
-        <div class="win-card">
-            <h1 id="txt-win-title" style="margin-bottom:15px; font-size:26px;">Ваш выигрыш!</h1>
-            <img id="win-img" src="">
+        <div style="width:85%; background:#0a0a0a; border-radius:35px; padding:35px; text-align:center; border:2px solid var(--accent);">
+            <h1 id="txt-win-title" style="margin-bottom:15px;">Выигрыш!</h1>
+            <img id="win-img" src="" style="width:150px; margin-bottom:20px;">
             <h2 id="win-name">Item</h2>
             <div id="win-price" style="color:var(--accent); font-size:24px; font-weight:900; margin:15px 0;"></div>
-            <div style="display:flex; gap:12px;">
-                <button class="btn" style="flex:1; margin:0;" id="btn-sell" onclick="claim('sell')">Продать</button>
-                <button class="btn btn-sec" style="flex:1; margin:0;" id="btn-keep" onclick="claim('keep')">Оставить</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:1;" id="btn-sell" onclick="claim('sell')">Продать</button>
+                <button class="btn btn-sec" style="flex:1;" id="btn-keep" onclick="claim('keep')">Оставить</button>
             </div>
         </div>
     </div>
@@ -81,63 +68,61 @@
     <div class="top-bar">
         <div class="logo-text">CASE MONK</div>
         <div class="bal-chip" onclick="openM('m-refill')">
-            <img src="ton.png" width="18"> <span id="bal-val">0.00</span> <i class="fa-solid fa-plus-circle" style="color:var(--accent);"></i>
+            <img src="ton.webp" width="18"> <span id="bal-val">0.00</span> <i class="fa-solid fa-plus-circle" style="color:var(--accent);"></i>
         </div>
     </div>
 
     <div id="p-cases" class="container active">
-        <div id="case-list" class="case-section">
-            <h2 class="section-title" id="txt-unique" style="align-self: flex-start;">Уникальные</h2>
+        <div id="case-list">
+            <h2 id="txt-unique" style="margin-bottom:20px;">Уникальные</h2>
             <div class="case-card" onclick="openCaseView()">
                 <img src="case_drop.png">
-                <p style="font-weight:700; font-size:16px;">DROP</p>
-                <p style="color:var(--accent); font-weight:800;">10 <img src="ton.png" width="12"></p>
+                <p style="font-weight:700;">DROP</p>
+                <p style="color:var(--accent); font-weight:800;">10 <img src="ton.webp" width="12"></p>
             </div>
         </div>
-
         <div id="case-view" style="display:none;">
             <div style="display:flex; align-items:center; margin-bottom:20px;">
                 <i class="fa-solid fa-chevron-left" onclick="hideCaseView()" style="font-size:22px;"></i>
-                <span style="margin-left:15px; font-weight:800; font-size:20px;" id="txt-case-name">Кейс DROP</span>
+                <span style="margin-left:15px; font-weight:800; font-size:20px;">DROP</span>
             </div>
             <div class="roulette-box"><div class="pointer"></div><div id="track"></div></div>
-            <button class="btn" id="btn-open" onclick="spin(false)">ОТКРЫТЬ ЗА 10 <img src="ton.png" width="14"></button>
+            <button class="btn" id="btn-open" onclick="spin(false)">ОТКРЫТЬ ЗА 10 <img src="ton.webp" width="14"></button>
             <button class="btn btn-sec" id="btn-demo" onclick="spin(true)">ДЕМО РЕЖИМ</button>
-            <h4 style="margin:30px 0 15px; color:rgba(255,255,255,0.4);" id="txt-content">Содержимое:</h4>
-            <div id="preview-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;"></div>
+            <div id="preview-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:20px;"></div>
         </div>
     </div>
 
     <div id="p-bonus" class="container">
-        <h2 class="section-title" id="txt-bonus">Друзья</h2>
-        <div class="friends-card">
-            <div class="bonus-stat">
-                <div class="stat-sub"><p style="color:rgba(255,255,255,0.5); font-size:12px;" id="txt-friends">Всего</p><p style="font-size:22px; font-weight:900;">0</p></div>
-                <div class="stat-sub"><p style="color:rgba(255,255,255,0.5); font-size:12px;" id="txt-income">Заработок</p><p style="font-size:22px; font-weight:900; color:var(--accent);">0 <img src="ton.png" width="16"></p></div>
-            </div>
-            <p style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:15px; text-align:center;" id="txt-min-withdraw">
-                Вывести можно от 5 <img src="ton.png" width="10"> на игровой баланс.
+        <h2 id="txt-bonus-h" style="margin-bottom:20px;">Друзья</h2>
+        <div style="background:var(--glass); border-radius:28px; padding:25px; border:var(--border);">
+            <p id="txt-bonus-desc" style="font-size:14px; line-height:1.4; text-align:center; color:rgba(255,255,255,0.7); margin-bottom:20px;">
+                Зарабатывай приглашая друзей, получай 15% от их депозитов в TON - чем больше пригласил, тем больше заработал пора выигрывать подарки вместе с CaseMonk
             </p>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-blue" id="btn-invite" style="flex: 1;" onclick="invite()">Пригласить друга</button>
-                <button class="btn btn-sec" style="width: 55px;" onclick="copyRef()"><i class="fa-solid fa-copy"></i></button>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+                <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; text-align:center;">
+                    <p style="font-size:12px; opacity:0.5;" id="txt-fr-count">Всего</p><p style="font-size:20px; font-weight:800;">0</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; text-align:center;">
+                    <p style="font-size:12px; opacity:0.5;" id="txt-inc-count">Доход</p><p style="font-size:20px; font-weight:800; color:var(--accent);">0 <img src="ton.webp" width="14"></p>
+                </div>
             </div>
+            <button class="btn btn-blue" id="btn-invite" onclick="invite()">Пригласить друга</button>
+            <button class="btn btn-sec" id="btn-withdraw" onclick="withdrawBonus()">Вывести (от 5 <img src="ton.webp" width="12">)</button>
         </div>
     </div>
 
     <div id="p-profile" class="container">
-        <div style="text-align:center; margin-bottom:30px;">
-            <img id="u-pic" src="" style="width:85px; height:85px; border-radius:50%; border:3px solid var(--accent); margin-bottom:12px;">
+        <div style="text-align:center; margin-bottom:25px;">
+            <img id="u-pic" src="" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--accent); margin-bottom:10px;">
             <h2 id="u-name">User</h2>
+            <p id="u-tag" style="opacity:0.4; font-size:14px;">@username</p>
         </div>
-        <div style="background:var(--glass); padding:20px; border-radius:28px; border:var(--border);">
-            <h3 id="txt-inv">Инвентарь</h3>
-            <div id="inv-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:15px;"></div>
+        <div style="background:var(--glass); padding:20px; border-radius:25px; border:var(--border);">
+            <h3 id="txt-inv-h">Инвентарь</h3>
+            <div id="inv-grid" class="inv-grid">
+                </div>
         </div>
-        <h3 style="margin:25px 0 10px;" id="txt-promo">Промокод</h3>
-        <input type="text" id="promo-input" class="input-f" placeholder="...">
-        <button class="btn btn-sec" id="btn-promo-act" onclick="checkPromo()">Активировать</button>
-        
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button class="btn btn-sec" onclick="setLang('ru')">RU</button>
             <button class="btn btn-sec" onclick="setLang('en')">EN</button>
@@ -146,53 +131,35 @@
     </div>
 
     <div class="nav-glass">
-        <div class="nav-item active" onclick="nav('cases', this)"><i class="fa-solid fa-shapes"></i><span id="nav-1">Кейсы</span></div>
-        <div class="nav-item" onclick="nav('bonus', this)"><i class="fa-solid fa-gift"></i><span id="nav-2">Бонусы</span></div>
-        <div class="nav-item" onclick="nav('profile', this)"><i class="fa-solid fa-user"></i><span id="nav-3">Профиль</span></div>
+        <div class="nav-item active" onclick="nav('cases', this)"><i class="fa-solid fa-shapes"></i><span id="n1">Кейсы</span></div>
+        <div class="nav-item" onclick="nav('bonus', this)"><i class="fa-solid fa-gift"></i><span id="n2">Бонусы</span></div>
+        <div class="nav-item" onclick="nav('profile', this)"><i class="fa-solid fa-user"></i><span id="n3">Профиль</span></div>
     </div>
 
     <div id="m-refill" class="modal">
-        <div style="display:flex; align-items:center; margin-bottom:30px;">
-            <i class="fa-solid fa-xmark" onclick="closeM('m-refill')"></i>
-            <span style="margin-left:20px; font-weight:800;" id="txt-topup">Пополнение</span>
-        </div>
-        <button class="btn btn-sec" style="display:flex; justify-content:space-between; margin-bottom:15px;" onclick="openM('m-ton')">TON <img src="ton.png" width="22"></button>
-        <button class="btn btn-sec" style="display:flex; justify-content:space-between;" onclick="openM('m-gifts')">Gifts 🎁</button>
+        <div style="display:flex; align-items:center; margin-bottom:30px;"><i class="fa-solid fa-xmark" onclick="closeM('m-refill')"></i><span style="margin-left:20px; font-weight:800;" id="t-refill">Пополнение</span></div>
+        <button class="btn btn-sec" onclick="openM('m-ton')">TON <img src="ton.webp" width="20"></button>
+        <button class="btn btn-sec" onclick="openM('m-gifts')">Gifts 🎁</button>
     </div>
 
     <div id="m-ton" class="modal">
-        <div style="display:flex; align-items:center; margin-bottom:30px;"><i class="fa-solid fa-chevron-left" onclick="closeM('m-ton')"></i><span style="margin-left:20px; font-weight:800;" id="txt-connect"> Wallet</span></div>
+        <div style="display:flex; align-items:center; margin-bottom:30px;"><i class="fa-solid fa-chevron-left" onclick="closeM('m-ton')"></i><span style="margin-left:20px; font-weight:800;">Wallet</span></div>
         <div id="ton-connect-root" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
         <div id="pay-box" style="display:none;">
-            <p style="text-align:center; color:rgba(255,255,255,0.4); margin-bottom:10px;" id="txt-sum">Сумма (0.10 - 9999)</p>
-            <input type="number" id="t-sum" class="input-f" value="1.0" style="text-align:center; font-size:24px; font-weight:800;">
-            <button class="btn btn-blue" id="btn-pay" onclick="payTON()">Оплатить</button>
+            <input type="number" id="t-amt" style="width:100%; background:#111; border:var(--border); padding:15px; border-radius:15px; color:#fff; text-align:center; font-size:20px;" value="1.0">
+            <button class="btn btn-blue" onclick="pay()">Оплатить</button>
         </div>
     </div>
 
     <div id="m-gifts" class="modal">
         <div style="display:flex; align-items:center; margin-bottom:30px;"><i class="fa-solid fa-chevron-left" onclick="closeM('m-gifts')"></i><span style="margin-left:20px; font-weight:800;">Gifts</span></div>
-        <div style="padding: 10px;">
-            <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px;">
-                <div class="step-circle">1</div>
-                <div><p style="font-weight:700;" id="txt-step1">Перейдите в нашего бота</p><p style="color:var(--accent); font-size:14px;">@casemonk_relayer</p></div>
-            </div>
-            <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px;">
-                <div class="step-circle">2</div>
-                <div><p style="font-weight:700;" id="txt-step2">Отправьте ему NFT подарок</p><p style="color:rgba(255,255,255,0.4); font-size:12px;" id="txt-step2-desc">Модель, фон и символ не учитываются!</p></div>
-            </div>
-            <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px;">
-                <div class="step-circle">3</div>
-                <div><p style="font-weight:700;" id="txt-step3">Баланс пополнится</p><p style="color:rgba(255,255,255,0.4); font-size:12px;" id="txt-step3-desc">В течении нескольких секунд</p></div>
-            </div>
-            <div class="warning-box" id="txt-warning">Отправляйте подарки только напрямую со своего аккаунта!</div>
-            <button class="btn btn-blue" style="margin-top:30px;" id="btn-go-gifts" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
-        </div>
+        <div id="t-gift-desc" style="background:var(--glass); padding:20px; border-radius:20px; font-size:14px; line-height:1.6;"></div>
+        <button class="btn btn-blue" style="margin-top:20px;" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp; tg.expand();
-        let bal = 0, inventory = [], wonItem = null, isDemo = false, curLang = 'ru';
+        let bal = 0, inventory = [], won = null, isDemo = false, lang = 'ru';
 
         const ITEMS = [
             { name: 'Nail Bracelet', price: 115.83, file: 'nailbracelet-1.png' },
@@ -209,102 +176,92 @@
 
         const I18N = {
             ru: {
-                unique: "Уникальные", case_name: "Кейс DROP", open: "ОТКРЫТЬ ЗА 10", demo: "ДЕМО РЕЖИМ", content: "Содержимое:",
-                bonus: "Бонусы", total: "Всего", friends: "Друзей", income: "Доход", min_withdraw: "Вывести можно от 5 на баланс.", invite: "Пригласить друга",
-                inv: "Инвентарь", promo: "Промокод", promo_act: "Активировать", sup: "Поддержка", topup: "Пополнение", connect: " Wallet", sum: "Сумма (0.10 - 9999)",
-                win_title: "Ваш выигрыш!", sell: "Продать", keep: "Оставить", pay: "Оплатить", go: "Перейти", nav1: "Кейсы", nav2: "Бонусы", nav3: "Профиль",
-                step1: "Перейдите в нашего бота", step2: "Отправьте ему NFT подарок", step2_desc: "Модель, фон и символ не учитываются!", step3: "Баланс пополнится", step3_desc: "В течении нескольких секунд", warning: "Отправляйте подарки только напрямую со своего аккаунта!",
-                msg_p1: "Промокод активирован!", msg_p2: "Промокод закончился!", msg_p3: "Промокод не существует", msg_sell: "Продано!", msg_with: "Заявка создана!"
+                uniq: "Уникальные", open: "ОТКРЫТЬ ЗА 10", demo: "ДЕМО РЕЖИМ", n1: "Кейсы", n2: "Бонусы", n3: "Профиль",
+                bon_h: "Друзья", bon_desc: "Зарабатывай приглашая друзей, получай 15% от их депозитов в TON - чем больше пригласил, тем больше заработал пора выигрывать подарки вместе с CaseMonk",
+                win: "Выигрыш!", sell: "Продать", keep: "Оставить", inv_h: "Инвентарь", sup: "Поддержка", ref: "Пополнение",
+                gift: "1. Перейдите в @casemonk_relayer<br>2. Отправьте NFT подарок<br>3. Баланс пополнится автоматически",
+                with: "Вывести (от 5", min: "Нужно минимум 5 TON!"
             },
             en: {
-                unique: "Unique", case_name: "Case DROP", open: "OPEN FOR 10", demo: "DEMO MODE", content: "Contents:",
-                bonus: "Bonuses", total: "Total", friends: "Friends", income: "Earnings", min_withdraw: "Min withdraw 5 to balance.", invite: "Invite Friend",
-                inv: "Inventory", promo: "Promo Code", promo_act: "Activate", sup: "Support", topup: "Top Up", connect: " Wallet", sum: "Amount (0.10 - 9999)",
-                win_title: "You Won!", sell: "Sell", keep: "Keep", pay: "Pay", go: "Go", nav1: "Cases", nav2: "Bonuses", nav3: "Profile",
-                step1: "Go to our bot", step2: "Send him an NFT gift", step2_desc: "Model, BG and symbol don't matter!", step3: "Balance will be topped up", step3_desc: "Within a few seconds", warning: "Send gifts only directly from your account!",
-                msg_p1: "Promo activated!", msg_p2: "Promo ended!", msg_p3: "Promo not found", msg_sell: "Sold!", msg_with: "Request created!"
+                uniq: "Unique", open: "OPEN FOR 10", demo: "DEMO MODE", n1: "Cases", n2: "Bonuses", n3: "Profile",
+                bon_h: "Friends", bon_desc: "Earn by inviting friends, get 15% of their TON deposits - the more you invite, the more you earn! Let's win gifts with CaseMonk",
+                win: "You Won!", sell: "Sell", keep: "Keep", inv_h: "Inventory", sup: "Support", ref: "Top Up",
+                gift: "1. Go to @casemonk_relayer<br>2. Send an NFT gift<br>3. Balance updates automatically",
+                with: "Withdraw (min 5", min: "You need at least 5 TON!"
             }
         };
 
         function setLang(l) {
-            curLang = l; const d = I18N[l];
-            document.getElementById('txt-unique').innerText = d.unique; document.getElementById('txt-case-name').innerText = d.case_name;
-            document.getElementById('btn-open').innerHTML = `${d.open} <img src="ton.png" width="14">`; document.getElementById('btn-demo').innerText = d.demo;
-            document.getElementById('txt-content').innerText = d.content; document.getElementById('txt-bonus').innerText = d.bonus;
-            document.getElementById('txt-total').innerText = d.total; document.getElementById('txt-income').innerText = d.income;
-            document.getElementById('txt-min-withdraw').innerHTML = d.min_withdraw.replace('5', '5 <img src="ton.png" width="10">');
-            document.getElementById('btn-invite').innerText = d.invite; document.getElementById('txt-inv').innerText = d.inv;
-            document.getElementById('txt-promo').innerText = d.promo; document.getElementById('btn-promo-act').innerText = d.promo_act;
-            document.getElementById('btn-sup').innerText = d.sup; document.getElementById('txt-topup').innerText = d.topup;
-            document.getElementById('txt-connect').innerText = d.connect; document.getElementById('txt-sum').innerText = d.sum;
-            document.getElementById('txt-win-title').innerText = d.win_title; document.getElementById('btn-sell').innerText = d.sell;
-            document.getElementById('btn-keep').innerText = d.keep; document.getElementById('btn-pay').innerText = d.pay;
-            document.getElementById('nav-1').innerText = d.nav1; document.getElementById('nav-2').innerText = d.nav2; document.getElementById('nav-3').innerText = d.nav3;
-            document.getElementById('txt-step1').innerText = d.step1; document.getElementById('txt-step2').innerText = d.step2;
-            document.getElementById('txt-step2-desc').innerText = d.step2_desc; document.getElementById('txt-step3').innerText = d.step3;
-            document.getElementById('txt-step3-desc').innerText = d.step3_desc; document.getElementById('txt-warning').innerText = d.warning;
-            document.getElementById('btn-go-gifts').innerText = d.go;
+            lang = l; const d = I18N[l];
+            document.getElementById('txt-unique').innerText = d.uniq;
+            document.getElementById('btn-open').innerHTML = d.open + ' <img src="ton.webp" width="14">';
+            document.getElementById('btn-demo').innerText = d.demo;
+            document.getElementById('txt-bonus-h').innerText = d.bon_h;
+            document.getElementById('txt-bonus-desc').innerText = d.bon_desc;
+            document.getElementById('txt-win-title').innerText = d.win;
+            document.getElementById('btn-sell').innerText = d.sell;
+            document.getElementById('btn-keep').innerText = d.keep;
+            document.getElementById('txt-inv-h').innerText = d.inv_h;
+            document.getElementById('btn-sup').innerText = d.sup;
+            document.getElementById('t-refill').innerText = d.ref;
+            document.getElementById('t-gift-desc').innerHTML = d.gift;
+            document.getElementById('btn-withdraw').innerHTML = d.with + ' <img src="ton.webp" width="12">)';
+            document.getElementById('n1').innerText = d.n1; document.getElementById('n2').innerText = d.n2; document.getElementById('n3').innerText = d.n3;
         }
 
         const u = tg.initDataUnsafe.user;
-        if(u) { document.getElementById('u-name').innerText = u.first_name; if(u.photo_url) document.getElementById('u-pic').src = u.photo_url; }
+        if(u) {
+            document.getElementById('u-name').innerText = u.first_name;
+            document.getElementById('u-tag').innerText = u.username ? '@' + u.username : '';
+            if(u.photo_url) document.getElementById('u-pic').src = u.photo_url;
+        }
 
         function openCaseView() {
             document.getElementById('case-list').style.display='none'; document.getElementById('case-view').style.display='block';
             const pg = document.getElementById('preview-grid'); pg.innerHTML = '';
-            ITEMS.forEach(i => { pg.innerHTML += `<div style="aspect-ratio:1; background:linear-gradient(145deg, #121212, #050505); padding:10px; border-radius:18px; text-align:center; border:var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center;"><img src="${i.file}" style="width:40px; height:40px; object-fit:contain;"><div style="font-size:10px; font-weight:800; color:var(--accent); margin-top:5px;">${i.price} <img src="ton.png" width="8"></div></div>`; });
+            ITEMS.forEach(i => { pg.innerHTML += `<div class="inv-slot"><img src="${i.file}"></div>`; });
         }
-
         function hideCaseView() { document.getElementById('case-list').style.display='block'; document.getElementById('case-view').style.display='none'; }
 
         let spinning = false;
         function spin(demo) {
             if(spinning) return;
-            if(!demo && bal < 10) return tg.showAlert("Need 10 TON!");
+            if(!demo && bal < 10) return tg.showAlert("Need 10 TON");
             spinning = true; isDemo = demo; if(!demo) { bal -= 10; updateBal(); }
             const track = document.getElementById('track'); track.style.transition = 'none'; track.style.transform = 'translateX(0)'; track.innerHTML = '';
             for(let i=0; i<60; i++) { const r = ITEMS[Math.floor(Math.random()*ITEMS.length)]; track.innerHTML += `<div class="slot"><img src="${r.file}"></div>`; }
-            wonItem = ITEMS[Math.floor(Math.random()*ITEMS.length)]; track.children[50].innerHTML = `<img src="${wonItem.file}">`;
+            won = ITEMS[Math.floor(Math.random()*ITEMS.length)]; track.children[50].innerHTML = `<img src="${won.file}">`;
             setTimeout(() => {
                 track.style.transition = 'transform 7s cubic-bezier(0.1, 0, 0.05, 1)';
                 track.style.transform = `translateX(-${(50*110) - (track.parentElement.offsetWidth/2) + 55}px)`;
             }, 50);
             setTimeout(() => {
-                document.getElementById('win-img').src = wonItem.file; document.getElementById('win-name').innerText = wonItem.name;
-                document.getElementById('win-price').innerHTML = wonItem.price + ' <img src="ton.png" width="18">';
+                document.getElementById('win-img').src = won.file; document.getElementById('win-name').innerText = won.name;
+                document.getElementById('win-price').innerHTML = won.price + ' <img src="ton.webp" width="18">';
                 document.getElementById('win-overlay').style.display = 'flex'; spinning = false;
             }, 7200);
         }
 
         function claim(act) {
-            if(!isDemo) { if(act === 'sell') { bal += wonItem.price; updateBal(); } else { inventory.push(wonItem); updateInv(); } }
+            if(!isDemo) { if(act === 'sell') { bal += won.price; updateBal(); } else { inventory.push(won); updateInv(); } }
             document.getElementById('win-overlay').style.display = 'none';
-        }
-
-        function checkPromo() {
-            const v = document.getElementById('promo-input').value, d = I18N[curLang];
-            if(v === "CASE") tg.showAlert(d.msg_p1); else if(v === "END") tg.showAlert(d.msg_p2); else tg.showAlert(d.msg_p3);
-        }
-
-        function invite() {
-            const l = `https://t.me/casemonk_robot?start=${u?u.id:''}`;
-            const t = `CaseMonk - выигрывай дорогие подарки уже сейчас, за приглашение друзей получай 15% от их пополнений!🎁\n\n${l}`;
-            window.open("https://t.me/share/url?url=" + encodeURIComponent(t));
         }
 
         function updateBal() { document.getElementById('bal-val').innerText = bal.toFixed(2); }
         function updateInv() {
             const g = document.getElementById('inv-grid'); g.innerHTML = '';
-            inventory.forEach((i, idx) => { g.innerHTML += `<div class="inv-slot" onclick="manageItem(${idx})"><img src="${i.file}"></div>`; });
+            inventory.forEach((i, idx) => { g.innerHTML += `<div class="inv-slot" onclick="sellItem(${idx})"><img src="${i.file}"></div>`; });
         }
-        function manageItem(idx) {
-            const i = inventory[idx]; const d = I18N[curLang];
-            tg.showConfirm(`${i.name} (${i.price} TON)\nSell or Withdraw?`, (ok) => {
-                if(ok) { bal += i.price; inventory.splice(idx,1); updateInv(); updateBal(); tg.showAlert(d.msg_sell); }
-                else { tg.showAlert(d.msg_with); }
-            });
+        function sellItem(idx) {
+            const i = inventory[idx];
+            tg.showConfirm(`Sell ${i.name} for ${i.price} TON?`, (ok) => { if(ok) { bal += i.price; inventory.splice(idx,1); updateInv(); updateBal(); } });
         }
-        function copyRef() { const l = `https://t.me/casemonk_robot?start=${u?u.id:''}`; navigator.clipboard.writeText(l); tg.showAlert("Скопировано!"); }
+
+        function invite() {
+            const link = `https://t.me/casemonk_robot?start=${u?u.id:''}`;
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(I18N[lang].bon_desc)}`);
+        }
+        function withdrawBonus() { tg.showAlert(I18N[lang].min); }
 
         function nav(p, el) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
@@ -316,11 +273,6 @@
 
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json', buttonRootId: 'ton-connect-root' });
         tonConnect.onStatusChange(w => { document.getElementById('pay-box').style.display = w ? 'block' : 'none'; });
-        async function payTON() {
-            const a = document.getElementById('t-sum').value; if(a < 0.1 || a > 9999) return tg.showAlert("Invalid sum");
-            const tx = { validUntil: Math.floor(Date.now()/1000)+60, messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (a*1e9).toString() }] };
-            try { await tonConnect.sendTransaction(tx); tg.showAlert("Success!"); } catch(e){}
-        }
 
         setLang('ru'); updateBal();
     </script>
