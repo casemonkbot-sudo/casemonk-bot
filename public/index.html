@@ -3,408 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CaseMonk Releyer</title>
+    <title>CaseMonk</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --bg-color: #000000;
-            --card-bg: #0d0d0d;
-            --accent-blue: #007bff;
+            --card-bg: #0f0f0f;
             --accent-green: #2ecc71;
-            --ton-blue: #0098ea;
-            --text-muted: #888;
-            --border-style: 1px solid #1a1a1a;
+            --accent-blue: #2481cc;
+            --text-gray: #8e8e93;
+            --border: 1px solid #1c1c1e;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            outline: none; 
-            margin: 0; padding: 0;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
         }
 
-        /* Плавные переходы */
-        .page {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 0 20px;
-            overflow-y: auto;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        /* Верхняя панель */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            z-index: 10;
-        }
-
-        .user-info { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-        .user-photo { width: 28px; height: 28px; border-radius: 50%; background: #222; object-fit: cover; }
-
-        .balance-chip {
-            background: rgba(255, 255, 255, 0.07);
-            padding: 7px 14px;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: var(--border-style);
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .balance-chip:active { transform: scale(0.95); }
+        .container { padding: 20px; display: flex; flex-direction: column; align-items: center; }
 
         /* Профиль */
-        .profile-main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .avatar-container {
-            position: relative;
-            padding: 4px;
-            background: linear-gradient(180deg, var(--accent-green), transparent);
-            border-radius: 50%;
-            margin-bottom: 15px;
-        }
-
-        .main-photo {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            display: block;
-            object-fit: cover;
-        }
-
-        .user-name { font-size: 22px; font-weight: 800; margin-bottom: 25px; }
-
-        .btn {
+        .profile-card {
             width: 100%;
-            max-width: 400px;
-            padding: 16px;
-            border-radius: 18px;
-            font-weight: 700;
-            font-size: 16px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+            border-radius: 28px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: var(--border);
+        }
+
+        .avatar-wrapper {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            padding: 3px;
+            background: var(--accent-green);
+        }
+        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #000; }
+        .username { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+
+        .btn-deposit {
+            width: 100%;
+            background: var(--accent-green);
+            color: #000;
             border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: opacity 0.2s;
+            gap: 10px;
+            margin: 20px 0;
         }
-        .btn:active { opacity: 0.8; }
-        .btn-support { background: var(--accent-blue); color: white; margin-bottom: 20px; }
-
-        /* Карточки */
-        .card {
-            background: var(--card-bg);
-            width: 100%;
-            border-radius: 22px;
-            padding: 20px;
-            border: var(--border-style);
-            margin-bottom: 15px;
-        }
-
-        .promo-input-wrap { display: flex; gap: 10px; margin-top: 12px; }
-        input {
-            flex: 1;
-            background: #000;
-            border: 1px solid #222;
-            border-radius: 14px;
-            padding: 12px 15px;
-            color: #fff;
-            font-size: 15px;
-        }
-        .btn-apply { background: var(--accent-green); padding: 0 20px; border-radius: 14px; color: #000; font-weight: bold; }
-
-        /* Язык */
-        .language-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-bottom: 25px;
-        }
-        .toggle-group { display: flex; background: #111; border-radius: 12px; padding: 3px; border: var(--border-style); }
-        .toggle-btn {
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-        .toggle-btn.active { background: var(--accent-blue); color: white; }
 
         /* Инвентарь */
-        .inv-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 15px;
+        .inventory-section {
             width: 100%;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 20px;
+            border: var(--border);
         }
-        .inv-item { aspect-ratio: 1; background: #080808; border-radius: 18px; border: 1px dashed #222; }
+        .inv-header { display: flex; justify-content: space-between; margin-bottom: 15px; color: #fff; font-weight: 600; }
+        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .inv-slot { aspect-ratio: 1; background: #1c1c1e; border-radius: 15px; border: 1px dashed #333; }
 
         /* Модальные окна */
         .modal {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            padding: 20px;
-            overflow-y: auto;
+            position: fixed; inset: 0; background: #000; z-index: 100;
+            display: none; flex-direction: column; padding: 20px;
         }
-        .modal.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal.active { display: flex; animation: slideIn 0.25s ease-out; }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .modal-nav { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn { font-size: 24px; margin-right: 20px; cursor: pointer; }
+        .modal-header { display: flex; align-items: center; padding: 10px 0 30px; }
+        .back-icon { font-size: 22px; margin-right: 15px; cursor: pointer; }
+        .modal-title { font-size: 20px; font-weight: 600; }
 
-        .payment-option {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border: var(--border-style);
+        /* Выбор оплаты */
+        .pay-method {
+            background: #1c1c1e; padding: 18px; border-radius: 18px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; font-size: 17px;
         }
 
-        /* Инструкция Gifts */
-        .instruction-step { display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-start; }
-        .step-badge {
-            min-width: 34px; height: 34px;
-            background: #1a1a1a;
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            color: var(--accent-blue); font-weight: bold;
+        /* Окно TON */
+        .pay-label { color: var(--text-gray); font-size: 14px; margin-bottom: 10px; }
+        .input-box {
+            background: #111; border: 1px solid #2c2c2e; border-radius: 14px;
+            padding: 15px; display: flex; justify-content: space-between; align-items: center;
         }
-        .alert-box {
-            background: rgba(231, 76, 60, 0.1);
-            border: 1px solid rgba(231, 76, 60, 0.2);
-            color: #ff5e5e;
-            padding: 15px;
-            border-radius: 15px;
-            font-size: 13px;
-            text-align: center;
-            margin-top: auto;
-            margin-bottom: 20px;
-        }
+        .input-box input { background: none; border: none; color: #fff; font-size: 18px; width: 80%; outline: none; }
+        
+        .footer-btns { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
+        .btn-blue { background: var(--accent-blue); color: #fff; border: none; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 17px; }
+        .btn-outline { background: none; border: 1px solid #2c2c2e; color: var(--text-gray); padding: 12px; border-radius: 14px; font-size: 14px; }
 
-        /* Навигация (фиктивная) */
-        .bottom-nav {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(15px);
-            padding: 10px 30px;
-            border-radius: 35px;
-            display: flex;
-            gap: 45px;
-            border: var(--border-style);
+        /* Окно Gifts */
+        .step { display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-start; }
+        .step-num {
+            min-width: 32px; height: 32px; background: #1c1c1e; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; color: #fff; font-weight: 600;
         }
-        .nav-icon { opacity: 0.3; font-size: 18px; }
-        .nav-icon.active { opacity: 1; color: #fff; }
+        .step-info b { display: block; font-size: 16px; margin-bottom: 4px; }
+        .step-info span { color: var(--text-gray); font-size: 14px; }
+        .alert-red {
+            background: rgba(255, 69, 58, 0.15); color: #ff453a;
+            padding: 15px; border-radius: 14px; text-align: center; font-size: 14px; margin-top: auto; margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="user-info">
-            <img id="header-avatar" class="user-photo" src="">
-            <span id="header-name">User</span>
-        </div>
-        <div class="balance-chip" onclick="showModal('payment-list')">
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
-            <span id="user-balance">0.00</span>
-            <i class="fa-solid fa-plus" style="font-size: 11px; color: var(--text-muted);"></i>
-        </div>
-    </div>
-
-    <div class="page">
-        <div class="profile-main">
-            <div class="avatar-container">
-                <img id="profile-avatar" class="main-photo" src="">
+    <div class="container">
+        <div class="profile-card">
+            <div class="avatar-wrapper">
+                <img id="user-avatar" class="avatar-img" src="https://via.placeholder.com/150">
             </div>
-            <div class="user-name" id="user-handle">@username</div>
-
-            <button class="btn btn-support" onclick="window.open('https://t.me/casemonk_sup_robot')">
-                <i class="fa-solid fa-headset"></i> <span data-ru="Поддержка" data-en="Support">Поддержка</span>
+            <div class="username" id="user-name">@username</div>
+            
+            <button class="btn-deposit" onclick="openModal('modal-methods')">
+                💵 Пополнить баланс
             </button>
+        </div>
 
-            <div class="card">
-                <div style="font-size: 14px; font-weight: 500;" data-ru="Активировать промокод" data-en="Activate promo code">Активировать промокод</div>
-                <div class="promo-input-wrap">
-                    <input type="text" placeholder="Код...">
-                    <button class="btn-apply" onclick="tg.showAlert('Код не найден')">OK</button>
-                </div>
+        <div class="inventory-section">
+            <div class="inv-header">
+                <span>Инвентарь</span>
+                <span style="color: var(--text-gray); font-weight: 400;">0 предметов</span>
             </div>
-
-            <div class="language-row">
-                <span style="font-size: 14px; color: var(--text-muted);" data-ru="Язык интерфейса" data-en="Interface language">Язык</span>
-                <div class="toggle-group">
-                    <div class="toggle-btn active" onclick="changeLanguage('ru', this)">Русский</div>
-                    <div class="toggle-btn" onclick="changeLanguage('en', this)">English</div>
-                </div>
-            </div>
-
-            <div style="width:100%; display:flex; justify-content:space-between; font-size:14px;">
-                <span data-ru="Инвентарь" data-en="Inventory">Инвентарь 0</span>
-                <span style="color:var(--accent-blue)">Продать все 0</span>
-            </div>
-
             <div class="inv-grid">
-                <div class="inv-item"></div><div class="inv-item"></div><div class="inv-item"></div>
-                <div class="inv-item"></div><div class="inv-item"></div><div class="inv-item"></div>
-            </div>
-
-            <div style="margin: 50px 0; opacity: 0.3; text-align: center;">
-                <span data-ru="Нет подарков" data-en="No gifts">Нет подарков</span>
+                <div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div>
+                <div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div>
             </div>
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <i class="fa-solid fa-rocket nav-icon"></i>
-        <i class="fa-solid fa-box-open nav-icon"></i>
-        <i class="fa-solid fa-user nav-icon active"></i>
-    </div>
-
-    <div id="payment-list" class="modal">
-        <div class="modal-nav">
-            <i class="fa-solid fa-arrow-left back-btn" onclick="hideModal('payment-list')"></i>
-            <span data-ru="Пополнение" data-en="Deposit">Пополнение</span>
+    <div id="modal-methods" class="modal">
+        <div class="modal-header">
+            <i class="fa-solid fa-arrow-left back-icon" onclick="closeModal('modal-methods')"></i>
+            <span class="modal-title">Пополнение</span>
         </div>
-        <div class="payment-option" onclick="showModal('pay-ton')">
-            <span>TON Coin</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="26">
+        <div class="pay-method" onclick="openModal('modal-ton')">
+            <span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22">
         </div>
-        <div class="payment-option" onclick="showModal('pay-gifts')">
-            <span>Telegram Gifts</span> <span>🎁</span>
-        </div>
-    </div>
-
-    <div id="pay-ton" class="modal">
-        <div class="modal-nav">
-            <i class="fa-solid fa-arrow-left back-btn" onclick="hideModal('pay-ton')"></i>
-            <span>TON</span>
-        </div>
-        <div style="margin-bottom:15px; opacity:0.7;" data-ru="Сумма пополнения (мин. 0.1)" data-en="Deposit amount (min 0.1)">Сумма (мин. 0.1)</div>
-        <input type="number" id="ton-input" value="0.1" step="0.1" style="font-size:24px; text-align:center; margin-bottom:25px;">
-        <div id="ton-btn-container" style="margin-bottom:15px;"></div>
-        <button class="btn" style="background:var(--ton-blue); color:white;" onclick="processTonPayment()">
-            <span data-ru="Оплатить" data-en="Pay now">Оплатить</span>
-        </button>
-        <p style="text-align:center; margin-top:20px; font-size:12px; color:var(--text-muted);">
-            Wallet: UQCZVO...MaRyZzZ
-        </p>
-    </div>
-
-    <div id="pay-gifts" class="modal">
-        <div class="modal-nav">
-            <i class="fa-solid fa-arrow-left back-btn" onclick="hideModal('pay-gifts')"></i>
+        <div class="pay-method" onclick="openModal('modal-gifts')">
             <span>Gifts 🎁</span>
         </div>
-        <div class="instruction-step">
-            <div class="step-badge">1</div>
-            <div><b data-ru="Перейдите в бота" data-en="Go to bot">Перейдите в бота</b><br><small>@casemonk_relayer</small></div>
+    </div>
+
+    <div id="modal-ton" class="modal">
+        <div class="modal-header">
+            <i class="fa-solid fa-arrow-left back-icon" onclick="closeModal('modal-ton')"></i>
+            <span class="modal-title">Пополнение</span>
         </div>
-        <div class="instruction-step">
-            <div class="step-badge">2</div>
-            <div><b data-ru="Отправьте NFT подарок" data-en="Send NFT gift">Отправьте NFT подарок</b><br><small data-ru="Любая модель и фон" data-en="Any model or background">Любая модель и фон</small></div>
+        <div class="pay-method" style="background: #111; border: 1px solid #2c2c2e;">
+            <span style="color: var(--text-gray);">Способ оплаты:</span>
+            <span style="display: flex; align-items: center; gap: 5px;">TON <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18"></span>
         </div>
-        <div class="instruction-step">
-            <div class="step-badge">3</div>
-            <div data-ru="Баланс пополнится мгновенно" data-en="Balance updates instantly">Баланс пополнится мгновенно</div>
+        <div class="pay-label" style="margin-top: 10px;">Введите сумму</div>
+        <div class="input-box">
+            <input type="number" id="ton-sum" value="100">
+            <span style="color: var(--text-gray);">TON</span>
         </div>
-        
-        <div class="alert-box" data-ru="Отправляйте подарки только напрямую со своего аккаунта!" data-en="Send gifts only directly from your account!">
+
+        <div class="footer-btns">
+            <button class="btn-outline">Disconnect wallet</button>
+            <button class="btn-blue" onclick="payTon()">
+                <i class="fa-solid fa-wallet"></i> Пополнить
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-gifts" class="modal">
+        <div class="modal-header">
+            <i class="fa-solid fa-arrow-left back-icon" onclick="closeModal('modal-gifts')"></i>
+            <span class="modal-title">Пополнение</span>
+        </div>
+        <div class="pay-method" style="background: #111; border: 1px solid #2c2c2e; margin-bottom: 30px;">
+            <span style="color: var(--text-gray);">Способ оплаты:</span>
+            <span>Gifts 🎁</span>
+        </div>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-info">
+                <b>Перейдите в нашего бота</b>
+                <span>@casemonk_relayer</span>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-info">
+                <b>Отправьте ему NFT подарок</b>
+                <span>Модель, фон и символ не учитываются!</span>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-info">
+                <b>Баланс пополнится</b>
+                <span>В течении нескольких секунд</span>
+            </div>
+        </div>
+
+        <div class="alert-red">
             Отправляйте подарки только напрямую со своего аккаунта!
         </div>
-        <button class="btn btn-support" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
+        <button class="btn-blue" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
 
-        // Настройка TON Connect
-        const tonConnect = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json',
-            buttonRootId: 'ton-btn-container'
-        });
-
-        // Загрузка данных пользователя
+        // Данные пользователя
         const user = tg.initDataUnsafe.user;
         if(user) {
-            document.getElementById('header-name').innerText = user.first_name;
-            document.getElementById('user-handle').innerText = '@' + (user.username || 'user');
-            if(user.photo_url) {
-                document.getElementById('header-avatar').src = user.photo_url;
-                document.getElementById('profile-avatar').src = user.photo_url;
-            }
+            document.getElementById('user-name').innerText = '@' + (user.username || 'user');
+            if(user.photo_url) document.getElementById('user-avatar').src = user.photo_url;
         }
 
-        // Функции интерфейса
-        function showModal(id) {
+        function openModal(id) {
             document.getElementById(id).classList.add('active');
-            tg.HapticFeedback.impactOccurred('medium');
+            tg.HapticFeedback.impactOccurred('light');
         }
 
-        function hideModal(id) {
+        function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
 
-        function changeLanguage(lang, btn) {
-            document.querySelectorAll('[data-ru]').forEach(el => {
-                el.innerText = lang === 'ru' ? el.dataset.ru : el.dataset.en;
-            });
-            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            tg.HapticFeedback.selectionChanged();
-        }
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json'
+        });
 
-        async function processTonPayment() {
-            const amount = document.getElementById('ton-input').value;
-            if(parseFloat(amount) < 0.1) return tg.showAlert("Min 0.1 TON");
-
-            const tx = {
-                validUntil: Math.floor(Date.now() / 1000) + 600,
+        async function payTon() {
+            const amount = document.getElementById('ton-sum').value;
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 60,
                 messages: [{
-                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", // Твой кошелек
+                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ",
                     amount: (parseFloat(amount) * 1000000000).toString()
                 }]
             };
-
             try {
-                await tonConnect.sendTransaction(tx);
-                tg.showAlert("Транзакция отправлена!");
+                await tonConnectUI.sendTransaction(transaction);
             } catch (e) {
-                tg.showAlert("Ошибка или отмена");
+                console.error(e);
             }
         }
     </script>
