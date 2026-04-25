@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CaseMonk Full Version</title>
+    <title>CaseMonk Full Stable</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -100,7 +100,6 @@
                 Зарабатывай приглашая друзей, получай 15% от их депозитов в TON - чем больше пригласил, тем больше заработал пора выигрывать подарки вместе с CaseMonk
             </p>
             <button class="btn" style="background:#2e62f6;" onclick="invite()">Пригласить друга</button>
-            <button class="btn btn-sec" onclick="tg.showAlert('Минимум 5 TON для вывода')">Вывести (от 5 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="ton-icon">)</button>
         </div>
     </div>
 
@@ -135,7 +134,7 @@
         <div style="display:flex; align-items:center; margin-bottom:30px;"><i class="fa-solid fa-chevron-left" onclick="closeM('m-gifts')"></i><span style="margin-left:20px; font-weight:800;">Gifts</span></div>
         <div style="display:flex; flex-direction:column; gap:20px;">
             <div style="display:flex; gap:15px; align-items:center;"><div class="step-num">1</div><div><p style="font-weight:700;">Перейдите в бота</p><p style="color:var(--accent);">@casemonk_relayer</p></div></div>
-            <div style="display:flex; gap:15px; align-items:center;"><div class="step-num">2</div><div><p style="font-weight:700;">Отправьте NFT подарок</p><p style="opacity:0.4; font-size:12px;">Модель и фон не учитываются!</p></div></div>
+            <div style="display:flex; gap:15px; align-items:center;"><div class="step-num">2</div><div><p style="font-weight:700;">Отправьте NFT подарок</p></div></div>
             <div style="display:flex; gap:15px; align-items:center;"><div class="step-num">3</div><div><p style="font-weight:700;">Баланс пополнится</p></div></div>
             <button class="btn" style="background:#2e62f6;" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
         </div>
@@ -167,8 +166,10 @@
             });
         }
 
+        function hideCaseView() { document.getElementById('case-list').style.display='block'; document.getElementById('case-view').style.display='none'; }
+
         function spin(demo) {
-            if(!demo && bal < 10) return tg.showAlert("Need 10 TON");
+            if(!demo && bal < 10) return tg.showAlert("Недостаточно TON");
             if(!demo) { bal -= 10; updateBal(); }
             const track = document.getElementById('track');
             track.style.transition = 'none'; track.style.transform = 'translateX(0)';
