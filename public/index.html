@@ -10,87 +10,58 @@
     <style>
         :root {
             --bg: #000000;
-            --card: #0a0a0a;
+            --card: #0d0d0d;
             --accent-blue: #007aff;
             --text-sec: #8e8e93;
-            --border: 1px solid rgba(255, 255, 255, 0.08);
+            --border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        body {
-            background-color: var(--bg);
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-        }
+        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; }
 
-        .header {
-            display: flex; justify-content: flex-end;
-            padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 50;
-        }
-
-        .balance-chip {
-            background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(15px);
-            padding: 8px 14px; border-radius: 22px; border: var(--border);
+        .header { display: flex; justify-content: flex-end; padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 50; }
+        .balance-chip { 
+            background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(10px);
+            padding: 8px 16px; border-radius: 20px; border: var(--border);
             display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
 
-        .main {
-            padding: 80px 20px 120px; height: 100vh; overflow-y: auto;
-            display: flex; flex-direction: column; align-items: center;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .avatar-glow {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: linear-gradient(180deg, #34c759, transparent);
-            padding: 3px; margin-bottom: 12px;
-        }
+        .main { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        
+        .avatar-glow { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(180deg, #34c759, transparent); padding: 3px; margin-bottom: 12px; }
         .avatar-glow img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; }
-
         .username { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
 
-        .btn-full {
-            width: 100%; max-width: 100%; background: var(--accent-blue);
-            color: #fff; border: none; padding: 16px; border-radius: 16px;
-            font-size: 16px; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px;
+        .btn-full { 
+            width: 100%; background: var(--accent-blue); color: #fff; border: none; 
+            padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; 
+            display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px;
         }
+
+        .lang-container { display: flex; gap: 10px; width: 100%; margin-top: 5px; }
+        .lang-btn { flex: 1; background: #1c1c1e; border: var(--border); padding: 10px; border-radius: 12px; color: #fff; font-size: 14px; }
 
         .inv-box { background: var(--card); width: 100%; border-radius: 24px; padding: 20px; border: var(--border); margin-top: 25px; }
         .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .slot { aspect-ratio: 1; background: #121212; border-radius: 15px; border: 1px dashed #222; }
 
-        .glass-nav {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px);
-            padding: 10px 40px; border-radius: 30px; border: var(--border);
-            display: flex; flex-direction: column; align-items: center;
-        }
-
         .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; }
-        .modal.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.1, 0.7, 0.1, 1); }
+        .modal.active { display: flex; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .m-head { display: flex; align-items: center; height: 50px; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-        .back { margin-right: 15px; font-size: 20px; cursor: pointer; }
+        .back { margin-right: 15px; font-size: 20px; }
 
-        .item-row {
-            background: #111; padding: 18px; border-radius: 16px; border: var(--border);
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-        }
-
-        .step-box { display: flex; gap: 15px; margin-bottom: 20px; }
-        .step-n { background: #222; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .pay-row { background: #1c1c1e; padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         
-        .red-alert {
-            background: rgba(255, 59, 48, 0.12); color: #ff3b30; padding: 15px;
-            border-radius: 14px; font-size: 13px; text-align: center; margin-top: 10px; margin-bottom: 20px;
-        }
+        .step-item { display: flex; gap: 15px; margin-bottom: 20px; }
+        .step-n { background: #2c2c2e; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        
+        .red-box { background: rgba(255, 59, 48, 0.15); color: #ff3b30; padding: 15px; border-radius: 14px; font-size: 13px; text-align: center; margin-bottom: 20px; }
+        
+        input { width: 100%; background: #1c1c1e; border: 1px solid #2c2c2e; padding: 18px; border-radius: 14px; color: #fff; font-size: 18px; margin-top: 10px; text-align: center; }
 
-        .lang-btn { margin-top: 15px; background: #111; border: var(--border); padding: 8px 15px; border-radius: 10px; color: var(--text-sec); font-size: 12px; }
-
-        input { width: 100%; background: #111; border: var(--border); padding: 16px; border-radius: 14px; color: #fff; font-size: 18px; text-align: center; margin-top: 10px; }
+        .nav-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); padding: 10px 40px; border-radius: 30px; border: var(--border); text-align: center; }
     </style>
 </head>
 <body>
@@ -98,20 +69,23 @@
     <div class="header">
         <div class="balance-chip" onclick="openM('m-sel')">
             <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
-            <span id="balance">0.00</span>
+            <span id="bal-val">0.00</span>
             <i class="fa-solid fa-plus-circle" style="color: var(--accent-blue);"></i>
         </div>
     </div>
 
     <div class="main">
-        <div class="avatar-glow"><img id="u-p" src=""></div>
-        <div class="username" id="u-n">@username</div>
+        <div class="avatar-glow"><img id="user-pic" src=""></div>
+        <div class="username" id="user-tag">@username</div>
 
         <button class="btn-full" onclick="window.open('https://t.me/casemonk_sup_robot')">
             <i class="fa-solid fa-headset"></i> <span data-ru="Поддержка" data-en="Support">Поддержка</span>
         </button>
 
-        <button class="lang-btn" onclick="toggleLang()" id="l-btn">English</button>
+        <div class="lang-container">
+            <button class="lang-btn" onclick="setLang('ru')">Русский</button>
+            <button class="lang-btn" onclick="setLang('en')">English</button>
+        </div>
 
         <div class="inv-box">
             <div style="display:flex; justify-content:space-between; font-size:14px;">
@@ -125,70 +99,74 @@
         </div>
     </div>
 
-    <div class="glass-nav">
-        <i class="fa-solid fa-circle-user" style="font-size: 20px; margin-bottom: 4px;"></i>
-        <span style="font-size: 11px;" data-ru="Профиль" data-en="Profile">Профиль</span>
+    <div class="nav-bar">
+        <i class="fa-solid fa-user-circle" style="font-size: 20px; display: block; margin-bottom: 2px;"></i>
+        <span style="font-size: 10px;" data-ru="Профиль" data-en="Profile">Профиль</span>
     </div>
 
     <div id="m-sel" class="modal">
         <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-sel')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
-        <div class="item-row" onclick="openM('m-ton')"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22"></div>
-        <div class="item-row" onclick="openM('m-gift')"><span>Gifts 🎁</span></div>
+        <div class="pay-row" onclick="openM('m-ton')"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22"></div>
+        <div class="pay-row" onclick="openM('m-gift')"><span>Gifts 🎁</span></div>
     </div>
 
     <div id="m-ton" class="modal">
         <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-ton')"></i> TON</div>
-        <div id="ton-connect-btn" style="display: flex; justify-content: center; margin: 20px 0;"></div>
-        <div id="ton-pay-ui" style="display:none;">
-            <p style="color:var(--text-sec); font-size:14px; text-align:center;" data-ru="Введите сумму" data-en="Enter amount">Введите сумму</p>
-            <input type="number" id="t-amount" value="100">
-            <button class="btn-full" style="margin-top:20px;" onclick="doPay()" data-ru="Пополнить" data-en="Deposit">Пополнить</button>
+        <div id="ton-connect-btn" style="display: flex; justify-content: center; margin: 40px 0;"></div>
+        
+        <div id="ton-pay-ui" style="display:none; flex-direction: column; height: 100%;">
+            <p style="color:var(--text-sec); font-size:14px; margin-bottom: 10px;" data-ru="Способ оплаты:" data-en="Payment method:">Способ оплаты:</p>
+            <div class="pay-row"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20"></div>
+            
+            <p style="color:var(--text-sec); font-size:14px; margin-top: 20px;" data-ru="Введите сумму" data-en="Enter amount">Введите сумму</p>
+            <input type="number" id="t-input" value="100" min="0.1" max="9999" step="0.1">
+            
+            <div style="margin-top: auto; padding-bottom: 20px;">
+                <button class="btn-full" style="background: transparent; border: 1px solid #333; margin-bottom: 15px;" onclick="tonConnect.disconnect()">Disconnect wallet</button>
+                <button class="btn-full" onclick="handlePay()" data-ru="Пополнить" data-en="Deposit">Пополнить</button>
+            </div>
         </div>
     </div>
 
     <div id="m-gift" class="modal">
         <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-gift')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
         
-        <div class="step-box">
+        <div class="step-item">
             <div class="step-n">1</div>
-            <div><b data-ru="Перейдите в нашего бота" data-en="Go to our bot">Перейдите в нашего бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_relayer</p></div>
+            <div><b data-ru="Перейдите в нашего бота" data-en="Go to bot">Перейдите в нашего бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_relayer</p></div>
         </div>
-        <div class="step-box">
+        <div class="step-item">
             <div class="step-n">2</div>
-            <div><b data-ru="Отправьте ему NFT подарок" data-en="Send NFT gift">Отправьте ему NFT подарок</b><p style="color:var(--text-sec); font-size:14px;" data-ru="Модель, фон и символ не учитываются!" data-en="Model, background and symbol don't matter!">Модель, фон и символ не учитываются!</p></div>
+            <div><b data-ru="Отправьте ему NFT подарок" data-en="Send NFT gift">Отправьте ему NFT подарок</b><p style="color:var(--text-sec); font-size:14px;" data-ru="Модель, фон и символ не учитываются!" data-en="Model/background don't matter!">Модель, фон и символ не учитываются!</p></div>
         </div>
-        <div class="step-box">
+        <div class="step-item">
             <div class="step-n">3</div>
-            <div><b data-ru="Баланс пополнится" data-en="Balance updated">Баланс пополнится</b><p style="color:var(--text-sec); font-size:14px;" data-ru="В течении нескольких секунд" data-en="Within a few seconds">В течении нескольких секунд</p></div>
+            <div><b data-ru="Баланс пополнится" data-en="Balance will update">Баланс пополнится</b><p style="color:var(--text-sec); font-size:14px;" data-ru="В течении нескольких секунд" data-en="In a few seconds">В течении нескольких секунд</p></div>
         </div>
 
-        <div class="red-alert" data-ru="Отправляйте подарки только напрямую со своего аккаунта!" data-en="Send gifts only directly from your account!">
+        <div class="red-box" data-ru="Отправляйте подарки только напрямую со своего аккаунта!" data-en="Send gifts only directly from your account!">
             Отправляйте подарки только напрямую со своего аккаунта!
         </div>
 
-        <button class="btn-full" style="margin-top:auto; margin-bottom:20px;" onclick="window.open('https://t.me/casemonk_relayer')" data-ru="Перейти" data-en="Go">Перейти</button>
+        <button class="btn-full" style="margin-top: auto; margin-bottom: 20px;" onclick="window.open('https://t.me/casemonk_relayer')" data-ru="Перейти" data-en="Go">Перейти</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let curLang = 'ru';
-        const u = tg.initDataUnsafe.user;
-        if(u) {
-            document.getElementById('u-n').innerText = '@' + (u.username || 'user');
-            if(u.photo_url) document.getElementById('u-p').src = u.photo_url;
+        const user = tg.initDataUnsafe.user;
+        if(user) {
+            document.getElementById('user-tag').innerText = '@' + (user.username || 'user');
+            if(user.photo_url) document.getElementById('user-pic').src = user.photo_url;
         }
 
         function openM(id){ document.getElementById(id).classList.add('active'); tg.HapticFeedback.impactOccurred('medium'); }
         function closeM(id){ document.getElementById(id).classList.remove('active'); }
 
-        function toggleLang(){
-            curLang = curLang === 'ru' ? 'en' : 'ru';
-            document.getElementById('l-btn').innerText = curLang === 'ru' ? 'English' : 'Русский';
-            document.querySelectorAll('[data-ru]').forEach(el => {
-                el.innerText = curLang === 'ru' ? el.dataset.ru : el.dataset.en;
-            });
+        function setLang(l){
+            document.querySelectorAll('[data-ru]').forEach(el => el.innerText = (l === 'ru' ? el.dataset.ru : el.dataset.en));
+            tg.HapticFeedback.selectionChanged();
         }
 
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
@@ -196,14 +174,20 @@
             buttonRootId: 'ton-connect-btn'
         });
 
-        tonConnect.onStatusChange(w => {
-            document.getElementById('ton-pay-ui').style.display = w ? 'block' : 'none';
+        tonConnect.onStatusChange(wallet => {
+            document.getElementById('ton-pay-ui').style.display = wallet ? 'flex' : 'none';
+            document.getElementById('ton-connect-btn').style.display = wallet ? 'none' : 'flex';
         });
 
-        async function doPay(){
-            const v = document.getElementById('t-amount').value;
-            const tx = { validUntil: Math.floor(Date.now()/1000)+60, messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (v*1e9).toString() }] };
-            try { await tonConnect.sendTransaction(tx); } catch(e){}
+        async function handlePay(){
+            const amount = parseFloat(document.getElementById('t-input').value);
+            if(amount < 0.1 || amount > 9999) { alert("Min 0.1, Max 9999 TON"); return; }
+            
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 60,
+                messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (amount * 1e9).toString() }]
+            };
+            try { await tonConnect.sendTransaction(transaction); } catch(e){}
         }
     </script>
 </body>
