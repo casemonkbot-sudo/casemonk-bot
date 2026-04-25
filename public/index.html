@@ -26,207 +26,211 @@
             padding: 8px 16px; border-radius: 20px; border: var(--border);
             display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
-        #bal-val { font-weight: 800; font-size: 17px; }
 
         /* CONTAINERS */
-        .main-container { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: none; flex-direction: column; align-items: center; }
+        .main-container { padding: 80px 20px 120px; height: 100vh; overflow-y: auto; display: none; flex-direction: column; }
         .main-container.active { display: flex; }
-        
-        /* КЕЙС DROP */
-        .case-preview { width: 100%; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: var(--card); padding: 15px; border-radius: 20px; border: var(--border); }
-        .case-preview img { width: 60px; height: 60px; border-radius: 12px; }
-        .case-info h2 { font-size: 18px; margin: 0; }
-        .case-info p { font-size: 12px; color: var(--text-sec); margin: 0; }
 
-        .roulette-box { position: relative; width: 100%; height: 120px; background: #0a0a0a; border-radius: 18px; border: var(--border); overflow: hidden; margin-bottom: 20px; }
-        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: #ff3b30; z-index: 10; box-shadow: 0 0 10px #ff3b30; }
-        #track { display: flex; align-items: center; height: 100%; transition: transform 5s cubic-bezier(0.15, 0, 0.05, 1); will-change: transform; }
-        .r-item { min-width: 100px; height: 100px; margin: 0 5px; background: #151515; border-radius: 15px; display: flex; align-items: center; justify-content: center; }
-        .r-item img { width: 70px; height: 70px; object-fit: contain; }
+        /* КЕЙС DROP (Ячейка) */
+        .case-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
+        .case-card { 
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: var(--border); border-radius: 24px; padding: 25px;
+            text-align: center; position: relative; cursor: pointer;
+        }
+        .case-card img { width: 90px; filter: drop-shadow(0 10px 15px rgba(0,122,255,0.2)); }
+        .case-name { font-weight: 800; font-size: 20px; margin-top: 10px; }
 
-        .case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; margin-top: 10px; }
-        .c-card { background: var(--card); border: var(--border); border-radius: 18px; padding: 15px; text-align: center; }
-        .c-card img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; }
-        .c-name { font-size: 11px; color: var(--text-sec); margin-bottom: 4px; height: 26px; overflow: hidden; }
-        .c-price { font-size: 14px; font-weight: 700; color: var(--accent-blue); }
+        /* РУЛЕТКА (ПРОКРУТ) */
+        .roulette-view { display: none; width: 100%; flex-direction: column; }
+        .roulette-view.active { display: flex; }
 
-        /* ПРОФИЛЬ */
-        .avatar-glow { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(180deg, #34c759, transparent); padding: 3px; margin-bottom: 12px; }
-        .avatar-glow img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; }
-        .username { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
-        .user-tag { color: var(--text-sec); font-size: 14px; margin-bottom: 20px; }
+        .roulette-container {
+            position: relative; width: 100%; height: 140px; background: #080808;
+            border-radius: 20px; border: var(--border); overflow: hidden; margin: 20px 0;
+        }
+        .roulette-pointer {
+            position: absolute; left: 50%; top: 0; width: 4px; height: 100%;
+            background: var(--accent-blue); z-index: 10; transform: translateX(-50%);
+            box-shadow: 0 0 20px var(--accent-blue);
+        }
+        #roulette-track {
+            display: flex; align-items: center; height: 100%;
+            transition: transform 7s cubic-bezier(0.15, 0, 0.05, 1);
+            will-change: transform;
+        }
+        .r-slot {
+            min-width: 110px; height: 110px; margin: 0 5px; background: #121212;
+            border-radius: 18px; border: var(--border);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .r-slot img { width: 75px; height: 75px; object-fit: contain; }
 
-        .btn-full { width: 100%; background: var(--accent-blue); color: #fff; border: none; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; }
-        .btn-sec { background: #1c1c1e; color: #fff; border: var(--border); }
+        /* ЭЛЕМЕНТЫ ПРОФИЛЯ */
+        .avatar-box { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(180deg, var(--accent-blue), transparent); padding: 3px; margin: 0 auto 15px; }
+        .avatar-box img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; }
 
-        /* ИНВЕНТАРЬ */
-        .inv-box { background: var(--card); width: 100%; border-radius: 24px; padding: 20px; border: var(--border); margin-top: 25px; }
-        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .slot { aspect-ratio: 1; background: #121212; border-radius: 15px; border: 1px dashed #222; }
-
-        /* БОНУСЫ */
-        .friends-card { background: var(--card); width: 100%; border-radius: 24px; padding: 20px; border: var(--border); margin-bottom: 15px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
-        .stat-item { background: #1c1c1e; padding: 15px; border-radius: 16px; text-align: center; border: var(--border); }
-        .stat-label { font-size: 12px; color: var(--text-sec); display: block; margin-bottom: 5px; }
-        .stat-val { font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 5px; }
-
-        /* МОДАЛКИ */
-        .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; }
-        .modal.active { display: flex; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .m-head { display: flex; align-items: center; height: 50px; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-        .back { margin-right: 15px; font-size: 20px; cursor: pointer; }
-        .pay-row { background: #1c1c1e; padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer; }
+        /* КНОПКИ */
+        .btn { width: 100%; background: var(--accent-blue); color: #fff; border: none; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-sec { background: #1c1c1e; border: var(--border); }
 
         /* NAV GLASS */
         .nav-glass {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
-            padding: 10px 30px; border-radius: 30px; border: var(--border);
-            display: flex; gap: 40px; z-index: 100;
+            background: rgba(28, 28, 30, 0.6); backdrop-filter: blur(25px);
+            padding: 12px 35px; border-radius: 35px; border: var(--border);
+            display: flex; gap: 45px; z-index: 100;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sec); cursor: pointer; }
+        .nav-item { color: var(--text-sec); text-align: center; font-size: 10px; }
         .nav-item.active { color: #fff; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+
+        /* МОДАЛКИ */
+        .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 25px; }
+        .modal.active { display: flex; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .red-alert { background: rgba(255, 59, 48, 0.1); color: #ff3b30; padding: 15px; border-radius: 15px; font-size: 13px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255, 59, 48, 0.2); }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="balance-chip" onclick="openM('m-sel')">
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="18">
-            <span id="bal-val">0.00</span>
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20">
+            <span id="bal-val" style="font-weight: 800; font-size: 18px;">0.00</span>
             <i class="fa-solid fa-plus-circle" style="color: var(--accent-blue);"></i>
         </div>
     </div>
 
-    <div id="page-cases" class="main-container">
-        <div class="case-preview">
-            <img src="/case_drop.png">
-            <div class="case-info">
-                <h2 data-ru="Кейс DROP" data-en="DROP Case">Кейс DROP</h2>
-                <p data-ru="Уникальные предметы" data-en="Unique items">Уникальные предметы</p>
+    <div id="page-cases" class="main-container active">
+        <div id="case-grid-view" class="case-list">
+            <div class="case-card" onclick="enterCase()">
+                <img src="case_drop.png">
+                <div class="case-name">DROP</div>
+                <div style="color:var(--accent-blue); font-weight:600; margin-top:5px;">10 TON</div>
             </div>
         </div>
 
-        <div class="roulette-box">
-            <div class="pointer"></div>
-            <div id="track"></div>
+        <div id="roulette-view" class="roulette-view">
+            <div style="display:flex; align-items:center; margin-bottom:20px;">
+                <i class="fa-solid fa-chevron-left" onclick="exitCase()" style="font-size:20px;"></i>
+                <span style="margin-left:15px; font-weight:700; font-size:20px;">Кейс DROP</span>
+            </div>
+            
+            <div class="roulette-container">
+                <div class="roulette-pointer"></div>
+                <div id="roulette-track"></div>
+            </div>
+
+            <button class="btn" onclick="spin(false)">ОТКРЫТЬ ЗА 10 TON</button>
+            <button class="btn btn-sec" onclick="spin(true)">ДЕМО РЕЖИМ</button>
+
+            <h3 style="margin: 25px 0 15px; font-size: 14px; color: var(--text-sec);">Предметы внутри:</h3>
+            <div id="drop-preview-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;"></div>
         </div>
-
-        <button class="btn-full" onclick="startSpin(false)" data-ru="ОТКРЫТЬ ЗА 10 TON" data-en="OPEN FOR 10 TON">ОТКРЫТЬ ЗА 10 TON</button>
-        <button class="btn-full btn-sec" onclick="startSpin(true)" data-ru="ДЕМО РЕЖИМ" data-en="DEMO MODE">ДЕМО РЕЖИМ</button>
-
-        <h3 style="align-self: flex-start; margin: 20px 0 10px; font-size: 14px; color: var(--text-sec);" data-ru="Возможные результаты" data-en="Possible outcomes">Возможные результаты</h3>
-        <div class="case-grid" id="grid-items"></div>
     </div>
 
     <div id="page-bonus" class="main-container">
-        <h2 style="align-self: flex-start; margin-bottom: 20px;" data-ru="Друзья" data-en="Friends">Друзья</h2>
-        <div class="friends-card">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-label" data-ru="Всего" data-en="Total">Всего</span>
-                    <span class="stat-val" id="ref-count">0</span>
+        <h2>Друзья</h2>
+        <div class="friends-card" style="margin-top:20px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+                <div style="background:#1c1c1e; padding:15px; border-radius:18px; text-align:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">Рефералы</span><br>
+                    <b id="ref-count" style="font-size:18px;">0</b>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label" data-ru="Заработок" data-en="Earnings">Заработок</span>
-                    <span class="stat-val">
-                        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="16"> <span id="ref-earn">0.00</span>
-                    </span>
+                <div style="background:#1c1c1e; padding:15px; border-radius:18px; text-align:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">Прибыль</span><br>
+                    <b id="ref-earn" style="font-size:18px;">0.00</b>
                 </div>
             </div>
-            <button class="btn-full" onclick="claimEarnings()" data-ru="Вывести" data-en="Withdraw">Вывести</button>
-            <p style="color:var(--text-sec); font-size:12px; margin: 15px 0;" data-ru="Приглашайте друзей — получайте 15% от их депозита!" data-en="Invite friends — get 15% of their deposits!">Приглашайте друзей — получайте 15% от их депозита!</p>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-full" style="margin-bottom:0;" onclick="inviteFriend()" data-ru="Пригласить друга" data-en="Invite friend">Пригласить друга</button>
-                <button style="background: #1c1c1e; width: 54px; border-radius: 16px; border: var(--border); color: #fff;" onclick="copyRef()"><i class="fa-regular fa-copy"></i></button>
+            <p style="color:var(--text-sec); font-size:13px; line-height:1.5; margin-bottom:20px;">Приглашай друзей по своей ссылке и получай <b>15%</b> от каждого их пополнения на свой баланс моментально!</p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="margin:0;" onclick="shareRef()">Пригласить</button>
+                <button class="btn btn-sec" style="width:60px; margin:0;" onclick="copyRef()"><i class="fa-regular fa-copy"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="page-profile" class="main-container active">
-        <div class="avatar-glow"><img id="u-pic" src=""></div>
-        <div class="username" id="u-name">User</div>
-        <div class="user-tag" id="u-tag">@username</div>
-        <button class="btn-full" onclick="window.open('https://t.me/casemonk_sup_robot')">
-            <i class="fa-solid fa-headset"></i> <span data-ru="Поддержка" data-en="Support">Поддержка</span>
-        </button>
-        <div style="display: flex; gap: 10px; width: 100%;">
-            <button class="btn-full btn-sec" style="flex:1" onclick="setL('ru')">Русский</button>
-            <button class="btn-full btn-sec" style="flex:1" onclick="setL('en')">English</button>
-        </div>
-        <div class="inv-box">
-            <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom: 5px;">
-                <b data-ru="Инвентарь" data-en="Inventory">Инвентарь</b>
-                <span style="color:var(--text-sec)" data-ru="0 предметов" data-en="0 items">0 предметов</span>
-            </div>
-            <div class="inv-grid">
-                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-            </div>
+    <div id="page-profile" class="main-container">
+        <div class="avatar-box"><img id="u-pic" src=""></div>
+        <h2 id="u-name" style="text-align:center;">User</h2>
+        <p id="u-tag" style="text-align:center; color:var(--text-sec); margin-bottom:30px;">@username</p>
+        
+        <button class="btn" onclick="window.open('https://t.me/casemonk_sup_robot')"><i class="fa-solid fa-headset"></i> Поддержка</button>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn btn-sec" onclick="setL('ru')">Русский</button>
+            <button class="btn btn-sec" onclick="setL('en')">English</button>
         </div>
     </div>
 
     <div class="nav-glass">
-        <div class="nav-item" onclick="switchPage('cases', this)">
-            <i class="fa-solid fa-box-open"></i>
-            <span style="font-size: 10px;" data-ru="Кейсы" data-en="Cases">Кейсы</span>
-        </div>
-        <div class="nav-item" onclick="switchPage('bonus', this)">
-            <i class="fa-solid fa-gift"></i>
-            <span style="font-size: 10px;" data-ru="Бонусы" data-en="Bonuses">Бонусы</span>
-        </div>
-        <div class="nav-item active" onclick="switchPage('profile', this)">
-            <i class="fa-solid fa-user-circle"></i>
-            <span style="font-size: 10px;" data-ru="Профиль" data-en="Profile">Профиль</span>
-        </div>
+        <div class="nav-item active" onclick="switchPage('cases', this)"><i class="fa-solid fa-box-open"></i>Кейсы</div>
+        <div class="nav-item" onclick="switchPage('bonus', this)"><i class="fa-solid fa-gift"></i>Бонусы</div>
+        <div class="nav-item" onclick="switchPage('profile', this)"><i class="fa-solid fa-user-circle"></i>Профиль</div>
     </div>
 
     <div id="m-sel" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-sel')"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
-        <div class="pay-row" onclick="openM('m-ton')"><span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22"></div>
-        <div class="pay-row" onclick="openM('m-gift')"><span>Gifts 🎁</span></div>
+        <div style="display:flex; align-items:center; margin-bottom:30px;">
+            <i class="fa-solid fa-chevron-left" onclick="closeM('m-sel')" style="font-size:20px;"></i>
+            <span style="margin-left:15px; font-weight:700;">Пополнение</span>
+        </div>
+        <div class="btn btn-sec" style="justify-content:space-between;" onclick="openM('m-ton')">
+            <span>TON Coin</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22">
+        </div>
+        <div class="btn btn-sec" style="justify-content:space-between;" onclick="openM('m-gift')">
+            <span>Telegram Gifts 🎁</span>
+        </div>
     </div>
 
     <div id="m-ton" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-ton')"></i> TON</div>
-        <div id="ton-connect-btn" style="display: flex; justify-content: center; margin: 40px 0;"></div>
-        <div id="ton-pay-ui" style="display:none; flex-direction: column; height: 100%;">
-            <input type="number" id="t-val" value="1.0" min="0.1" step="0.1" style="width: 100%; background: #1c1c1e; border: 1px solid #2c2c2e; padding: 18px; border-radius: 14px; color: #fff; font-size: 18px; text-align: center; outline: none;">
-            <div style="margin-top: auto; padding-bottom: 20px;">
-                <button class="btn-full btn-sec" style="margin-bottom: 10px;" onclick="tonConnect.disconnect()">Отвязать кошелек</button>
-                <button class="btn-full" onclick="sendT()">Пополнить</button>
-            </div>
+        <div style="display:flex; align-items:center; margin-bottom:30px;">
+            <i class="fa-solid fa-chevron-left" onclick="closeM('m-ton')" style="font-size:20px;"></i>
+            <span style="margin-left:15px; font-weight:700;">Пополнение TON</span>
+        </div>
+        <div id="ton-connect-btn" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
+        <div id="ton-pay-ui" style="display:none; flex-direction:column;">
+            <input type="number" id="t-amount" value="1.0" step="0.1" style="background:#1c1c1e; border:1px solid #333; padding:20px; border-radius:15px; color:#fff; text-align:center; font-size:20px; margin-bottom:20px;">
+            <button class="btn" onclick="sendTON()">Пополнить</button>
+            <button class="btn btn-sec" onclick="tonConnect.disconnect()">Выйти из кошелька</button>
         </div>
     </div>
 
     <div id="m-gift" class="modal">
-        <div class="m-head"><i class="fa-solid fa-chevron-left back" onclick="closeM('m-gift')"></i> Gifts</div>
-        <p style="color:var(--text-sec); margin-bottom:20px;">Отправьте NFT подарок на @casemonk_robot. Баланс пополнится автоматически.</p>
-        <button class="btn-full" onclick="window.open('https://t.me/casemonk_robot')">Перейти к боту</button>
+        <div style="display:flex; align-items:center; margin-bottom:30px;">
+            <i class="fa-solid fa-chevron-left" onclick="closeM('m-gift')" style="font-size:20px;"></i>
+            <span style="margin-left:15px; font-weight:700;">Пополнение Gifts</span>
+        </div>
+        <div style="display:flex; gap:15px; margin-bottom:20px;">
+            <div style="width:30px; height:30px; background:#333; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">1</div>
+            <div><b>Откройте бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_robot</p></div>
+        </div>
+        <div style="display:flex; gap:15px; margin-bottom:20px;">
+            <div style="width:30px; height:30px; background:#333; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">2</div>
+            <div><b>Отправьте NFT Подарок</b><p style="color:var(--text-sec); font-size:14px;">Любой подарок из вашей коллекции</p></div>
+        </div>
+        <div class="red-alert">Внимание! Принимаются только подарки, отправленные напрямую.</div>
+        <button class="btn" onclick="window.open('https://t.me/casemonk_robot')">Перейти к боту</button>
     </div>
 
-    <div id="m-win" class="modal">
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
-            <h1 id="win-status" style="margin-bottom:10px;">ВЫИГРЫШ!</h1>
-            <img id="win-img-res" src="" style="width:160px; margin-bottom:20px;">
-            <h2 id="win-name-res" style="margin-bottom:5px;">Item</h2>
-            <div id="win-price-res" style="color:var(--accent-blue); font-size:20px; font-weight:800; margin-bottom:30px;">0.00 TON</div>
-            <div id="win-real-btns" style="width:100%;">
-                <button class="btn-full" onclick="claim('sell')">ПРОДАТЬ</button>
-                <button class="btn-full btn-sec" onclick="claim('keep')">ОСТАВИТЬ</button>
-            </div>
-            <div id="win-demo-msg" style="display:none; color:#ff3b30;">Демо режим: приз не начисляется</div>
+    <div id="m-win" class="modal" style="justify-content:center; align-items:center; text-align:center;">
+        <h1 style="color:var(--accent-blue); font-size:32px;">ВЫИГРЫШ!</h1>
+        <img id="win-img" src="" style="width:180px; margin:30px 0; filter: drop-shadow(0 0 20px rgba(0,122,255,0.4));">
+        <h2 id="win-name">Item Name</h2>
+        <div id="win-price" style="font-size:20px; font-weight:800; color:var(--accent-blue); margin:10px 0 40px;">0.00 TON</div>
+        <div id="real-btns" style="width:100%;">
+            <button class="btn" onclick="claimWin('sell')">ПРОДАТЬ</button>
+            <button class="btn btn-sec" onclick="claimWin('keep')">ОСТАВИТЬ</button>
         </div>
+        <p id="demo-msg" style="display:none; color:#ff3b30; font-weight:700;">Это демо-режим!</p>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        let curL = 'ru';
+        const u = tg.initDataUnsafe.user;
 
-        const ITEMS = [
+        const DROP_ITEMS = [
             { name: 'Nail Bracelet', price: 115.83, chance: 0.1, file: '1000002213.png' },
             { name: 'Bonded Ring', price: 40.10, chance: 0.3, file: '1000002214.png' },
             { name: 'Signet Ring', price: 32.69, chance: 1, file: '1000002215.png' },
@@ -236,94 +240,117 @@
             { name: 'Love Candle', price: 10.04, chance: 40, file: '1000002295.jpg' },
             { name: 'Jolly Chimp', price: 6.46, chance: 45, file: '1000002297.jpg' },
             { name: 'Light Sword', price: 5.40, chance: 50, file: '1000002291.jpg' },
-            { name: 'Snoop Dogg', price: 4.95, chance: 55, file: '1000002223.png' },
-            { name: '3.0 TON', price: 3.00, chance: 48, file: 'ton.webp' }
+            { name: 'Snoop Dogg', price: 4.95, chance: 55, file: '1000002223.png' }
         ];
 
-        // ТВОЙ ОРИГИНАЛЬНЫЙ КОД ПОЛЬЗОВАТЕЛЯ
-        const u = tg.initDataUnsafe.user;
+        // Инициализация профиля
         if(u) {
-            document.getElementById('u-name').innerText = u.first_name + (u.last_name ? ' ' + u.last_name : '');
+            document.getElementById('u-name').innerText = u.first_name;
             document.getElementById('u-tag').innerText = '@' + (u.username || 'user');
             if(u.photo_url) document.getElementById('u-pic').src = u.photo_url;
+            // Реферальный код (start_param)
             const sp = tg.initDataUnsafe.start_param;
-            if(sp) tg.sendData(JSON.stringify({type: "register_ref", inviter: sp, user: u.id}));
+            if(sp) tg.sendData(JSON.stringify({action: "ref_reg", inviter: sp}));
         }
 
-        // TON CONNECT
+        // Вход в кейс
+        function enterCase() {
+            document.getElementById('case-grid-view').style.display = 'none';
+            document.getElementById('roulette-view').classList.add('active');
+            const grid = document.getElementById('drop-preview-grid');
+            grid.innerHTML = '';
+            DROP_ITEMS.forEach(item => {
+                grid.innerHTML += `<div style="background:var(--card); padding:10px; border-radius:12px; text-align:center; border:var(--border);">
+                    <img src="${item.file}" style="width:50px; height:50px; object-fit:contain;"><br>
+                    <span style="font-size:10px; color:var(--text-sec);">${item.name}</span>
+                </div>`;
+            });
+        }
+
+        function exitCase() {
+            document.getElementById('case-grid-view').style.display = 'grid';
+            document.getElementById('roulette-view').classList.remove('active');
+        }
+
+        let isSpinning = false;
+        let winner = null;
+        let demoMode = false;
+
+        function spin(demo) {
+            if(isSpinning) return;
+            isSpinning = true;
+            demoMode = demo;
+            
+            const track = document.getElementById('roulette-track');
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0)';
+            track.innerHTML = '';
+
+            // Генерируем 60 предметов для прокрутки
+            let itemsPool = [];
+            for(let i=0; i<60; i++) {
+                const random = DROP_ITEMS[Math.floor(Math.random() * DROP_ITEMS.length)];
+                itemsPool.push(random);
+                track.innerHTML += `<div class="r-slot"><img src="${random.file}"></div>`;
+            }
+
+            // Определяем победителя (50-й предмет в ленте)
+            winner = calculateWinner(demo);
+            track.children[50].innerHTML = `<img src="${winner.file}">`;
+
+            // Запускаем анимацию
+            setTimeout(() => {
+                track.style.transition = 'transform 7s cubic-bezier(0.15, 0, 0.05, 1)';
+                // 50 предметов * (110px ширина + 10px отступ) - центр контейнера + половина слота
+                const centerOffset = track.parentElement.offsetWidth / 2;
+                const targetPos = (50 * 120) - centerOffset + 60;
+                track.style.transform = `translateX(-${targetPos}px)`;
+            }, 50);
+
+            setTimeout(finishSpin, 7200);
+        }
+
+        function calculateWinner(demo) {
+            if(demo) return DROP_ITEMS[Math.floor(Math.random()*3)]; // В демо чаще падают дорогие
+            const total = DROP_ITEMS.reduce((s, i) => s + i.chance, 0);
+            let r = Math.random() * total;
+            for(let item of DROP_ITEMS) {
+                if(r < item.chance) return item;
+                r -= item.chance;
+            }
+        }
+
+        function finishSpin() {
+            document.getElementById('win-img').src = winner.file;
+            document.getElementById('win-name').innerText = winner.name;
+            document.getElementById('win-price').innerText = winner.price + ' TON';
+            document.getElementById('real-btns').style.display = demoMode ? 'none' : 'block';
+            document.getElementById('demo-msg').style.display = demoMode ? 'block' : 'none';
+            openM('m-win');
+            if(demoMode) setTimeout(() => closeM('m-win'), 4000);
+        }
+
+        function claimWin(act) {
+            tg.showAlert(act === 'sell' ? 'Успешно продано!' : 'Для вывода напишите в поддержку.');
+            closeM('m-win');
+        }
+
+        // TON Connect
         const tonConnect = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json',
             buttonRootId: 'ton-connect-btn'
         });
         tonConnect.onStatusChange(w => {
             document.getElementById('ton-pay-ui').style.display = w ? 'flex' : 'none';
-            document.getElementById('ton-connect-btn').style.display = w ? 'none' : 'flex';
         });
 
-        async function sendT(){
-            const v = parseFloat(document.getElementById('t-val').value);
-            if(isNaN(v) || v < 0.1) return tg.showAlert("Минимум 0.1 TON");
-            const tx = { validUntil: Math.floor(Date.now()/1000)+60, messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (v*1e9).toString() }] };
-            try { 
-                const res = await tonConnect.sendTransaction(tx);
-                if(res) tg.sendData(JSON.stringify({type: "pay_done", amount: v, user: u.id}));
-            } catch(e){}
+        async function sendTON() {
+            const amount = document.getElementById('t-amount').value;
+            const tx = { validUntil: Math.floor(Date.now()/1000)+60, messages: [{ address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ", amount: (amount*1e9).toString() }] };
+            try { await tonConnect.sendTransaction(tx); } catch(e){}
         }
 
-        // РУЛЕТКА
-        let isSpinning = false;
-        let won = null;
-        let demo = false;
-
-        function startSpin(isDemo) {
-            if (isSpinning) return;
-            isSpinning = true;
-            demo = isDemo;
-            const track = document.getElementById('track');
-            track.style.transition = 'none';
-            track.style.transform = 'translateX(0)';
-            track.innerHTML = '';
-            for(let i=0; i<60; i++) {
-                const r = ITEMS[Math.floor(Math.random() * ITEMS.length)];
-                track.innerHTML += `<div class="r-item"><img src="/${r.file}"></div>`;
-            }
-            won = getWinner(isDemo);
-            track.children[50].innerHTML = `<img src="/${won.file}">`;
-            setTimeout(() => {
-                track.style.transition = 'transform 5s cubic-bezier(0.15, 0, 0.05, 1)';
-                const shift = (50 * 110) - (track.parentElement.offsetWidth / 2) + 55;
-                track.style.transform = `translateX(-${shift}px)`;
-            }, 50);
-            setTimeout(showResult, 5500);
-        }
-
-        function getWinner(isDemo) {
-            if (isDemo) {
-                const exp = ITEMS.filter(i => i.price >= 20);
-                return Math.random() < 0.8 ? exp[Math.floor(Math.random()*exp.length)] : ITEMS[Math.floor(Math.random()*ITEMS.length)];
-            }
-            const total = ITEMS.reduce((s, i) => s + i.chance, 0);
-            let r = Math.random() * total;
-            for (let i of ITEMS) { if (r < i.chance) return i; r -= i.chance; }
-        }
-
-        function showResult() {
-            document.getElementById('win-img-res').src = '/' + won.file;
-            document.getElementById('win-name-res').innerText = won.name;
-            document.getElementById('win-price-res').innerText = won.price + ' TON';
-            document.getElementById('win-demo-msg').style.display = demo ? 'block' : 'none';
-            document.getElementById('win-real-btns').style.display = demo ? 'none' : 'block';
-            openM('m-win');
-            if(demo) setTimeout(() => closeM('m-win'), 5000);
-        }
-
-        function claim(type) {
-            if(type === 'sell') tg.showAlert('Продано!');
-            else tg.showAlert('Напишите @casemonk_relayer');
-            closeM('m-win');
-        }
-
-        // НАВИГАЦИЯ
+        // Системные функции
         function switchPage(p, el) {
             document.querySelectorAll('.main-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -334,23 +361,10 @@
 
         function openM(id){ document.getElementById(id).classList.add('active'); }
         function closeM(id){ document.getElementById(id).classList.remove('active'); isSpinning = false; }
-        
-        function setL(l){
-            curL = l;
-            document.querySelectorAll('[data-ru]').forEach(el => el.innerText = (l === 'ru' ? el.dataset.ru : el.dataset.en));
-            tg.HapticFeedback.selectionChanged();
-        }
 
-        const refLink = "https://t.me/casemonk_robot?start=" + (u ? u.id : "0");
-        function inviteFriend() { window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}`); }
-        function copyRef() { navigator.clipboard.writeText(refLink); tg.showAlert("Скопировано!"); }
-        function claimEarnings() { tg.showAlert("Вывод от 5 TON"); }
-
-        // Инициализация предметов
-        const grid = document.getElementById('grid-items');
-        ITEMS.forEach(i => {
-            grid.innerHTML += `<div class="c-card"><img src="/${i.file}"><div class="c-name">${i.name}</div><div class="c-price">${i.price} TON</div></div>`;
-        });
+        const rLink = "https://t.me/casemonk_robot?start=" + (u ? u.id : "0");
+        function shareRef() { window.open(`https://t.me/share/url?url=${encodeURIComponent(rLink)}`); }
+        function copyRef() { navigator.clipboard.writeText(rLink); tg.showAlert("Ссылка скопирована!"); }
     </script>
 </body>
-    </html>
+</html>
