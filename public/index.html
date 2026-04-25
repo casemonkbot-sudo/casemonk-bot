@@ -3,313 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CASE MONK RELEYER</title>
+    <title>CaseMonk Releyer</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-blue: #007bff;
-            --dark-bg: #000000;
-            --card-bg: #0a0a0a;
-            --border-color: #1a1a1a;
-            --text-gray: #888;
+            --bg-dark: #080a0f;
+            --card-bg: #0f1218;
+            --accent-blue: #007bff;
+            --accent-green: #2ecc71;
+            --text-muted: #8e9297;
+            --ton-color: #0098ea;
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
         body {
-            background-color: var(--dark-bg);
+            background-color: var(--bg-dark);
             color: #fff;
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
             margin: 0;
-            padding: 0;
-            overflow: hidden; /* Чтобы не скроллился весь экран, а только контент */
-            height: 100vh;
-        }
-
-        /* Анимация появления */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .screen {
-            display: none;
-            padding: 20px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* Шапка */
-        .header {
-            text-align: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo-text {
-            font-size: 18px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            color: var(--primary-blue);
-            text-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
-        }
-
-        /* Карточка профиля */
-        .profile-card {
-            background: var(--card-bg);
-            border: 1px solid var(--primary-blue);
-            border-radius: 25px;
-            padding: 25px;
-            text-align: center;
-            margin-top: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .user-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 3px solid var(--primary-blue);
-            margin-bottom: 15px;
-            object-fit: cover;
-        }
-
-        .user-name {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .user-id {
-            font-size: 12px;
-            color: var(--text-gray);
-            margin-bottom: 20px;
-        }
-
-        .balance-label {
-            font-size: 13px;
-            color: var(--text-gray);
-            text-transform: uppercase;
-        }
-
-        .balance-val {
-            font-size: 34px;
-            font-weight: 800;
-            color: var(--primary-blue);
-        }
-
-        /* Кнопки пополнения */
-        .pay-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .pay-button {
-            background: #111;
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 20px 10px;
-            text-align: center;
-            transition: 0.3s;
-        }
-
-        .pay-button:active {
-            border-color: var(--primary-blue);
-            background: #161616;
-        }
-
-        .pay-button i {
-            font-size: 28px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .ton-icon { color: #0098ea; }
-        .gift-icon { color: #ff9d00; }
-
-        .pay-button span {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* Навигация */
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 70px;
-            background: #050505;
-            border-top: 1px solid var(--border-color);
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Анимации и плавность */
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* Верхняя панель */
+        .header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding-bottom: 10px; /* Отступ для iPhone */
+            padding: 12px 16px;
+            z-index: 10;
         }
 
-        .nav-item {
-            color: #444;
-            text-align: center;
+        .user-mini { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+        .mini-photo { width: 26px; height: 26px; border-radius: 50%; background: #222; }
+
+        .balance-pill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        /* Главный экран профиля */
+        .profile-container {
             flex: 1;
-            transition: 0.3s;
-        }
-
-        .nav-item i {
-            font-size: 22px;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .nav-item span {
-            font-size: 10px;
-            text-transform: uppercase;
-        }
-
-        .nav-item.active {
-            color: var(--primary-blue);
-        }
-
-        /* Заглушки для других разделов */
-        .empty-state {
+            overflow-y: auto;
+            padding: 0 20px 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 60vh;
-            color: var(--text-gray);
         }
 
-        .empty-state i {
-            font-size: 50px;
+        .avatar-wrap {
+            margin-top: 20px;
+            position: relative;
+            padding: 5px;
+            background: linear-gradient(180deg, var(--accent-green), transparent);
+            border-radius: 50%;
+        }
+
+        .main-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #111;
+            object-fit: cover;
+            display: block;
+        }
+
+        .username-tag {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 15px 0 25px;
+        }
+
+        .btn-main {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            width: 100%;
+            max-width: 320px;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        /* Промокод */
+        .card-box {
+            background: var(--card-bg);
+            width: 100%;
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 20px;
+            border: 1px solid #1c2028;
+        }
+
+        .input-row { display: flex; gap: 10px; margin-top: 10px; }
+        input {
+            flex: 1;
+            background: #000;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 12px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .btn-sm { background: var(--accent-green); border: none; border-radius: 10px; padding: 0 15px; font-weight: bold; }
+
+        /* Язык */
+        .lang-bar { display: flex; align-items: center; gap: 12px; margin-top: 20px; width: 100%; }
+        .lang-toggle { display: flex; background: #161a22; border-radius: 12px; padding: 3px; }
+        .lang-opt {
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .lang-opt.active { background: var(--accent-blue); color: white; }
+
+        /* Инвентарь */
+        .inv-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .inv-cell { aspect-ratio: 1; background: #0c0e14; border-radius: 15px; border: 1px dashed #222; }
+
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #000;
+            z-index: 100;
+            display: none;
+            padding: 20px;
+            flex-direction: column;
+        }
+        .modal.active { display: flex; }
+        
+        .modal-head { display: flex; align-items: center; margin-bottom: 30px; font-size: 18px; font-weight: bold; }
+        .close-btn { margin-right: 15px; font-size: 22px; cursor: pointer; }
+
+        .pay-item {
+            background: var(--card-bg);
+            margin-bottom: 12px;
+            padding: 18px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #1c2028;
+        }
+
+        /* Gifts Инструкция */
+        .step-item { display: flex; gap: 15px; margin-bottom: 25px; }
+        .circle-num {
+            min-width: 32px; height: 32px;
+            border-radius: 50%;
+            background: #1c2028;
+            color: var(--accent-blue);
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold;
+        }
+
+        .red-alert {
+            background: rgba(231, 76, 60, 0.15);
+            color: #ff5e57;
+            padding: 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            font-size: 13px;
+            text-align: center;
+            margin-top: auto;
             margin-bottom: 20px;
-            opacity: 0.2;
+        }
+
+        /* Навигация (Профиль) */
+        .nav-fixed {
+            position: fixed;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 8px 25px;
+            display: flex;
+            gap: 40px;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo-text">CASE MONK RELEYER</div>
-    </div>
-
-    <div id="cases" class="screen">
-        <div class="empty-state">
-            <i class="fas fa-box-open"></i>
-            <p>Кейсы будут доступны скоро...</p>
+        <div class="user-mini">
+            <img id="m-photo" class="mini-photo" src="">
+            <span id="m-name">User</span>
+        </div>
+        <div class="balance-pill" onclick="openModal('m-pay')">
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="16">
+            <span id="bal-val">0.00</span>
+            <i class="fa-solid fa-plus" style="font-size: 12px; color: var(--text-muted);"></i>
         </div>
     </div>
 
-    <div id="rocket" class="screen">
-        <div class="empty-state">
-            <i class="fas fa-rocket"></i>
-            <p>Улучшения ракетки в разработке</p>
+    <div class="profile-container fade-in">
+        <div class="avatar-wrap">
+            <img id="main-photo" class="main-photo" src="">
         </div>
-    </div>
+        <div class="username-tag" id="u-handle">@username</div>
 
-    <div id="profile" class="screen active">
-        <div class="profile-card">
-            <img id="avatar" src="" class="user-avatar" alt="User">
-            <div id="username" class="user-name">Загрузка...</div>
-            <div id="user-id" class="user-id">ID: 000000000</div>
-            
-            <div class="balance-label">Доступный баланс</div>
-            <div class="balance-val" id="balance">0.00 $</div>
-        </div>
+        <button class="btn-main" onclick="openModal('m-pay')">
+            💵 <span data-ru="Пополнить баланс" data-en="Deposit balance">Пополнить баланс</span>
+        </button>
 
-        <div class="pay-grid">
-            <div class="pay-button" onclick="handleAction('ton')">
-                <i class="fa-solid fa-gem ton-icon"></i>
-                <span>TON Pay</span>
-            </div>
-            <div class="pay-button" onclick="handleAction('gifts')">
-                <i class="fa-solid fa-gift gift-icon"></i>
-                <span>Gifts</span>
+        <div class="card-box">
+            <div data-ru="Активировать промокод" data-en="Activate promo">Активировать промокод</div>
+            <div class="input-row">
+                <input type="text" id="promo" placeholder="Введите код">
+                <button class="btn-sm" onclick="tg.showAlert('Код не найден')">OK</button>
             </div>
         </div>
+
+        <div class="lang-bar">
+            <span style="color: var(--text-muted); font-size: 14px;">Язык:</span>
+            <div class="lang-toggle">
+                <div class="lang-opt" onclick="setLanguage('en')">English</div>
+                <div class="lang-opt active" onclick="setLanguage('ru')">Русский</div>
+            </div>
+        </div>
+
+        <div style="width: 100%; display: flex; justify-content: space-between; margin-top: 30px;">
+            <span style="font-size: 14px;" data-ru="Инвентарь" data-en="Inventory">Инвентарь</span>
+            <span style="color: var(--accent-blue); font-size: 13px;">Продать все 0</span>
+        </div>
+
+        <div class="inv-grid">
+            <div class="inv-cell"></div><div class="inv-cell"></div><div class="inv-cell"></div>
+            <div class="inv-cell"></div><div class="inv-cell"></div><div class="inv-cell"></div>
+        </div>
+
+        <div style="margin: 40px 0; text-align: center; opacity: 0.5;">
+            <i class="fa-solid fa-gift" style="font-size: 30px; margin-bottom: 10px; display: block;"></i>
+            <span data-ru="Нет подарков" data-en="No gifts">Нет подарков</span>
+        </div>
+
+        <button class="btn-main" style="background: #1a1e26; color: #fff;" onclick="window.open('https://t.me/casemonk_sup_robot')">
+            <i class="fa-solid fa-headset"></i> <span data-ru="Поддержка" data-en="Support">Поддержка</span>
+        </button>
     </div>
 
-    <div id="settings" class="screen">
-        <div class="empty-state">
-            <i class="fas fa-cog"></i>
-            <p>Настройки профиля</p>
+    <div class="nav-fixed">
+        <i class="fa-solid fa-gamepad" style="opacity: 0.3;"></i>
+        <i class="fa-solid fa-box-open" style="opacity: 0.3;"></i>
+        <i class="fa-solid fa-user" style="color: #fff;"></i>
+    </div>
+
+    <div id="m-pay" class="modal">
+        <div class="modal-head"><i class="fa-solid fa-chevron-left close-btn" onclick="closeModal('m-pay')"></i> Пополнение</div>
+        <div class="pay-item" onclick="openModal('m-ton')">
+            <span>TON</span> <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="22">
+        </div>
+        <div class="pay-item" onclick="openModal('m-gifts')">
+            <span>Gifts</span> <span>🎁</span>
         </div>
     </div>
 
-    <nav class="nav-bar">
-        <div class="nav-item" onclick="showScreen('cases', this)">
-            <i class="fas fa-box"></i>
-            <span>Кейсы</span>
+    <div id="m-ton" class="modal">
+        <div class="modal-head"><i class="fa-solid fa-chevron-left close-btn" onclick="closeModal('m-ton')"></i> TON Pay</div>
+        <div style="margin-bottom: 10px;">Введите сумму (TON)</div>
+        <input type="number" id="t-amount" value="0.1" step="0.1" style="font-size: 20px; text-align: center; margin-bottom: 20px;">
+        <div id="ton-connect-btn"></div> <button class="btn-main" style="margin-top: 15px; background: var(--ton-color); color: #fff;" onclick="payViaTon()">
+            Оплатить
+        </button>
+    </div>
+
+    <div id="m-gifts" class="modal">
+        <div class="modal-head"><i class="fa-solid fa-chevron-left close-btn" onclick="closeModal('m-gifts')"></i> Gifts 🎁</div>
+        <div class="step-item">
+            <div class="circle-num">1</div>
+            <div>Перейдите в бота <br> <small style="color:var(--text-muted)">@casemonk_relayer</small></div>
         </div>
-        <div class="nav-item" onclick="showScreen('rocket', this)">
-            <i class="fas fa-rocket"></i>
-            <span>Ракетка</span>
+        <div class="step-item">
+            <div class="circle-num">2</div>
+            <div>Отправьте ему NFT подарок</div>
         </div>
-        <div class="nav-item active" onclick="showScreen('profile', this)">
-            <i class="fas fa-user"></i>
-            <span>Профиль</span>
+        <div class="step-item">
+            <div class="circle-num">3</div>
+            <div>Баланс пополнится автоматически</div>
         </div>
-        <div class="nav-item" onclick="showScreen('settings', this)">
-            <i class="fas fa-cog"></i>
-            <span>Меню</span>
-        </div>
-    </nav>
+        <div class="red-alert">Отправляйте подарки только напрямую со своего аккаунта!</div>
+        <button class="btn-main" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
 
-        // Инициализация данных пользователя
+        // 1. Настройка TonConnect
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://casemonk-bot-akm8.onrender.com/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect-btn'
+        });
+
+        // 2. Данные пользователя
         const user = tg.initDataUnsafe.user;
-        if (user) {
-            document.getElementById('username').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            document.getElementById('user-id').innerText = 'ID: ' + user.id;
-            
-            if (user.photo_url) {
-                document.getElementById('avatar').src = user.photo_url;
-            } else {
-                document.getElementById('avatar').src = 'https://ui-avatars.com/api/?name=' + user.first_name + '&background=007bff&color=fff';
+        if(user) {
+            document.getElementById('m-name').innerText = user.first_name;
+            document.getElementById('u-handle').innerText = '@' + (user.username || 'user');
+            if(user.photo_url) {
+                document.getElementById('m-photo').src = user.photo_url;
+                document.getElementById('main-photo').src = user.photo_url;
             }
         }
 
-        // Логика переключения экранов
-        function showScreen(screenId, element) {
-            // Скрываем все экраны
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            // Деактивируем все кнопки навигации
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        // 3. Логика оплаты TON
+        async function payViaTon() {
+            const amount = document.getElementById('t-amount').value;
+            const nanoAmount = (parseFloat(amount) * 1000000000).toString();
             
-            // Активируем нужный
-            document.getElementById(screenId).classList.add('active');
-            element.classList.add('active');
-            
-            // Легкая вибрация при нажатии
-            tg.HapticFeedback.impactOccurred('light');
-        }
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 60,
+                messages: [{
+                    address: "UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ",
+                    amount: nanoAmount
+                }]
+            };
 
-        // Обработка действий (TON / Gifts)
-        function handleAction(type) {
-            tg.HapticFeedback.notificationOccurred('success');
-            if (type === 'ton') {
-                tg.showPopup({
-                    title: 'Пополнение TON',
-                    message: 'Вы хотите подключить кошелек для пополнения баланса?',
-                    buttons: [{id: 'ok', type: 'default', text: 'Да, продолжить'}, {type: 'cancel'}]
-                });
-            } else {
-                tg.showAlert('Раздел Gifts позволит вам активировать бонусные коды и подарки!');
+            try {
+                await tonConnectUI.sendTransaction(transaction);
+                tg.showAlert("Транзакция отправлена! Баланс обновится после подтверждения.");
+            } catch (e) {
+                tg.showAlert("Ошибка или отмена оплаты.");
             }
         }
+
+        // 4. Переводчик
+        function setLanguage(lang) {
+            document.querySelectorAll('[data-ru]').forEach(el => {
+                el.innerText = lang === 'ru' ? el.dataset.ru : el.dataset.en;
+            });
+            document.querySelectorAll('.lang-opt').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(lang)));
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); tg.HapticFeedback.impactOccurred('medium'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     </script>
 </body>
 </html>
