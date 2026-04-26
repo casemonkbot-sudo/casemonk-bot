@@ -2,236 +2,382 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CaseMonk Web App</title>
     <style>
         :root {
             --bg-color: #000000;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent: #007aff;
-            --tg-green: #76ff03;
+            --container-bg: #0a0a0a;
+            --accent-blue: #007AFF;
+            --accent-violet: #8A2BE2;
+            --text-main: #ffffff;
+            --text-secondary: #b0b0b0;
+            --ton-color: #0088cc;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
+            margin: 0; padding: 0;
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 80%);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            margin: 0;
-            padding: 0;
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* ЭФФЕКТ СТЕКЛА */
-        .glass {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
+        /* Навигация */
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            display: flex; justify-content: space-around;
+            padding: 15px 0; border-top: 1px solid #222; z-index: 100;
+        }
+        .nav-item { color: var(--text-secondary); font-size: 12px; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--accent-violet); font-weight: bold; }
+
+        /* Контент */
+        .screen { display: none; padding: 20px; padding-bottom: 80px; min-height: 100vh; }
+        .screen.active { display: block; }
+
+        /* КЕЙСЫ */
+        .case-card {
+            background: var(--container-bg); border-radius: 15px;
+            padding: 15px; margin-bottom: 15px; border: 1px solid #1a1a1a;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .case-info { display: flex; align-items: center; gap: 12px; }
+        .case-icon-small { width: 40px; height: 40px; }
+        .case-price { color: var(--ton-color); font-weight: bold; }
+
+        /* РУЛЕТКА */
+        .roulette-container {
+            position: relative; width: 100%; height: 120px;
+            background: #050505; border: 1px solid #333;
+            overflow: hidden; margin: 20px 0; border-radius: 10px;
+        }
+        .roulette-rail {
+            display: flex; position: absolute; left: 0; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+        .roulette-item {
+            min-width: 100px; height: 120px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; border-right: 1px solid #111;
+        }
+        .roulette-item img { width: 60px; }
+        .roulette-line {
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+            background: var(--accent-violet); z-index: 5; transform: translateX(-50%);
         }
 
-        /* АНИМАЦИЯ ПОДАРКА (TG STYLE) */
-        @keyframes gift-bounce {
-            0% { transform: scale(1); }
-            30% { transform: scale(1.12) rotate(-3deg); }
-            50% { transform: scale(0.92) rotate(3deg); }
-            100% { transform: scale(1) rotate(0); }
+        /* СЕТКА ПРЕДМЕТОВ */
+        .items-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;
         }
-        .anim-active { animation: gift-bounce 0.4s ease-out; }
-
-        /* Шапка */
-        .header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .balance-card {
-            padding: 8px 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .ton-icon { width: 18px; height: 18px; }
-
-        .case-title {
-            text-align: center;
-            font-size: 26px;
-            font-weight: 800;
-            margin: 20px 0;
-            letter-spacing: 1px;
-        }
-
-        /* Сетка предметов */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            padding: 0 15px;
-        }
-
         .grid-item {
-            padding: 12px;
-            text-align: center;
-            transition: transform 0.2s;
+            background: #0d0d0d; padding: 10px; border-radius: 8px;
+            text-align: center; border: 1px solid #1a1a1a;
+        }
+        .grid-item img { width: 100%; margin-bottom: 5px; }
+        .grid-item span { font-size: 10px; color: var(--text-secondary); display: block; }
+        .grid-item b { font-size: 11px; color: var(--ton-color); }
+
+        /* ПРОФИЛЬ & ИНВЕНТАРЬ */
+        .user-header { text-align: center; margin-bottom: 30px; }
+        .balance-card { font-size: 32px; font-weight: 800; margin: 10px 0; }
+        .inventory-section { margin-top: 20px; }
+
+        /* БАННЕРЫ И МОДАЛКИ */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; display: none;
+            flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .demo-banner {
+            position: fixed; top: 20px; left: 10%; width: 80%;
+            background: var(--accent-violet); color: white; padding: 15px;
+            border-radius: 10px; text-align: center; z-index: 2000; animation: slideDown 0.3s;
         }
 
-        .item-preview {
-            width: 100%;
-            height: 45px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        .btn-main {
+            background: var(--accent-blue); color: white; border: none;
+            padding: 15px 30px; border-radius: 10px; font-weight: bold; width: 100%; margin: 5px 0;
         }
+        .btn-demo { background: #222; color: white; width: 100%; border: none; padding: 12px; border-radius: 10px; }
 
-        /* Gifts Инструкция */
-        .section-box {
-            margin: 20px 15px;
-            padding: 20px;
-        }
-
-        .step {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .step-n {
-            background: rgba(255,255,255,0.1);
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .btn-blue {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 14px;
-            width: 100%;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        /* Инвентарь Кнопки */
-        .btn-group { display: flex; flex-direction: column; gap: 3px; margin-top: 15px; }
-        .btn-sell { background: #2c2c3e; color: white; border: none; padding: 12px; border-radius: 16px 16px 6px 6px; font-weight: 600; font-size: 13px; }
-        .btn-withdraw { background: var(--tg-green); color: black; border: none; padding: 12px; border-radius: 6px 6px 16px 16px; font-weight: 800; font-size: 13px; }
-
-        .nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0 30px;
-            background: rgba(0,0,0,0.9);
-            border-top: 1px solid #222;
-        }
-
-        .nav-item { color: #555; font-size: 12px; text-decoration: none; }
-        .nav-item.active { color: white; }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:35px; height:35px; border-radius:50%; background:#333; border: 1px solid #444;"></div>
-            <span style="font-weight:600;">MONK</span>
-        </div>
-        <div class="balance-card glass">
-            <span>10.00</span>
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="ton-icon">
-            <span style="opacity:0.3; margin-left:5px;">+</span>
-        </div>
-    </div>
-
-    <div class="case-title">Heart Кейс</div>
-
-    <div class="grid" id="grid-container"></div>
-
-    <div style="padding: 15px;">
-        <button class="btn-blue">ОТКРЫТЬ КЕЙС (1.5 TON)</button>
-    </div>
-
-    <div class="section-box glass">
-        <div style="font-weight:bold; margin-bottom:15px; font-size: 15px;">Способ оплаты: Gifts 🎁</div>
-        <div class="step">
-            <div class="step-n">1</div>
-            <div>Перейдите в нашего бота <b style="color:var(--accent)">@casemonk_relayer</b></div>
-        </div>
-        <div class="step">
-            <div class="step-n">2</div>
-            <div>Отправьте ему <b>NFT подарок</b><br><small style="color:#777">Модель и фон не имеют значения</small></div>
-        </div>
-        <div class="step">
-            <div class="step-n">3</div>
-            <div>Баланс зачислится мгновенно</div>
+    <div id="screen-cases" class="screen active">
+        <h2>Кейсы</h2>
+        <div class="case-card" onclick="showCaseDetail()">
+            <div class="case-info">
+                <img src="case_drop.png" class="case-icon-small" alt="DROP">
+                <div>
+                    <div><b>DROP</b></div>
+                    <div class="case-price">10 TON</div>
+                </div>
+            </div>
+            <span>➜</span>
         </div>
     </div>
 
-    <div style="padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 100px;">
-        <button class="btn-blue glass" style="background:none; margin:0; border: 1px solid var(--glass-border);">🎁 Бонусы</button>
-        <button class="btn-blue glass" style="background:none; margin:0; border: 1px solid var(--glass-border);">🎫 Промокод</button>
+    <div id="screen-case-open" class="screen">
+        <button onclick="changeScreen('cases')" style="background:none; border:none; color:var(--accent-blue); margin-bottom:10px;">← Назад</button>
+        <div class="case-header" style="text-align: center;">
+            <h1 id="case-title">DROP</h1>
+            <img src="case_drop_banner.png" style="width: 100%; border-radius: 15px;">
+        </div>
+
+        <div class="roulette-container">
+            <div class="roulette-line"></div>
+            <div id="roulette-rail" class="roulette-rail"></div>
+        </div>
+
+        <div id="action-area">
+            <button class="btn-main" onclick="playCase(false)">ОТКРЫТЬ ЗА 10 TON</button>
+            <button class="btn-demo" onclick="playCase(true)">ДЕМО РЕЖИМ</button>
+        </div>
+
+        <div class="case-contents">
+            <h4 style="margin-top:30px; color: var(--text-secondary);">Возможные результаты</h4>
+            <div class="items-grid" id="drop-items-list"></div>
+        </div>
     </div>
 
-    <nav class="nav">
-        <a href="#" class="nav-item">Режимы</a>
-        <a href="#" class="nav-item">Кейсы</a>
-        <a href="#" class="nav-item">Бонусы</a>
-        <a href="#" class="nav-item active">Профиль</a>
-    </nav>
+    <div id="screen-profile" class="screen">
+        <div class="user-header">
+            <div style="color: var(--text-secondary);">Ваш баланс</div>
+            <div class="balance-card" id="user-balance">100.00 TON</div>
+        </div>
+        
+        <div class="inventory-section">
+            <h4>Мой инвентарь</h4>
+            <div class="items-grid" id="inventory-grid"></div>
+        </div>
+    </div>
+
+    <div id="screen-bonus" class="screen">
+        <h2>Бонусы</h2>
+        <div class="case-card">
+            <div>🔥 Промокод</div>
+            <button class="btn-main" style="width: auto; padding: 8px 15px;">Ввести</button>
+        </div>
+    </div>
+
+    <div id="screen-deposit" class="screen">
+        <h2>Пополнение</h2>
+        <p style="color: var(--text-secondary); font-size: 14px;">Для пополнения баланса через Telegram Gifts, отправьте подарок на аккаунт:</p>
+        <div style="background:#111; padding:15px; border-radius:10px; color:var(--accent-blue); font-weight:bold; text-align:center; margin: 15px 0;">
+            @casemonk_relayer
+        </div>
+        <p style="font-size: 12px; color: #555;">После отправки баланс будет начислен автоматически в течение 5-15 минут.</p>
+    </div>
+
+    <div id="win-modal" class="modal-overlay">
+        <h2 id="win-title">ВЫ ВЫИГРАЛИ!</h2>
+        <img id="win-img" src="" style="width: 150px; margin: 20px 0;">
+        <div id="win-name" style="font-size: 18px; margin-bottom: 20px;"></div>
+        <button class="btn-main" id="btn-keep" onclick="closeWinModal()">ОСТАВИТЬ</button>
+        <button class="btn-demo" id="btn-sell" onclick="sellItem()">ПРОДАТЬ ЗА <span id="sell-price"></span> TON</button>
+    </div>
+
+    <div id="withdraw-modal" class="modal-overlay">
+        <div style="background: #111; padding: 20px; border-radius: 15px; text-align: center;">
+            <p id="withdraw-text"></p>
+            <div id="withdraw-step-1">
+                <p>Для вывода напишите на аккаунт <b>@casemonk_relayer</b> иначе ваш подарок не дойдёт!</p>
+                <button class="btn-main" onclick="withdrawStep(2)">Я выполнил</button>
+            </div>
+            <div id="withdraw-step-2" style="display:none;">
+                <p>Вы подтверждаете вывод подарка?</p>
+                <button class="btn-main" onclick="withdrawStep(3)">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="changeScreen('cases')">Кейсы</div>
+        <div class="nav-item" onclick="changeScreen('bonus')">Бонусы</div>
+        <div class="nav-item" onclick="changeScreen('profile')">Профиль</div>
+        <div class="nav-item" onclick="changeScreen('deposit')">Пополнение</div>
+    </div>
 
     <script>
-        const loot = [
-            { n: "Diamond Ring", p: "15.00", c: "#00d2ff" },
-            { n: "Nail Bracelet", p: "8.50", c: "#f093fb" },
-            { n: "Signet Ring", p: "5.20", c: "#43e97b" },
-            { n: "Cupid Charm", p: "4.10", c: "#ff5858" },
-            { n: "Snoop Dogg", p: "4.56", c: "#f6d365" },
-            { n: "Love Candle", p: "1.50", c: "#feb47b" }
+        let balance = 100.00;
+        let inventory = [];
+        let currentPrize = null;
+
+        const DROP_ITEMS = [
+            { id: 1, name: 'Nail Bracelet Random', price: 115.83, chance: 0.1, img: 'nail_bracelet.png' },
+            { id: 2, name: 'Bonded Ring Random', price: 40.10, chance: 0.3, img: 'bonded_ring.png' },
+            { id: 3, name: 'Signet Ring Random', price: 32.69, chance: 1.0, img: 'signet_ring.png' },
+            { id: 4, name: 'Diamond Ring Random', price: 26.59, chance: 2.5, img: 'diamond_ring.png' },
+            { id: 5, name: 'Cupid Charm Random', price: 20.19, chance: 3.5, img: 'cupid_charm.png' },
+            { id: 6, name: 'Crystal Ball Random', price: 11.87, chance: 35.0, img: 'crystal_ball.png' },
+            { id: 7, name: 'Love Candle Random', price: 10.04, chance: 40.0, img: 'love_candle.png' },
+            { id: 8, name: 'Jolly Chimp Random', price: 6.46, chance: 45.0, img: 'jolly_chimp.png' },
+            { id: 9, name: 'Light Sword Random', price: 5.40, chance: 50.0, img: 'light_sword.png' },
+            { id: 10, name: 'Shoop Dogg Random', price: 4.95, chance: 55.0, img: 'snoop_dogg.png' },
+            { id: 11, name: '3.0 TON balance', price: 3.00, chance: 48.0, img: 'ton_balance.png', type: 'ton' }
         ];
 
-        function init() {
-            const container = document.getElementById('grid-container');
-            loot.forEach(item => {
-                container.innerHTML += `
-                    <div class="grid-item glass" onclick="play(this)">
-                        <div class="item-preview" style="background:${item.c}; box-shadow: 0 0 15px ${item.c}44;"></div>
-                        <div style="font-size:10px; opacity:0.6; white-space: nowrap;">${item.n}</div>
-                        <div style="font-size:11px; font-weight:bold; margin-top:4px;">
-                            ${item.p} <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" style="width:10px;">
-                        </div>
-                    </div>
-                `;
-            });
+        function changeScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + screenId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if (['cases', 'bonus', 'profile', 'deposit'].includes(screenId)) {
+                // Подсветка навигации
+            }
+            if (screenId === 'profile') renderInventory();
         }
 
-        function play(el) {
-            el.classList.remove('anim-active');
-            void el.offsetWidth;
-            el.classList.add('anim-active');
-            if(window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+        function showCaseDetail() {
+            changeScreen('case-open');
+            const list = document.getElementById('drop-items-list');
+            list.innerHTML = DROP_ITEMS.map(item => `
+                <div class="grid-item">
+                    <img src="${item.img}">
+                    <span>${item.name}</span>
+                    <b>${item.price} TON</b>
+                </div>
+            `).join('');
+            prepareRoulette();
+        }
+
+        function prepareRoulette() {
+            const rail = document.getElementById('roulette-rail');
+            rail.style.transition = 'none';
+            rail.style.transform = 'translateX(0)';
+            let content = '';
+            for (let i = 0; i < 50; i++) {
+                const item = DROP_ITEMS[Math.floor(Math.random() * DROP_ITEMS.length)];
+                content += `<div class="roulette-item"><img src="${item.img}"></div>`;
+            }
+            rail.innerHTML = content;
+        }
+
+        function playCase(isDemo) {
+            if (!isDemo && balance < 10) return alert("Недостаточно TON");
+            if (!isDemo) { balance -= 10; updateBalance(); }
+
+            const prize = calculatePrize(isDemo);
+            currentPrize = prize;
+
+            const rail = document.getElementById('roulette-rail');
+            const itemWidth = 100;
+            const winningIndex = 40; // 40-й элемент будет победным
+            
+            // Вставляем приз в нужную позицию
+            const items = rail.querySelectorAll('.roulette-item');
+            items[winningIndex].innerHTML = `<img src="${prize.img}">`;
+
+            const offset = (winningIndex * itemWidth) - (window.innerWidth / 2) + (itemWidth / 2);
+            
+            rail.style.transition = 'transform 4s cubic-bezier(0.15, 0, 0.15, 1)';
+            rail.style.transform = `translateX(-${offset}px)`;
+
+            setTimeout(() => {
+                if (isDemo) {
+                    showDemoBanner(prize);
+                } else {
+                    showWinModal(prize);
+                }
+            }, 4500);
+        }
+
+        function calculatePrize(isDemo) {
+            if (isDemo) {
+                // В демо режиме дорогие падают чаще (80% на предметы > 20 TON)
+                const expensive = DROP_ITEMS.filter(i => i.price >= 20);
+                const cheap = DROP_ITEMS.filter(i => i.price < 20);
+                return Math.random() < 0.8 ? expensive[Math.floor(Math.random()*expensive.length)] : cheap[Math.floor(Math.random()*cheap.length)];
+            }
+            // Обычный расчет по шансам
+            let pool = [];
+            DROP_ITEMS.forEach(item => {
+                for(let i=0; i<item.chance * 100; i++) pool.push(item);
+            });
+            return pool[Math.floor(Math.random() * pool.length)] || DROP_ITEMS[DROP_ITEMS.length - 1];
+        }
+
+        function showDemoBanner(prize) {
+            const b = document.createElement('div');
+            b.className = 'demo-banner';
+            b.innerText = `Вы выиграли ${prize.name} в демо режиме, приз не начисляется, попробуйте выиграть за реальный баланс`;
+            document.body.appendChild(b);
+            setTimeout(() => { b.remove(); prepareRoulette(); }, 5000);
+        }
+
+        function showWinModal(prize) {
+            const modal = document.getElementById('win-modal');
+            modal.style.display = 'flex';
+            document.getElementById('win-img').src = prize.img;
+            document.getElementById('win-name').innerText = prize.name;
+            document.getElementById('sell-price').innerText = prize.price;
+        }
+
+        function closeWinModal() {
+            if (currentPrize.type === 'ton') {
+                balance += currentPrize.price;
+                updateBalance();
+            } else {
+                inventory.push({...currentPrize, invId: Date.now()});
+            }
+            document.getElementById('win-modal').style.display = 'none';
+            prepareRoulette();
+        }
+
+        function sellItem() {
+            balance += currentPrize.price;
+            updateBalance();
+            document.getElementById('win-modal').style.display = 'none';
+            prepareRoulette();
+        }
+
+        function renderInventory() {
+            const grid = document.getElementById('inventory-grid');
+            if (inventory.length === 0) {
+                grid.innerHTML = '<p style="color:#444; grid-column: 1/4;">Тут пока пусто...</p>';
+                return;
+            }
+            grid.innerHTML = inventory.map(item => `
+                <div class="grid-item" onclick="showWithdrawMenu(${item.invId})">
+                    <img src="${item.img}">
+                    <b>${item.price} TON</b>
+                </div>
+            `).join('');
+        }
+
+        let activeInvId = null;
+        function showWithdrawMenu(invId) {
+            activeInvId = invId;
+            const item = inventory.find(i => i.invId === invId);
+            document.getElementById('withdraw-modal').style.display = 'flex';
+            document.getElementById('withdraw-text').innerText = item.name;
+            withdrawStep(1);
+        }
+
+        function withdrawStep(step) {
+            document.getElementById('withdraw-step-1').style.display = step === 1 ? 'block' : 'none';
+            document.getElementById('withdraw-step-2').style.display = step === 2 ? 'block' : 'none';
+            
+            if (step === 3) {
+                alert("Успешно ваш подарок поставлен на вывод ожидайте до 24 часов, в случае проблем напишите в ТехПоддержку");
+                inventory = inventory.filter(i => i.invId !== activeInvId);
+                document.getElementById('withdraw-modal').style.display = 'none';
+                renderInventory();
+                // Здесь отправка уведомления в бота (через Telegram.WebApp.sendData или API)
             }
         }
-        window.onload = init;
+
+        function updateBalance() {
+            document.getElementById('user-balance').innerText = balance.toFixed(2) + " TON";
+        }
+
+        window.onclick = function(event) {
+            if (event.target.className === 'modal-overlay') event.target.style.display = 'none';
+        }
     </script>
 </body>
 </html>
