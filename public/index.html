@@ -5,269 +5,286 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CaseMonk</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --bg: #000;
-            --card: #0d0d0d;
-            --accent-purple: #7a3ef2;
-            --accent-blue: #007aff;
-            --btn-red: linear-gradient(135deg, #ff4d4d, #ff8c40);
-            --border: 1px solid rgba(255, 255, 255, 0.05);
-            --text-sec: #8e8e93;
-        }
-
+        :root { --bg: #000; --card: #0d0d0d; --accent: #007aff; --btn-red: linear-gradient(135deg, #ff4d4d, #ff8c40); --border: 1px solid rgba(255,255,255,0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; overflow: hidden; height: 100vh; }
 
-        /* Шапка */
-        .profile-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 100; border-bottom: var(--border); background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
-        .u-info-block { display: flex; align-items: center; gap: 10px; }
-        .u-ava-min { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #333; }
-        .u-bal-chip { display: flex; align-items: center; gap: 5px; background: #1c1c1e; padding: 6px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; }
+        /* Header */
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; position: fixed; top: 0; width: 100%; z-index: 100; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
+        .bal-box { display: flex; align-items: center; gap: 8px; background: #1c1c1e; padding: 6px 12px; border-radius: 20px; font-weight: 800; }
+        .add-btn { color: var(--accent); font-size: 20px; cursor: pointer; margin-left: 5px; }
 
-        /* Контейнеры */
-        .main-container { padding: 80px 20px 100px; height: 100vh; overflow-y: auto; display: none; flex-direction: column; }
-        .main-container.active { display: flex; }
+        /* Roulette */
+        .roulette-container { width: 100%; height: 130px; background: #0a0a0a; border-radius: 20px; position: relative; overflow: hidden; border: var(--border); margin: 20px 0; }
+        .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: #7a3ef2; z-index: 10; box-shadow: 0 0 15px #7a3ef2; transform: translateX(-50%); }
+        .tape { display: flex; align-items: center; transition: transform 10s cubic-bezier(0.1, 0, 0.1, 1); will-change: transform; }
+        .tape-item { min-width: 110px; height: 130px; display: flex; align-items: center; justify-content: center; }
+        .tape-item img { width: 80px; height: 80px; object-fit: contain; }
 
-        /* Карточка кейса в списке */
-        .case-preview-card { background: var(--card); border-radius: 24px; border: var(--border); padding: 15px; margin-bottom: 15px; }
-        .case-banner-img { width: 100%; border-radius: 18px; margin-bottom: 10px; }
-
-        /* Рулетка в модалке */
-        .roulette-box { width: 100%; height: 120px; background: #0a0a0a; border-radius: 20px; position: relative; overflow: hidden; border: var(--border); margin: 20px 0; }
-        .center-marker { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--accent-purple); z-index: 10; box-shadow: 0 0 15px var(--accent-purple); }
-        .items-tape { display: flex; align-items: center; transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); will-change: transform; }
-        .tape-item { min-width: 100px; height: 120px; display: flex; align-items: center; justify-content: center; }
-        .tape-item img { width: 70px; height: 70px; object-fit: contain; }
-
-        /* Кнопки */
-        .btn-main { background: var(--btn-red); width: 100%; border: none; padding: 16px; border-radius: 18px; color: #fff; font-weight: 800; font-size: 16px; margin-bottom: 10px; }
-        .btn-sec { background: #1c1c1e; width: 100%; border: none; padding: 16px; border-radius: 18px; color: #fff; font-weight: 700; margin-bottom: 10px; }
-
-        /* Жидкое стекло (Nav) */
-        .nav-glass {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
-            padding: 10px 30px; border-radius: 30px; border: var(--border);
-            display: flex; gap: 40px; z-index: 100;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sec); cursor: pointer; }
-        .nav-item.active { color: #fff; }
-
-        /* Модалки */
-        .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; overflow-y: auto; }
-        .modal.active { display: flex; }
-        .m-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
-
-        /* Наполнение кейса (Grid) */
+        /* Grid */
+        .main-container { padding: 80px 20px 100px; height: 100vh; overflow-y: auto; display: none; }
+        .main-container.active { display: block; }
         .grid-view { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-item { background: var(--card); border-radius: 20px; padding: 15px; border: var(--border); text-align: center; position: relative; }
-        .item-price-tag { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 10px; font-size: 11px; display: flex; align-items: center; gap: 3px; }
-        .item-img-small { width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px; }
+        .item-card { background: var(--card); border-radius: 20px; padding: 15px; border: var(--border); text-align: center; position: relative; }
 
-        /* Стили старых разделов */
-        .step-item { display: flex; gap: 15px; margin-bottom: 20px; }
-        .step-n { background: #2c2c2e; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        /* Navigation "Liquid Glass" */
+        .nav-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); padding: 12px 30px; border-radius: 35px; border: var(--border); display: flex; gap: 35px; z-index: 1000; }
+        .nav-item { color: #8e8e93; font-size: 22px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
+        .nav-item.active { color: #fff; transform: scale(1.1); }
+        .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
+
+        /* Modals */
+        .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; padding: 25px; overflow-y: auto; }
+        .modal.active { display: flex; }
+        .win-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        
+        .btn-main { background: var(--btn-red); border: none; padding: 18px; border-radius: 18px; color: #fff; font-weight: 800; width: 100%; margin: 10px 0; font-size: 16px; }
+        .btn-sec { background: #1c1c1e; border: none; padding: 16px; border-radius: 18px; color: #fff; font-weight: 700; width: 100%; }
+        
+        .step-card { display: flex; gap: 15px; margin-bottom: 20px; text-align: left; }
+        .step-idx { background: var(--accent); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; }
     </style>
 </head>
 <body>
 
-    <div class="profile-header">
-        <div class="u-info-block">
-            <img src="https://i.ibb.co/vzB7G9Y/bear.png" class="u-ava-min" id="h-ava">
-            <span id="h-name" style="font-weight:700;">User</span>
-            <div class="u-bal-chip" onclick="openM('m-sel')">
-                <img src="tonbalance001.png" width="14">
-                <span id="bal-val">100.00</span>
-            </div>
+    <div class="header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="https://i.ibb.co/vzB7G9Y/bear.png" id="h-ava" style="width:35px; height:35px; border-radius:50%;">
+            <b id="h-name">User</b>
         </div>
-        <button onclick="setL(curL==='ru'?'en':'ru')" id="lang-toggle" style="background:#1c1c1e; border:none; color:#fff; padding:8px 12px; border-radius:12px; font-size:12px;">RU</button>
+        <div class="bal-box">
+            <img src="tonbalance001.png" width="16">
+            <span id="bal-val">0.00</span>
+            <i class="fa-solid fa-circle-plus add-btn" onclick="openM('m-deposit')"></i>
+        </div>
     </div>
 
-    <div id="page-cases" class="main-container active">
-        <h2 style="margin-bottom:20px;" data-ru="Кейсы" data-en="Cases">Кейсы</h2>
-        <div class="case-preview-card" onclick="openCaseMenu('DROP')">
-            <img src="case_drop.png" class="case-banner-img">
+    <div id="p-cases" class="main-container active">
+        <h2 style="margin-bottom:20px;">Кейсы</h2>
+        <div class="item-card" onclick="openCase('DROP')">
+            <img src="case_drop.png" style="width:100%; border-radius:15px; margin-bottom:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <b>DROP</b>
-                <span style="background:var(--accent-blue); padding:5px 12px; border-radius:10px; font-size:14px;">10 TON</span>
+                <span style="background:var(--accent); padding:4px 10px; border-radius:10px; font-size:14px;">10 TON</span>
             </div>
         </div>
     </div>
 
-    <div id="page-bonus" class="main-container">
-        <h2 style="margin-bottom:20px;" data-ru="Бонусы" data-en="Bonuses">Бонусы</h2>
-        <div style="background:var(--card); padding:20px; border-radius:24px; border:var(--border);">
-            <p data-ru="Приглашайте друзей и получайте 15% от их пополнений!" data-en="Invite friends and get 15% of their deposits!">Приглашайте друзей и получайте 15% от их пополнений!</p>
-            <button class="btn-main" onclick="inviteFriend()" style="margin-top:20px;" data-ru="Пригласить друга" data-en="Invite friend">Пригласить друга</button>
+    <div id="p-bonus" class="main-container">
+        <h2 style="margin-bottom:20px;">Бонусы</h2>
+        <div class="item-card" style="text-align:left;">
+            <b style="font-size:18px;">Реферальная система</b>
+            <p style="color:#8e8e93; margin:10px 0;">Приглашайте друзей и получайте 15% от всех их пополнений на свой баланс TON!</p>
+            <button class="btn-main" onclick="invite()">Пригласить друга</button>
         </div>
     </div>
 
-    <div id="page-profile" class="main-container">
-        <img src="https://i.ibb.co/vzB7G9Y/bear.png" style="width:90px; height:90px; border-radius:50%; margin:0 auto 15px; display:block;" id="p-ava">
-        <h2 style="text-align:center; margin-bottom:20px;" id="p-name">User</h2>
-        <button class="btn-main" style="background:var(--accent-blue);" onclick="window.open('https://t.me/casemonk_sup_robot')" data-ru="Поддержка" data-en="Support">Поддержка</button>
-        
-        <div style="margin-top:20px;">
-            <b data-ru="Инвентарь" data-en="Inventory">Инвентарь</b>
-            <div class="grid-view" id="main-inv" style="margin-top:10px; grid-template-columns: repeat(3, 1fr);"></div>
+    <div id="p-profile" class="main-container">
+        <div style="text-align:center; margin-bottom:30px;">
+            <img src="https://i.ibb.co/vzB7G9Y/bear.png" id="p-ava" style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
+            <h3 id="p-name">User</h3>
+            <button onclick="toggleLang()" id="l-btn" style="background:#1c1c1e; border:none; color:#fff; padding:6px 15px; border-radius:12px; margin-top:10px;">RU / EN</button>
+        </div>
+        <b style="font-size:18px; display:block; margin-bottom:15px;">Инвентарь</b>
+        <div class="grid-view" id="inv-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="nav('cases', this)"><i class="fa-solid fa-box-open"></i><span>Кейсы</span></div>
+        <div class="nav-item" onclick="nav('bonus', this)"><i class="fa-solid fa-gift"></i><span>Бонусы</span></div>
+        <div class="nav-item" onclick="nav('profile', this)"><i class="fa-solid fa-user-circle"></i><span>Профиль</span></div>
+    </div>
+
+    <div id="m-case" class="modal">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;" onclick="closeM('m-case')">
+            <i class="fa-solid fa-chevron-left"></i> <b id="case-title">DROP</b>
+        </div>
+        <div class="roulette-container">
+            <div class="pointer"></div>
+            <div class="tape" id="tape"></div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn-main" onclick="spin(false)">Открыть (10 TON)</button>
+            <button class="btn-sec" onclick="spin(true)" style="height:60px; margin-top:10px;">Демо режим</button>
+        </div>
+        <p style="margin:25px 0 15px; font-weight:700; color:#8e8e93;">Наполнение кейса:</p>
+        <div class="grid-view" id="loot-view"></div>
+    </div>
+
+    <div id="win-screen" class="win-overlay">
+        <div>
+            <h2 style="color:var(--accent); margin-bottom:10px;">ВЫ ВЫИГРАЛИ!</h2>
+            <img id="win-img" src="" style="width:150px; height:150px; object-fit:contain; margin-bottom:15px;">
+            <h3 id="win-name">Предмет</h3>
+            <div style="display:flex; align-items:center; justify-content:center; gap:5px; margin:10px 0 20px;">
+                <b id="win-price">0.00</b> <img src="tonbalance001.png" width="18">
+            </div>
+            <button class="btn-main" onclick="claimWin(true)">Продать</button>
+            <button class="btn-sec" onclick="claimWin(false)">Оставить</button>
         </div>
     </div>
 
-    <div class="nav-glass">
-        <div class="nav-item" onclick="switchPage('cases', this)"><i class="fa-solid fa-box-open"></i><span style="font-size:10px;">Кейсы</span></div>
-        <div class="nav-item" onclick="switchPage('bonus', this)"><i class="fa-solid fa-gift"></i><span style="font-size:10px;">Бонусы</span></div>
-        <div class="nav-item active" onclick="switchPage('profile', this)"><i class="fa-solid fa-user-circle"></i><span style="font-size:10px;">Профиль</span></div>
-    </div>
-
-    <div id="m-case-view" class="modal">
-        <div class="m-head" onclick="closeM('m-case-view')"><i class="fa-solid fa-chevron-left"></i> <span id="case-title">DROP</span></div>
-        
-        <div class="roulette-box">
-            <div class="center-marker"></div>
-            <div class="items-tape" id="tape"></div>
+    <div id="m-deposit" class="modal">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:25px;" onclick="closeM('m-deposit')">
+            <i class="fa-solid fa-chevron-left"></i> <b>Пополнение</b>
         </div>
-
-        <button class="btn-main" id="btn-open-real" onclick="startSpin(false)">Открыть за 10 TON</button>
-        <button class="btn-sec" onclick="startSpin(true)">Демо режим</button>
-
-        <p style="margin:20px 0 15px; font-weight:700;" data-ru="Наполнение кейса:" data-en="Case content:">Наполнение кейса:</p>
-        <div class="grid-view" id="loot-list"></div>
-    </div>
-
-    <div id="m-sel" class="modal">
-        <div class="m-head" onclick="closeM('m-sel')"><i class="fa-solid fa-chevron-left"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
-        <div class="step-item"><div class="step-n">1</div><div><b data-ru="Перейдите в бота" data-en="Go to bot">Перейдите в бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_relayer</p></div></div>
-        <div class="step-item"><div class="step-n">2</div><div><b data-ru="Отправьте подарок" data-en="Send gift">Отправьте подарок</b><p style="color:var(--text-sec); font-size:14px;" data-ru="Любой NFT подарок" data-en="Any NFT gift">Любой NFT подарок</p></div></div>
-        <button class="btn-main" onclick="window.open('https://t.me/casemonk_relayer')" style="margin-top:auto;" data-ru="Перейти" data-en="Go to bot">Перейти</button>
+        <div class="step-card"><div class="step-idx">1</div><div><b>Перейдите в нашего бота</b><p style="color:#8e8e93;">@casemonk_relayer</p></div></div>
+        <div class="step-card"><div class="step-idx">2</div><div><b>Отправьте ему NFT подарок</b><p style="color:#8e8e93;">Модель, фон и символ не учитываются!</p></div></div>
+        <div class="step-card"><div class="step-idx">3</div><div><b>Баланс пополнится</b><p style="color:#8e8e93;">В течении нескольких секунд</p></div></div>
+        <div style="background:rgba(255,0,0,0.1); border:1px solid rgba(255,0,0,0.2); padding:15px; border-radius:15px; color:#ff4d4d; font-size:13px; text-align:center; margin-top:10px;">
+            Отправляйте подарки только напрямую со своего аккаунта!
+        </div>
+        <button class="btn-main" onclick="window.open('https://t.me/casemonk_relayer')" style="margin-top:auto;">Перейти</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        let curL = 'ru';
-        let inventory = JSON.parse(localStorage.getItem('inv') || '[]');
+        let balance = 0.00;
+        let inventory = JSON.parse(localStorage.getItem('user_inv') || '[]');
+        let lastWinner = null;
 
-        const CASE_ITEMS = [
-            { n: "Nail Bracelet", p: "115.83", img: "nailbracelet-1.png", s: 0.1 },
-            { n: "Bonded Ring", p: "40.10", img: "bondedring-1.png", s: 0.3 },
-            { n: "Signet Ring", p: "32.69", img: "signetring-1.png", s: 1 },
-            { n: "Diamond Ring", p: "26.59", img: "diamondring-1.png", s: 2.5 },
-            { n: "Cupid Charm", p: "20.19", img: "cupidcharm-1.png", s: 3.5 },
-            { n: "Crystal Ball", p: "11.87", img: "crystalball-1.png", s: 35 },
-            { n: "Love Candle", p: "10.04", img: "lovecandle-1.png", s: 40 },
-            { n: "Jolly Chimp", p: "6.46", img: "jollychimp-1.png", s: 45 },
-            { n: "Light Sword", p: "5.40", img: "lightsword-1.png", s: 50 },
-            { n: "Snoop Dogg", p: "4.95", img: "snoopdogg-1.png", s: 55 }
+        const ITEMS = [
+            { n: "Loot Bag", p: "132.40", img: "nailbracelet-1.png", r: 1 },
+            { n: "Nail Bracelet", p: "114.16", img: "nailbracelet-1.png", r: 2 },
+            { n: "Perfume Bottle", p: "76.19", img: "bondedring-1.png", r: 5 },
+            { n: "Kissed Frog", p: "55.06", img: "diamondring-1.png", r: 10 },
+            { n: "Snoop Dogg", p: "4.95", img: "snoopdogg-1.png", r: 82 }
         ];
 
-        function switchPage(p, el) {
+        function nav(p, el) {
             document.querySelectorAll('.main-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('page-' + p).classList.add('active');
+            document.getElementById('p-'+p).classList.add('active');
             el.classList.add('active');
         }
 
-        function setL(l) {
-            curL = l;
-            document.getElementById('lang-toggle').innerText = l.toUpperCase();
-            document.querySelectorAll('[data-ru]').forEach(el => el.innerText = (l === 'ru' ? el.dataset.ru : el.dataset.en));
-        }
+        function openM(id) { document.getElementById(id).classList.add('active'); }
+        function closeM(id) { document.getElementById(id).classList.remove('active'); }
 
-        function openM(id){ document.getElementById(id).classList.add('active'); }
-        function closeM(id){ document.getElementById(id).classList.remove('active'); }
-
-        function openCaseMenu(type) {
-            const list = document.getElementById('loot-list');
-            list.innerHTML = '';
-            CASE_ITEMS.forEach(item => {
-                list.innerHTML += `
-                    <div class="grid-item">
-                        <div class="item-price-tag"><span>${item.p}</span> <img src="tonbalance001.png" width="10"></div>
-                        <img src="${item.img}" class="item-img-small">
-                        <div style="font-size:12px; font-weight:600; margin-bottom:8px;">${item.n}</div>
-                        <button class="btn-sec" style="padding:6px; font-size:11px; margin:0;">Random</button>
+        function openCase(title) {
+            const loot = document.getElementById('loot-view');
+            loot.innerHTML = '';
+            ITEMS.forEach(it => {
+                loot.innerHTML += `
+                    <div class="item-card">
+                        <div style="position:absolute; top:8px; right:8px; font-size:11px; background:rgba(0,0,0,0.5); padding:3px 7px; border-radius:8px;">${it.p} <img src="tonbalance001.png" width="8"></div>
+                        <img src="${it.img}" style="width:70px; height:70px; object-fit:contain; margin-bottom:5px;">
+                        <div style="font-size:12px; font-weight:700;">${it.n}</div>
+                        <button class="btn-sec" style="padding:6px; font-size:10px; margin-top:8px;">Случайный</button>
                     </div>`;
             });
-            fillTape();
-            openM('m-case-view');
+            resetTape();
+            openM('m-case');
         }
 
-        function fillTape() {
+        function resetTape() {
             const tape = document.getElementById('tape');
             tape.innerHTML = '';
-            for(let i=0; i<60; i++) {
-                const item = CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)];
-                tape.innerHTML += `<div class="tape-item"><img src="${item.img}"></div>`;
+            for(let i=0; i<80; i++) {
+                const it = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+                tape.innerHTML += `<div class="tape-item"><img src="${it.img}"></div>`;
             }
             tape.style.transition = 'none';
             tape.style.transform = 'translateX(0)';
         }
 
         let isSpinning = false;
-        function startSpin(isDemo) {
+        function spin(demo) {
             if(isSpinning) return;
-            const bal = parseFloat(document.getElementById('bal-val').innerText);
-            if(!isDemo && bal < 10) return tg.showAlert("Недостаточно TON!");
+            if(!demo && balance < 10) return tg.showAlert("Недостаточно TON!");
 
             isSpinning = true;
-            if(!isDemo) updateBal(-10);
-            
-            const tape = document.getElementById('tape');
-            const r = Math.random() * 100;
-            const winner = [...CASE_ITEMS].sort((a,b)=>a.s-b.s).find(i => r <= i.s) || CASE_ITEMS[9];
-            tape.children[55].innerHTML = `<img src="${winner.img}">`;
+            if(!demo) updateBal(-10);
 
+            const tape = document.getElementById('tape');
+            const winner = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+            lastWinner = { ...winner, isDemo: demo };
+            
+            tape.children[75].innerHTML = `<img src="${winner.img}">`;
+            
             setTimeout(() => {
-                tape.style.transition = 'transform 5s cubic-bezier(0.15, 0, 0.15, 1)';
-                const stopPos = (55 * 100) - (window.innerWidth / 2) + 50;
-                tape.style.transform = `translateX(-${stopPos}px)`;
+                tape.style.transition = 'transform 10s cubic-bezier(0.1, 0, 0.1, 1)';
+                const offset = (75 * 110) - (window.innerWidth / 2) + 55;
+                tape.style.transform = `translateX(-${offset}px)`;
             }, 50);
 
             setTimeout(() => {
+                showWin(winner);
                 isSpinning = false;
-                if(isDemo) tg.showAlert("Демо: Вы выиграли " + winner.n);
-                else {
-                    inventory.push(winner);
-                    localStorage.setItem('inv', JSON.stringify(inventory));
-                    renderInv();
-                    tg.showConfirm(`Вы выиграли ${winner.n}! Продать за ${winner.p} TON?`, ok => { if(ok) sellItem(inventory.length-1); });
-                }
-            }, 5500);
+            }, 10500);
         }
 
-        function sellItem(idx) {
-            updateBal(parseFloat(inventory[idx].p));
-            inventory.splice(idx,1);
-            localStorage.setItem('inv', JSON.stringify(inventory));
+        function showWin(it) {
+            document.getElementById('win-img').src = it.img;
+            document.getElementById('win-name').innerText = it.n;
+            document.getElementById('win-price').innerText = it.p;
+            document.getElementById('win-screen').style.display = 'flex';
+        }
+
+        function claimWin(sell) {
+            if(!lastWinner.isDemo) {
+                if(sell) updateBal(parseFloat(lastWinner.p));
+                else {
+                    inventory.push(lastWinner);
+                    saveInv();
+                }
+            }
+            document.getElementById('win-screen').style.display = 'none';
+            closeM('m-case');
             renderInv();
         }
 
         function renderInv() {
-            const grid = document.getElementById('main-inv');
+            const grid = document.getElementById('inv-grid');
             grid.innerHTML = '';
-            inventory.forEach((it, i) => { grid.innerHTML += `<div style="background:#1c1c1e; border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:center;" onclick="sellItem(${i})"><img src="${it.img}" width="40"></div>`; });
+            inventory.forEach((it, i) => {
+                grid.innerHTML += `
+                    <div style="background:#1c1c1e; border-radius:15px; padding:12px; text-align:center;" onclick="showInvAction(${i})">
+                        <img src="${it.img}" style="width:100%; aspect-ratio:1; object-fit:contain;">
+                    </div>`;
+            });
         }
 
-        function updateBal(v) {
-            const c = parseFloat(document.getElementById('bal-val').innerText);
-            document.getElementById('bal-val').innerText = (c + v).toFixed(2);
+        function showInvAction(i) {
+            const it = inventory[i];
+            tg.showConfirm(`Вы подтверждаете выбор для ${it.n}?`, (ok) => {
+                if(!ok) return;
+                tg.showPopup({
+                    title: it.n,
+                    message: "Что вы хотите сделать с предметом?",
+                    buttons: [{id: 'sell', text: 'Продать за ' + it.p + ' TON'}, {id: 'out', text: 'Вывести'}]
+                }, (btnId) => {
+                    if(btnId === 'sell') {
+                        updateBal(parseFloat(it.p));
+                        inventory.splice(i, 1);
+                        saveInv();
+                        renderInv();
+                    } else if(btnId === 'out') {
+                        tg.showPopup({
+                            title: "Вывод подарка",
+                            message: "Напишите на аккаунт боту - @casemonk_relayer",
+                            buttons: [{text: "Я написал"}]
+                        }, () => {
+                            tg.showAlert("УСПЕШНО! ВАШ ПОДАРОК ПОСТАВЛЕН НА ВЫВОД. ОЖИДАЙТЕ ДО 24 ЧАСОВ.");
+                            inventory.splice(i, 1);
+                            saveInv();
+                            renderInv();
+                        });
+                    }
+                });
+            });
         }
 
-        function inviteFriend() {
-            const link = "https://t.me/casemonk_robot?start=" + (tg.initDataUnsafe.user?.id || "");
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=CaseMonk - выигрывай подарки!`);
-        }
+        function updateBal(v) { balance += v; document.getElementById('bal-val').innerText = balance.toFixed(2); }
+        function saveInv() { localStorage.setItem('user_inv', JSON.stringify(inventory)); }
 
         const u = tg.initDataUnsafe.user;
         if(u) {
             document.getElementById('h-name').innerText = u.first_name;
             document.getElementById('p-name').innerText = u.first_name;
-            if(u.photo_url) {
-                document.getElementById('h-ava').src = u.photo_url;
-                document.getElementById('p-ava').src = u.photo_url;
-            }
+            if(u.photo_url) { document.getElementById('h-ava').src = u.photo_url; document.getElementById('p-ava').src = u.photo_url; }
         }
         renderInv();
     </script>
