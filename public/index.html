@@ -11,33 +11,40 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; overflow: hidden; height: 100vh; }
 
+        /* Header & Balance */
         .header { display: flex; justify-content: flex-end; padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 100; }
         .bal-box { display: flex; align-items: center; background: var(--glass); padding: 6px 14px; border-radius: 20px; border: var(--border); font-weight: 800; }
         .bal-box img { width: 18px; margin-right: 8px; }
         .add-btn { color: #34c759; font-size: 20px; cursor: pointer; margin-left: 10px; }
 
+        /* Navigation */
         .nav-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 25px; border: var(--border); display: flex; padding: 12px; z-index: 1000; }
         .nav-item { flex: 1; text-align: center; color: #8e8e93; font-size: 10px; font-weight: 600; cursor: pointer; }
         .nav-item.active { color: #fff; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
 
-        .page { display: none; padding: 70px 20px 120px; height: 100vh; overflow-y: auto; }
+        /* Layout */
+        .page { display: none; padding: 75px 20px 120px; height: 100vh; overflow-y: auto; }
         .page.active { display: block; }
 
-        .btn { background: var(--glass); border: var(--border); color: #fff; padding: 16px; border-radius: 18px; width: 100%; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-main { background: var(--accent); border: none; }
+        /* UI Elements */
+        .btn { background: var(--glass); border: var(--border); color: #fff; padding: 16px; border-radius: 18px; width: 100%; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; }
+        .btn-main { background: var(--accent); }
         .promo-input { width: 100%; background: rgba(255,255,255,0.05); border: var(--border); padding: 14px; border-radius: 14px; color: #fff; text-align: center; font-weight: 700; margin: 10px 0; outline: none; }
         
+        /* Roulette */
         .roulette { width: 100%; height: 140px; background: #0a0a0a; border-radius: 20px; border: var(--border); position: relative; overflow: hidden; margin: 15px 0; }
         .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--accent); }
         .tape { display: flex; align-items: center; transition: transform 9s cubic-bezier(0.1, 0, 0.1, 1); }
         .tape-item { min-width: 115px; display: flex; justify-content: center; }
         .tape-item img { width: 85px; height: 85px; object-fit: contain; }
 
+        /* Modal & Overlay */
         .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; padding: 25px; flex-direction: column; }
         .modal.active { display: flex; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         
+        /* Inventory */
         .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .slot { aspect-ratio: 1; background: var(--glass); border: var(--border); border-radius: 15px; display: flex; align-items: center; justify-content: center; }
         .slot img { width: 75%; }
@@ -72,7 +79,9 @@
             <img id="u-ava" src="" style="width:90px; height:90px; border-radius:50%; border:2px solid var(--accent); margin-bottom:10px;">
             <div id="u-nick" style="font-size: 22px; font-weight: 800;">User</div>
             <div id="u-handle" style="color: #8e8e93; font-size: 14px; margin-bottom: 15px;">@username</div>
-            <button class="btn" onclick="window.open('https://t.me/casemonk_sup_bot')"><i class="fa-solid fa-headset"></i> <span class="l-support">Поддержка</span></button>
+            <button class="btn" onclick="window.open('https://t.me/casemonk_sup_bot')">
+                <i class="fa-solid fa-headset"></i> <span class="l-support">Поддержка</span>
+            </button>
         </div>
 
         <div style="background: var(--glass); padding: 20px; border-radius: 20px; border: var(--border);">
@@ -119,7 +128,7 @@
                 <p style="font-size:12px; color:#8e8e93;">Адрес для перевода:</p>
                 <code style="display:block; background:#111; padding:12px; border-radius:12px; font-size:11px; word-break:break-all; margin:10px 0;">UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ</code>
                 <input type="number" id="dep-v" class="promo-input" placeholder="0.10 - 9999 TON">
-                <button class="btn btn-main" onclick="sendDep()">Внести TON</button>
+                <button class="btn btn-main l-dep-btn" onclick="sendDep()">Внести TON</button>
             </div>
         </div>
         <div id="d-gift" style="display:none; text-align:center;">
@@ -134,8 +143,8 @@
         <img id="win-img" src="" style="width:180px; height:180px; object-fit:contain; margin:20px 0;">
         <h2 id="win-name">Item Name</h2>
         <h3 id="win-price" style="margin-bottom:25px;">0.00 TON</h3>
-        <button class="btn btn-main" id="w-keep">Оставить</button>
-        <button class="btn" id="w-sell">Продать</button>
+        <button class="btn btn-main l-keep" id="w-keep">Оставить</button>
+        <button class="btn l-sell" id="w-sell">Продать</button>
     </div>
 
     <script>
@@ -160,8 +169,8 @@
         ];
 
         const LANGS = {
-            ru: { support: "Поддержка", promoh: "Введите промокод", promob: "Активировать", inv: "Инвентарь", empty: "Пусто", dep: "Пополнение", nav1: "КЕЙСЫ", nav2: "ПРОФИЛЬ", win: "ВЫ ВЫИГРАЛИ!", gift: "Отправьте NFT подарок на аккаунт:" },
-            en: { support: "Support", promoh: "Enter Promo Code", promob: "Activate", inv: "Inventory", empty: "Empty", dep: "Deposit", nav1: "CASES", nav2: "PROFILE", win: "YOU WON!", gift: "Send NFT gift to account:" }
+            ru: { support: "Поддержка", promoh: "Введите промокод", promob: "Активировать", inv: "Инвентарь", empty: "Пусто", dep: "Пополнение", nav1: "КЕЙСЫ", nav2: "ПРОФИЛЬ", win: "ВЫ ВЫИГРАЛИ!", gift: "Отправьте NFT подарок на аккаунт:", keep: "Оставить", sell: "Продать", depbtn: "Внести TON" },
+            en: { support: "Support", promoh: "Enter Promo Code", promob: "Activate", inv: "Inventory", empty: "Empty", dep: "Deposit", nav1: "CASES", nav2: "PROFILE", win: "YOU WON!", gift: "Send NFT gift to account:", keep: "Keep", sell: "Sell", depbtn: "Deposit TON" }
         };
 
         function tab(t, el) {
@@ -183,6 +192,9 @@
             document.querySelector('.l-nav2').innerText = t.nav2;
             document.querySelector('.l-win-h').innerText = t.win;
             document.querySelector('.l-gift-txt').innerText = t.gift;
+            document.querySelector('.l-keep').innerText = t.keep;
+            document.querySelector('.l-sell').innerText = t.sell;
+            document.querySelector('.l-dep-btn').innerText = t.depbtn;
         }
 
         function prepareCase() {
@@ -241,14 +253,14 @@
             const it = inv[i];
             tg.showPopup({
                 title: it.n,
-                message: `Цена продажи: ${it.p} TON`,
+                message: `Цена: ${it.p} TON`,
                 buttons: [{id:'out', text:'Вывести'}, {id:'sell', text:'Продать', type:'destructive'}, {type:'cancel'}]
             }, (id) => {
                 if(id === 'sell') { updBal(it.p); inv.splice(i,1); saveInv(); }
                 else if(id === 'out') {
                     tg.showPopup({title:"Вывод", message:"Напишите @casemonk_relayer", buttons:[{id:'ok', text:'Я выполнил'}]}, (r) => {
                         if(r === 'ok') {
-                            tg.showAlert("Успешно ваш вывод обработан, ожидайте получения подарка до 24х часов");
+                            tg.showAlert("Успешно ваш вывод обработан, ожидайте получения подарка до 24х часов, в случае ошибки обратитесь в поддержку");
                             inv.splice(i,1); saveInv();
                         }
                     });
@@ -265,12 +277,12 @@
         function sendDep() {
             const v = document.getElementById('dep-v').value;
             if(v < 0.1) msg("Ошибка Пополнение от 0.10 тон", "var(--red)");
-            else tg.showAlert("Запрос отправлен на подтверждение");
+            else tg.showAlert("Запрос на пополнение отправлен");
         }
 
         function checkPromo() {
             const v = document.getElementById('promo-in').value;
-            if(v === "GIFT") msg("Успешно активирован!", "var(--accent)");
+            if(v === "CASE") msg("Успешно активирован!", "var(--accent)");
             else if(v === "OLD") msg("Промокод закончился", "var(--red)");
             else msg("Промокод не существует", "var(--red)");
         }
