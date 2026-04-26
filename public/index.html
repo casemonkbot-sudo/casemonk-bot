@@ -21,120 +21,134 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; }
 
-        /* Шапка Профиля */
-        .profile-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: var(--border); background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 100; }
+        /* Шапка */
+        .profile-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 100; border-bottom: var(--border); background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
         .u-info-block { display: flex; align-items: center; gap: 10px; }
-        .u-ava-min { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #333; object-fit: cover; }
+        .u-ava-min { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #333; }
         .u-bal-chip { display: flex; align-items: center; gap: 5px; background: #1c1c1e; padding: 6px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; }
-        .btn-top-pay { background: var(--accent-purple); color: #fff; border: none; padding: 8px 15px; border-radius: 12px; font-weight: 700; font-size: 13px; }
 
         /* Контейнеры */
         .main-container { padding: 80px 20px 100px; height: 100vh; overflow-y: auto; display: none; flex-direction: column; }
         .main-container.active { display: flex; }
 
-        /* Дизайн Кейса */
-        .case-title { font-size: 28px; font-weight: 900; margin-bottom: 20px; }
-        .roulette-container { width: 100%; height: 120px; background: #0a0a0a; border-radius: 20px; position: relative; overflow: hidden; border: var(--border); margin-bottom: 15px; }
+        /* Карточка кейса в списке */
+        .case-preview-card { background: var(--card); border-radius: 24px; border: var(--border); padding: 15px; margin-bottom: 15px; }
+        .case-banner-img { width: 100%; border-radius: 18px; margin-bottom: 10px; }
+
+        /* Рулетка в модалке */
+        .roulette-box { width: 100%; height: 120px; background: #0a0a0a; border-radius: 20px; position: relative; overflow: hidden; border: var(--border); margin: 20px 0; }
         .center-marker { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--accent-purple); z-index: 10; box-shadow: 0 0 15px var(--accent-purple); }
         .items-tape { display: flex; align-items: center; transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); will-change: transform; }
-        .tape-item { min-width: 100px; height: 120px; display: flex; align-items: center; justify-content: center; padding: 10px; }
-        .tape-item img { width: 75px; height: 75px; object-fit: contain; }
-        .btn-open-main { background: var(--btn-red); width: 100%; border: none; padding: 18px; border-radius: 20px; color: #fff; font-weight: 800; font-size: 17px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(255, 77, 77, 0.3); }
+        .tape-item { min-width: 100px; height: 120px; display: flex; align-items: center; justify-content: center; }
+        .tape-item img { width: 70px; height: 70px; object-fit: contain; }
 
-        /* Предметы в кейсе */
-        .grid-view { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-item { background: var(--card); border-radius: 20px; padding: 15px; border: var(--border); text-align: center; position: relative; }
-        .item-img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 15px; }
-        .item-price-tag { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 10px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 3px; border: var(--border); }
-        .btn-random { background: #3c1e84; color: #fff; border: none; width: 100%; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 13px; }
+        /* Кнопки */
+        .btn-main { background: var(--btn-red); width: 100%; border: none; padding: 16px; border-radius: 18px; color: #fff; font-weight: 800; font-size: 16px; margin-bottom: 10px; }
+        .btn-sec { background: #1c1c1e; width: 100%; border: none; padding: 16px; border-radius: 18px; color: #fff; font-weight: 700; margin-bottom: 10px; }
 
-        /* Профиль и Инвентарь */
-        .avatar-main { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; display: block; border: 3px solid #1c1c1e; }
-        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .slot { aspect-ratio: 1; background: #121212; border-radius: 15px; border: 1px dashed #222; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .slot img { width: 80%; object-fit: contain; }
+        /* Жидкое стекло (Nav) */
+        .nav-glass {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
+            padding: 10px 30px; border-radius: 30px; border: var(--border);
+            display: flex; gap: 40px; z-index: 100;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sec); cursor: pointer; }
+        .nav-item.active { color: #fff; }
 
         /* Модалки */
-        .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; }
+        .modal { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; padding: 20px; overflow-y: auto; }
         .modal.active { display: flex; }
-        .m-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; font-weight: 700; }
+        .m-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
 
-        /* Навигация */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: var(--border); z-index: 90; }
-        .nav-item { color: #555; text-align: center; font-size: 11px; cursor: pointer; }
-        .nav-item.active { color: #fff; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+        /* Наполнение кейса (Grid) */
+        .grid-view { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-item { background: var(--card); border-radius: 20px; padding: 15px; border: var(--border); text-align: center; position: relative; }
+        .item-price-tag { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 10px; font-size: 11px; display: flex; align-items: center; gap: 3px; }
+        .item-img-small { width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px; }
+
+        /* Стили старых разделов */
+        .step-item { display: flex; gap: 15px; margin-bottom: 20px; }
+        .step-n { background: #2c2c2e; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     </style>
 </head>
 <body>
 
     <div class="profile-header">
         <div class="u-info-block">
-            <img src="https://i.ibb.co/vzB7G9Y/bear.png" class="u-ava-min" id="mini-ava">
-            <span class="u-name-min" id="mini-name">nowk</span>
+            <img src="https://i.ibb.co/vzB7G9Y/bear.png" class="u-ava-min" id="h-ava">
+            <span id="h-name" style="font-weight:700;">User</span>
             <div class="u-bal-chip" onclick="openM('m-sel')">
                 <img src="tonbalance001.png" width="14">
                 <span id="bal-val">100.00</span>
             </div>
         </div>
-        <button class="btn-top-pay" onclick="openM('m-sel')">Пополнить</button>
+        <button onclick="setL(curL==='ru'?'en':'ru')" id="lang-toggle" style="background:#1c1c1e; border:none; color:#fff; padding:8px 12px; border-radius:12px; font-size:12px;">RU</button>
     </div>
 
     <div id="page-cases" class="main-container active">
-        <h1 class="case-title">DROP</h1>
-        <div class="roulette-container">
-            <div class="center-marker"></div>
-            <div class="items-tape" id="tape"></div>
+        <h2 style="margin-bottom:20px;" data-ru="Кейсы" data-en="Cases">Кейсы</h2>
+        <div class="case-preview-card" onclick="openCaseMenu('DROP')">
+            <img src="case_drop.png" class="case-banner-img">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b>DROP</b>
+                <span style="background:var(--accent-blue); padding:5px 12px; border-radius:10px; font-size:14px;">10 TON</span>
+            </div>
         </div>
-        <button class="btn-open-main" onclick="startSpin(false)">Открыть за 10 TON</button>
-        <button class="btn-open-main" style="background:#1c1c1e; margin-top:-20px; font-size:14px;" onclick="startSpin(true)">Демо режим</button>
-        
-        <p style="margin: 20px 0 15px; font-weight: 700;"><i class="fa-solid fa-box-open" style="color: var(--accent-purple);"></i> Collections in this case</p>
-        <div class="grid-view" id="loot-list"></div>
     </div>
 
     <div id="page-bonus" class="main-container">
-        <h2 style="margin-bottom:20px;">Бонусы</h2>
+        <h2 style="margin-bottom:20px;" data-ru="Бонусы" data-en="Bonuses">Бонусы</h2>
         <div style="background:var(--card); padding:20px; border-radius:24px; border:var(--border);">
-            <p style="margin-bottom:15px;">Приглашайте друзей и получайте 15% от их пополнений!</p>
-            <button class="btn-open-main" onclick="inviteFriend()" style="margin-bottom:10px;">Пригласить друга</button>
-            <button class="btn-open-main" style="background:#1c1c1e;" onclick="copyRef()">Скопировать ссылку</button>
+            <p data-ru="Приглашайте друзей и получайте 15% от их пополнений!" data-en="Invite friends and get 15% of their deposits!">Приглашайте друзей и получайте 15% от их пополнений!</p>
+            <button class="btn-main" onclick="inviteFriend()" style="margin-top:20px;" data-ru="Пригласить друга" data-en="Invite friend">Пригласить друга</button>
         </div>
     </div>
 
     <div id="page-profile" class="main-container">
-        <img src="https://i.ibb.co/vzB7G9Y/bear.png" class="avatar-main" id="main-ava">
-        <h2 style="text-align:center; margin-bottom:5px;" id="main-name">nowk</h2>
-        <p style="text-align:center; color:var(--text-sec); margin-bottom:20px;" id="main-tag">@username</p>
+        <img src="https://i.ibb.co/vzB7G9Y/bear.png" style="width:90px; height:90px; border-radius:50%; margin:0 auto 15px; display:block;" id="p-ava">
+        <h2 style="text-align:center; margin-bottom:20px;" id="p-name">User</h2>
+        <button class="btn-main" style="background:var(--accent-blue);" onclick="window.open('https://t.me/casemonk_sup_robot')" data-ru="Поддержка" data-en="Support">Поддержка</button>
         
-        <button class="btn-open-main" style="background:var(--accent-blue);" onclick="window.open('https://t.me/casemonk_sup_robot')">Поддержка</button>
-        
-        <div style="background:var(--card); padding:20px; border-radius:24px; border:var(--border); margin-top:10px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <b>Инвентарь</b> <span id="inv-count" style="color:var(--text-sec);">0</span>
-            </div>
-            <div class="inv-grid" id="main-inv"></div>
+        <div style="margin-top:20px;">
+            <b data-ru="Инвентарь" data-en="Inventory">Инвентарь</b>
+            <div class="grid-view" id="main-inv" style="margin-top:10px; grid-template-columns: repeat(3, 1fr);"></div>
         </div>
     </div>
 
-    <div class="nav-bar">
-        <div class="nav-item" onclick="switchPage('cases', this)"><i class="fa-solid fa-box-open"></i>Кейсы</div>
-        <div class="nav-item" onclick="switchPage('bonus', this)"><i class="fa-solid fa-gift"></i>Бонусы</div>
-        <div class="nav-item" onclick="switchPage('profile', this)"><i class="fa-solid fa-user-circle"></i>Профиль</div>
+    <div class="nav-glass">
+        <div class="nav-item" onclick="switchPage('cases', this)"><i class="fa-solid fa-box-open"></i><span style="font-size:10px;">Кейсы</span></div>
+        <div class="nav-item" onclick="switchPage('bonus', this)"><i class="fa-solid fa-gift"></i><span style="font-size:10px;">Бонусы</span></div>
+        <div class="nav-item active" onclick="switchPage('profile', this)"><i class="fa-solid fa-user-circle"></i><span style="font-size:10px;">Профиль</span></div>
+    </div>
+
+    <div id="m-case-view" class="modal">
+        <div class="m-head" onclick="closeM('m-case-view')"><i class="fa-solid fa-chevron-left"></i> <span id="case-title">DROP</span></div>
+        
+        <div class="roulette-box">
+            <div class="center-marker"></div>
+            <div class="items-tape" id="tape"></div>
+        </div>
+
+        <button class="btn-main" id="btn-open-real" onclick="startSpin(false)">Открыть за 10 TON</button>
+        <button class="btn-sec" onclick="startSpin(true)">Демо режим</button>
+
+        <p style="margin:20px 0 15px; font-weight:700;" data-ru="Наполнение кейса:" data-en="Case content:">Наполнение кейса:</p>
+        <div class="grid-view" id="loot-list"></div>
     </div>
 
     <div id="m-sel" class="modal">
-        <div class="m-head" onclick="closeM('m-sel')"><i class="fa-solid fa-chevron-left"></i> Пополнение</div>
-        <div style="background:#1c1c1e; padding:18px; border-radius:16px; display:flex; justify-content:space-between; margin-bottom:12px;" onclick="openM('m-ton')">
-            <span>TON Connect</span> <img src="tonbalance001.png" width="20">
-        </div>
-        <div style="background:#1c1c1e; padding:18px; border-radius:16px; display:flex; justify-content:space-between;" onclick="openM('m-gift')">
-            <span>NFT Gifts 🎁</span>
-        </div>
+        <div class="m-head" onclick="closeM('m-sel')"><i class="fa-solid fa-chevron-left"></i> <span data-ru="Пополнение" data-en="Deposit">Пополнение</span></div>
+        <div class="step-item"><div class="step-n">1</div><div><b data-ru="Перейдите в бота" data-en="Go to bot">Перейдите в бота</b><p style="color:var(--text-sec); font-size:14px;">@casemonk_relayer</p></div></div>
+        <div class="step-item"><div class="step-n">2</div><div><b data-ru="Отправьте подарок" data-en="Send gift">Отправьте подарок</b><p style="color:var(--text-sec); font-size:14px;" data-ru="Любой NFT подарок" data-en="Any NFT gift">Любой NFT подарок</p></div></div>
+        <button class="btn-main" onclick="window.open('https://t.me/casemonk_relayer')" style="margin-top:auto;" data-ru="Перейти" data-en="Go to bot">Перейти</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
+        let curL = 'ru';
+        let inventory = JSON.parse(localStorage.getItem('inv') || '[]');
+
         const CASE_ITEMS = [
             { n: "Nail Bracelet", p: "115.83", img: "nailbracelet-1.png", s: 0.1 },
             { n: "Bonded Ring", p: "40.10", img: "bondedring-1.png", s: 0.3 },
@@ -148,34 +162,6 @@
             { n: "Snoop Dogg", p: "4.95", img: "snoopdogg-1.png", s: 55 }
         ];
 
-        let inventory = JSON.parse(localStorage.getItem('inv') || '[]');
-
-        function init() {
-            const list = document.getElementById('loot-list');
-            CASE_ITEMS.forEach(item => {
-                list.innerHTML += `
-                    <div class="grid-item">
-                        <div class="item-price-tag"><span>${item.p}</span> <img src="tonbalance001.png" width="12"></div>
-                        <img src="${item.img}" class="item-img">
-                        <div class="item-name">${item.n} Random</div>
-                        <button class="btn-random">Random</button>
-                    </div>`;
-            });
-            fillTape();
-            renderInv();
-            
-            const u = tg.initDataUnsafe.user;
-            if(u) {
-                document.getElementById('mini-name').innerText = u.first_name;
-                document.getElementById('main-name').innerText = u.first_name;
-                document.getElementById('main-tag').innerText = '@' + (u.username || 'user');
-                if(u.photo_url) {
-                    document.getElementById('mini-ava').src = u.photo_url;
-                    document.getElementById('main-ava').src = u.photo_url;
-                }
-            }
-        }
-
         function switchPage(p, el) {
             document.querySelectorAll('.main-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -183,8 +169,30 @@
             el.classList.add('active');
         }
 
+        function setL(l) {
+            curL = l;
+            document.getElementById('lang-toggle').innerText = l.toUpperCase();
+            document.querySelectorAll('[data-ru]').forEach(el => el.innerText = (l === 'ru' ? el.dataset.ru : el.dataset.en));
+        }
+
         function openM(id){ document.getElementById(id).classList.add('active'); }
         function closeM(id){ document.getElementById(id).classList.remove('active'); }
+
+        function openCaseMenu(type) {
+            const list = document.getElementById('loot-list');
+            list.innerHTML = '';
+            CASE_ITEMS.forEach(item => {
+                list.innerHTML += `
+                    <div class="grid-item">
+                        <div class="item-price-tag"><span>${item.p}</span> <img src="tonbalance001.png" width="10"></div>
+                        <img src="${item.img}" class="item-img-small">
+                        <div style="font-size:12px; font-weight:600; margin-bottom:8px;">${item.n}</div>
+                        <button class="btn-sec" style="padding:6px; font-size:11px; margin:0;">Random</button>
+                    </div>`;
+            });
+            fillTape();
+            openM('m-case-view');
+        }
 
         function fillTape() {
             const tape = document.getElementById('tape');
@@ -193,21 +201,20 @@
                 const item = CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)];
                 tape.innerHTML += `<div class="tape-item"><img src="${item.img}"></div>`;
             }
+            tape.style.transition = 'none';
+            tape.style.transform = 'translateX(0)';
         }
 
-        let spinning = false;
+        let isSpinning = false;
         function startSpin(isDemo) {
-            if(spinning) return;
+            if(isSpinning) return;
             const bal = parseFloat(document.getElementById('bal-val').innerText);
             if(!isDemo && bal < 10) return tg.showAlert("Недостаточно TON!");
 
-            spinning = true;
+            isSpinning = true;
             if(!isDemo) updateBal(-10);
             
             const tape = document.getElementById('tape');
-            tape.style.transition = 'none';
-            tape.style.transform = 'translateX(0)';
-            
             const r = Math.random() * 100;
             const winner = [...CASE_ITEMS].sort((a,b)=>a.s-b.s).find(i => r <= i.s) || CASE_ITEMS[9];
             tape.children[55].innerHTML = `<img src="${winner.img}">`;
@@ -219,24 +226,20 @@
             }, 50);
 
             setTimeout(() => {
-                spinning = false;
-                if(isDemo) {
-                    tg.showAlert("Демо-режим: Вы выиграли " + winner.n + ". На реальный баланс приз не зачислен.");
-                } else {
+                isSpinning = false;
+                if(isDemo) tg.showAlert("Демо: Вы выиграли " + winner.n);
+                else {
                     inventory.push(winner);
                     localStorage.setItem('inv', JSON.stringify(inventory));
                     renderInv();
-                    tg.showConfirm(`Вы выиграли ${winner.n}! Продать за ${winner.p} TON?`, (ok) => {
-                        if(ok) sellItem(inventory.length - 1);
-                    });
+                    tg.showConfirm(`Вы выиграли ${winner.n}! Продать за ${winner.p} TON?`, ok => { if(ok) sellItem(inventory.length-1); });
                 }
             }, 5500);
         }
 
         function sellItem(idx) {
-            const item = inventory[idx];
-            updateBal(parseFloat(item.p));
-            inventory.splice(idx, 1);
+            updateBal(parseFloat(inventory[idx].p));
+            inventory.splice(idx,1);
             localStorage.setItem('inv', JSON.stringify(inventory));
             renderInv();
         }
@@ -244,15 +247,12 @@
         function renderInv() {
             const grid = document.getElementById('main-inv');
             grid.innerHTML = '';
-            inventory.forEach((it, i) => {
-                grid.innerHTML += `<div class="slot" onclick="sellItem(${i})"><img src="${it.img}"></div>`;
-            });
-            document.getElementById('inv-count').innerText = inventory.length;
+            inventory.forEach((it, i) => { grid.innerHTML += `<div style="background:#1c1c1e; border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:center;" onclick="sellItem(${i})"><img src="${it.img}" width="40"></div>`; });
         }
 
         function updateBal(v) {
-            const cur = parseFloat(document.getElementById('bal-val').innerText);
-            document.getElementById('bal-val').innerText = (cur + v).toFixed(2);
+            const c = parseFloat(document.getElementById('bal-val').innerText);
+            document.getElementById('bal-val').innerText = (c + v).toFixed(2);
         }
 
         function inviteFriend() {
@@ -260,7 +260,16 @@
             window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=CaseMonk - выигрывай подарки!`);
         }
 
-        init();
+        const u = tg.initDataUnsafe.user;
+        if(u) {
+            document.getElementById('h-name').innerText = u.first_name;
+            document.getElementById('p-name').innerText = u.first_name;
+            if(u.photo_url) {
+                document.getElementById('h-ava').src = u.photo_url;
+                document.getElementById('p-ava').src = u.photo_url;
+            }
+        }
+        renderInv();
     </script>
 </body>
 </html>
