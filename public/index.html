@@ -6,34 +6,42 @@
     <title>CaseMonk Web App</title>
     <style>
         :root {
-            --bg-color: #000000;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --accent-blue: #007aff;
-            --text-color: #ffffff;
-            --card-bg: #1a1a1a;
             --tg-green: #76ff03;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000000;
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 70%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- АНИМАЦИИ ПОДАРКОВ (TG STYLE) --- */
-        @keyframes tg-jump {
-            0% { transform: translateY(0); }
-            30% { transform: translateY(-10px) rotate(-5deg); }
-            50% { transform: translateY(0) rotate(3deg); }
-            100% { transform: translateY(0); }
+        /* АНИМАЦИЯ ПОДАРКА */
+        @keyframes tg-gift-bounce {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.1) rotate(-3deg); }
+            50% { transform: scale(0.9) rotate(3deg); }
+            100% { transform: scale(1) rotate(0); }
         }
-        .anim-gift { animation: tg-jump 0.5s ease-in-out; }
+        .anim-active { animation: tg-gift-bounce 0.4s ease-out; }
 
-        /* Шапка и Баланс */
+        /* ЭФФЕКТ ЖИДКОГО СТЕКЛА */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+
+        /* Шапка */
         .header {
             padding: 20px;
             display: flex;
@@ -42,204 +50,180 @@
         }
 
         .balance-card {
-            background: var(--card-bg);
             padding: 10px 20px;
-            border-radius: 12px;
-            border: 1px solid #333;
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: bold;
+            font-size: 18px;
         }
 
-        .ton-icon { width: 18px; height: 18px; }
-
-        /* Кейс DROP (СТАРЫЙ ИНТЕРФЕЙС) */
-        .case-header {
+        /* Кейс DROP */
+        .case-title {
             text-align: center;
+            font-size: 26px;
+            font-weight: 800;
             margin: 20px 0;
+            letter-spacing: 1px;
         }
 
-        .drop-title {
-            font-size: 24px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
+        .ton-logo { width: 20px; height: 20px; vertical-align: middle; margin-left: 5px; }
 
-        .small-ton { width: 14px; height: 14px; vertical-align: middle; }
-
-        /* Сетка предметов В КЕЙСЕ */
-        .grid-container {
+        /* Сетка инвентаря / предметов */
+        .grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 12px;
             padding: 15px;
         }
 
-        .item-block {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 10px;
+        .item {
+            padding: 12px;
             text-align: center;
-            border: 1px solid #222;
+            transition: all 0.2s;
         }
 
-        /* ИНВЕНТАРЬ (Кнопки как на скриншоте) */
-        .inventory-card {
-            background: #1c1c24;
-            border-radius: 20px;
+        /* Склеенные кнопки как на скриншоте */
+        .inv-card {
             padding: 15px;
+            margin: 10px;
             text-align: center;
-            border: 1px solid #2d2d3d;
         }
 
-        .button-group {
+        .btn-group {
             display: flex;
             flex-direction: column;
             gap: 2px;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .btn-sell {
-            background: #32324a;
+            background: #2c2c3e;
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 14px 14px 5px 5px;
-            font-size: 13px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
+            padding: 12px;
+            border-radius: 15px 15px 5px 5px;
+            font-weight: 600;
         }
 
         .btn-withdraw {
             background: var(--tg-green);
             color: black;
             border: none;
-            padding: 10px;
-            border-radius: 5px 5px 14px 14px;
-            font-size: 13px;
+            padding: 12px;
+            border-radius: 5px 5px 15px 15px;
             font-weight: bold;
         }
 
-        /* Секция пополнения Gifts (Старый текст) */
-        .gifts-section {
-            padding: 15px;
-            background: #0d0d0d;
+        /* Секция Gifts */
+        .gifts-box {
             margin: 15px;
-            border-radius: 12px;
-            border: 1px solid #222;
+            padding: 20px;
         }
 
-        .btn-main {
+        .btn-action {
             background: var(--accent-blue);
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 12px;
             width: 100%;
-            margin-top: 10px;
             font-weight: bold;
+            margin-top: 10px;
         }
 
         /* Навигация */
-        .nav-menu {
+        .nav {
             position: fixed;
             bottom: 0;
             width: 100%;
             display: flex;
-            background: #111;
-            padding: 15px 0;
             justify-content: space-around;
-            border-top: 1px solid #333;
+            padding: 15px 0 25px;
+            background: rgba(0,0,0,0.8);
+            border-top: 1px solid #222;
         }
 
-        .nav-item { font-size: 11px; color: #888; text-align: center; }
-        .nav-item.active { color: var(--accent-blue); }
+        .nav-item { color: #555; font-size: 12px; text-decoration: none; }
+        .nav-item.active { color: white; }
+
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="balance-card">
-            <span id="user-balance">10.00</span> 
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="ton-icon">
+        <div class="balance-card glass">
+            <span id="bal">10.00</span>
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="ton-logo">
         </div>
-        <div style="display:flex; gap:10px;">
-            <button onclick="alert('RU')" style="background:none; border:1px solid #444; color:white; border-radius:8px; padding:5px 10px; font-size:12px;">Русский</button>
-        </div>
+        <div class="glass" style="padding: 8px 15px; font-size: 14px;">Русский</div>
     </div>
 
-    <div class="case-header">
-        <div class="drop-title">
-            DROP <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="small-ton">
-        </div>
-    </div>
+    <div class="case-title">DROP <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="ton-logo"></div>
 
-    <div class="grid-container" id="case-items">
+    <div class="grid" id="items-container">
         </div>
 
-    <div style="padding: 15px;">
-        <button class="btn-main" style="height:50px;">ОТКРЫТЬ КЕЙС (1.5 TON)</button>
+    <div style="padding: 0 15px;">
+        <button class="btn-action" style="font-size: 16px;">ОТКРЫТЬ КЕЙС (1.5 TON)</button>
     </div>
 
-    <div class="gifts-section">
-        <div style="font-size: 13px; color: #888;">Отправьте Gift-код боту. После проверки баланс будет зачислен мгновенно.</div>
-        <button class="btn-main" style="background:#222;">Активировать Gift</button>
+    <div class="gifts-box glass">
+        <div style="font-size: 13px; color: #aaa; line-height: 1.4;">
+            Введите реферальный или бонусный код и получайте подарки и бонусы!
+            <br><br>
+            Отправьте Gift-код боту. После проверки баланс будет зачислен мгновенно.
+        </div>
+        <button class="btn-action" style="background: rgba(255,255,255,0.1);">Активировать Gift</button>
     </div>
 
-    <div style="padding: 0 15px; margin-bottom: 80px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <button class="btn-main" style="background:#1a1a1a; border:1px solid #333; margin:0;">🎁 Бонусы</button>
-        <button class="btn-main" style="background:#1a1a1a; border:1px solid #333; margin:0;">👨‍💻 Поддержка</button>
+    <div style="padding: 0 15px; margin-bottom: 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button class="btn-action glass" style="background:none; margin:0;">🎁 Бонусы</button>
+        <button class="btn-action glass" style="background:none; margin:0;">👨‍💻 Поддержка</button>
     </div>
 
-    <nav class="nav-menu">
+    <nav class="nav">
         <div class="nav-item active">Кейсы</div>
         <div class="nav-item">Инвентарь</div>
         <div class="nav-item">Профиль</div>
     </nav>
 
     <script>
-        const items = [
-            { name: "Common", price: 0.1, color: "#888" },
-            { name: "Uncommon", price: 0.5, color: "#007aff" },
-            { name: "Rare", price: 2.0, color: "#a335ee" },
-            { name: "Epic", price: 5.0, color: "#ff00ff" },
-            { name: "Legendary", price: 10.0, color: "#ff8000" },
-            { name: "Mythic", price: 15.0, color: "#ff4d4d" }
+        const loot = [
+            { n: "Agaric", p: 4.29, c: "#ff4d4d" },
+            { n: "Snoop", p: 4.56, c: "#4facfe" },
+            { n: "Dryer", p: 2.10, c: "#f093fb" },
+            { n: "Ice", p: 1.20, c: "#43e97b" },
+            { n: "Coin", p: 0.50, c: "#f6d365" },
+            { n: "Box", p: 0.10, c: "#a1c4fd" }
         ];
 
-        function initGrid() {
-            const container = document.getElementById('case-items');
-            container.innerHTML = '';
-            items.forEach(item => {
+        function loadItems() {
+            const container = document.getElementById('items-container');
+            loot.forEach(item => {
                 container.innerHTML += `
-                    <div class="item-block" onclick="animateItem(this)">
-                        <div style="width:100%; height:45px; background:${item.color}; border-radius:8px; margin-bottom:8px;" class="item-img-target"></div>
-                        <div style="font-size:10px; margin-bottom:4px;">${item.name}</div>
-                        <div style="font-size:11px; font-weight:bold; color: #ccc;">
-                            ${item.price} <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="small-ton">
+                    <div class="item glass" onclick="giftAnim(this)">
+                        <div class="img-placeholder" style="width:100%; height:40px; background:${item.c}; border-radius:8px; margin-bottom:8px; box-shadow: 0 4px 15px ${item.c}44;"></div>
+                        <div style="font-size:10px; opacity:0.7;">${item.n}</div>
+                        <div style="font-size:11px; font-weight:bold; margin-top:3px;">
+                            ${item.p} <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" style="width:10px;">
                         </div>
                     </div>
                 `;
             });
         }
 
-        function animateItem(el) {
-            const target = el.querySelector('.item-img-target');
-            target.classList.remove('anim-gift');
-            void target.offsetWidth;
-            target.classList.add('anim-gift');
+        function giftAnim(el) {
+            el.classList.remove('anim-active');
+            void el.offsetWidth;
+            el.classList.add('anim-active');
             
-            if (window.Telegram && window.Telegram.WebApp) {
+            if(window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
             }
         }
 
-        window.onload = initGrid;
+        window.onload = loadItems;
     </script>
 </body>
 </html>
