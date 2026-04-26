@@ -11,41 +11,29 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; overflow: hidden; height: 100vh; }
 
-        /* Header */
         .header { display: flex; justify-content: flex-end; padding: 15px 20px; position: fixed; top: 0; width: 100%; z-index: 100; }
         .bal-box { display: flex; align-items: center; background: var(--glass); padding: 6px 14px; border-radius: 20px; border: var(--border); font-weight: 800; }
         .bal-box img { width: 18px; margin-right: 8px; }
         .add-btn { color: #34c759; font-size: 20px; cursor: pointer; margin-left: 10px; }
 
-        /* Nav Glass */
-        .nav-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 25px; border: var(--border); display: flex; padding: 12px; z-index: 1000; }
+        .nav-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 25px; border: var(--border); display: flex; padding: 12px; z-index: 1000; }
         .nav-item { flex: 1; text-align: center; color: #8e8e93; font-size: 10px; font-weight: 600; cursor: pointer; }
         .nav-item.active { color: #fff; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
 
-        /* Content */
         .page { display: none; padding: 70px 20px 120px; height: 100vh; overflow-y: auto; }
         .page.active { display: block; }
 
-        /* Profile */
-        .prof-header { text-align: center; margin-bottom: 25px; }
-        .u-ava { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; }
-        .u-nick { font-size: 22px; font-weight: 800; }
-        .u-id { color: #8e8e93; font-size: 14px; margin-bottom: 15px; }
-
-        /* Buttons & Inputs */
         .btn { background: var(--glass); border: var(--border); color: #fff; padding: 16px; border-radius: 18px; width: 100%; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-main { background: var(--accent); border: none; }
-        .promo-input { width: 100%; background: rgba(255,255,255,0.05); border: var(--border); padding: 14px; border-radius: 14px; color: #fff; text-align: center; font-weight: 700; margin: 10px 0; }
+        .promo-input { width: 100%; background: rgba(255,255,255,0.05); border: var(--border); padding: 14px; border-radius: 14px; color: #fff; text-align: center; font-weight: 700; margin: 10px 0; outline: none; }
         
-        /* Roulette */
         .roulette { width: 100%; height: 140px; background: #0a0a0a; border-radius: 20px; border: var(--border); position: relative; overflow: hidden; margin: 15px 0; }
         .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--accent); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--accent); }
         .tape { display: flex; align-items: center; transition: transform 9s cubic-bezier(0.1, 0, 0.1, 1); }
         .tape-item { min-width: 115px; display: flex; justify-content: center; }
-        .tape-item img { width: 80px; height: 80px; object-fit: contain; }
+        .tape-item img { width: 85px; height: 85px; object-fit: contain; }
 
-        /* Modal & Overlay */
         .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; padding: 25px; flex-direction: column; }
         .modal.active { display: flex; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
@@ -54,23 +42,23 @@
         .slot { aspect-ratio: 1; background: var(--glass); border: var(--border); border-radius: 15px; display: flex; align-items: center; justify-content: center; }
         .slot img { width: 75%; }
         
-        #msg { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 12px; font-weight: 700; z-index: 4000; display: none; }
+        #toast { position: fixed; top: 75px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 12px; font-weight: 700; z-index: 4000; display: none; text-align: center; width: 80%; }
     </style>
 </head>
 <body>
 
-    <div id="msg"></div>
+    <div id="toast"></div>
 
     <div class="header">
         <div class="bal-box">
             <img src="tonbalance001.png">
             <span id="bal-val">0.00</span>
-            <i class="fa-solid fa-circle-plus add-btn" onclick="openMod('m-dep')"></i>
+            <i class="fa-solid fa-circle-plus add-btn" onclick="openM('m-dep')"></i>
         </div>
     </div>
 
     <div id="p-cases" class="page active">
-        <div style="background: var(--glass); padding: 20px; border-radius: 25px; border: var(--border);" onclick="openCase()">
+        <div style="background: var(--glass); padding: 20px; border-radius: 25px; border: var(--border);" onclick="prepareCase()">
             <img src="case_drop.png" style="width: 100%; border-radius: 15px; margin-bottom: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <b style="font-size: 20px;">DROP</b>
@@ -80,86 +68,84 @@
     </div>
 
     <div id="p-prof" class="page">
-        <div class="prof-header">
-            <img id="u-ava" src="" class="u-ava">
-            <div id="u-nick" class="u-nick">User</div>
-            <div id="u-handle" class="u-id">@username</div>
-            <button class="btn" onclick="window.open('https://t.me/casemonk_sup_bot')"><i class="fa-solid fa-headset"></i> <span class="t-sup">Поддержка</span></button>
+        <div style="text-align: center; margin-bottom: 25px;">
+            <img id="u-ava" src="" style="width:90px; height:90px; border-radius:50%; border:2px solid var(--accent); margin-bottom:10px;">
+            <div id="u-nick" style="font-size: 22px; font-weight: 800;">User</div>
+            <div id="u-handle" style="color: #8e8e93; font-size: 14px; margin-bottom: 15px;">@username</div>
+            <button class="btn" onclick="window.open('https://t.me/casemonk_sup_bot')"><i class="fa-solid fa-headset"></i> <span class="l-support">Поддержка</span></button>
         </div>
 
         <div style="background: var(--glass); padding: 20px; border-radius: 20px; border: var(--border);">
-            <b class="t-promo-h">Введите промокод</b>
+            <b class="l-promo-h">Введите промокод</b>
             <input type="text" id="promo-in" class="promo-input" placeholder="XXXX-XXXX">
-            <button class="btn btn-main" onclick="applyPromo()" class="t-promo-btn">Активировать</button>
+            <button class="btn btn-main l-promo-btn" onclick="checkPromo()">Активировать</button>
         </div>
 
         <div style="display:flex; gap:10px; margin: 20px 0;">
-            <button class="btn" onclick="setLang('ru')">Русский</button>
-            <button class="btn" onclick="setLang('en')">English</button>
+            <button class="btn" onclick="changeL('ru')">Русский</button>
+            <button class="btn" onclick="changeL('en')">English</button>
         </div>
 
-        <b class="t-inv" style="font-size: 18px;">Инвентарь</b>
+        <b class="l-inv" style="font-size: 18px;">Инвентарь</b>
         <div id="inv-list" class="inv-grid"></div>
-        <div id="inv-empty" style="text-align:center; color:#555; margin-top:20px;" class="t-empty">Пусто</div>
+        <div id="inv-empty" style="text-align:center; color:#555; margin-top:20px;" class="l-empty">Пусто</div>
     </div>
 
     <nav class="nav-bar">
-        <div class="nav-item active" onclick="nav('cases', this)"><i class="fa-solid fa-box-open"></i><span class="t-nav-1">КЕЙСЫ</span></div>
-        <div class="nav-item" onclick="nav('prof', this)"><i class="fa-solid fa-user"></i><span class="t-nav-2">ПРОФИЛЬ</span></div>
+        <div class="nav-item active" onclick="tab('cases', this)"><i class="fa-solid fa-box-open"></i><span class="l-nav1">КЕЙСЫ</span></div>
+        <div class="nav-item" onclick="tab('prof', this)"><i class="fa-solid fa-user"></i><span class="l-nav2">ПРОФИЛЬ</span></div>
     </nav>
 
     <div id="m-case" class="modal">
-        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;" onclick="closeMod('m-case')">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;" onclick="closeM('m-case')">
             <i class="fa-solid fa-chevron-left"></i> <b style="font-size:22px;">DROP</b>
         </div>
         <div class="roulette"><div class="pointer"></div><div id="tape" class="tape"></div></div>
-        <button class="btn btn-main" style="height:60px;" onclick="startSpin(false)" id="btn-open">Открыть за 10 TON</button>
-        <button class="btn" onclick="startSpin(true)" id="btn-demo">Демо режим</button>
-        <div class="inv-grid" id="loot-preview"></div>
+        <button class="btn btn-main" style="height:60px;" onclick="run(false)" id="btn-open">Открыть за 10 TON</button>
+        <button class="btn" onclick="run(true)" id="btn-demo">Демо режим</button>
     </div>
 
     <div id="m-dep" class="modal">
-        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;" onclick="closeMod('m-dep')">
-            <i class="fa-solid fa-chevron-left"></i> <b class="t-dep-h">Пополнение</b>
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;" onclick="closeM('m-dep')">
+            <i class="fa-solid fa-chevron-left"></i> <b class="l-dep-h">Пополнение</b>
         </div>
         <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <button class="btn" id="tab-ton" onclick="switchDep('ton')" style="background:var(--accent)">TON</button>
-            <button class="btn" id="tab-gift" onclick="switchDep('gift')">GIFTS</button>
+            <button class="btn" id="t-ton" onclick="depTab('ton')" style="background:var(--accent)">TON</button>
+            <button class="btn" id="t-gift" onclick="depTab('gift')">GIFTS</button>
         </div>
-        <div id="dep-ton">
-            <button class="btn" id="wallet-btn" onclick="toggleWallet()">Привязать кошелек</button>
-            <div id="wallet-box" style="display:none; margin-top:15px;">
-                <p style="font-size:12px; color:#8e8e93; margin-bottom:5px;">Отправьте на адрес:</p>
-                <code style="display:block; background:#111; padding:10px; border-radius:10px; font-size:11px; word-break:break-all;">UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ</code>
-                <input type="number" id="dep-val" class="promo-input" placeholder="0.10 - 9999 TON">
-                <button class="btn btn-main" onclick="confirmDep()">Внести TON</button>
+        <div id="d-ton">
+            <button class="btn" id="wall-btn" onclick="linkWall()">Привязать кошелек</button>
+            <div id="wall-box" style="display:none; margin-top:15px;">
+                <p style="font-size:12px; color:#8e8e93;">Адрес для перевода:</p>
+                <code style="display:block; background:#111; padding:12px; border-radius:12px; font-size:11px; word-break:break-all; margin:10px 0;">UQCZVO12gl7nNHEPgup58ZdlUJQIg7ANsuNIo73CYMaRyZzZ</code>
+                <input type="number" id="dep-v" class="promo-input" placeholder="0.10 - 9999 TON">
+                <button class="btn btn-main" onclick="sendDep()">Внести TON</button>
             </div>
         </div>
-        <div id="dep-gift" style="display:none; text-align:center;">
-            <p class="t-gift-txt">Отправьте NFT подарок на аккаунт:</p>
+        <div id="d-gift" style="display:none; text-align:center;">
+            <p class="l-gift-txt">Отправьте NFT подарок на аккаунт:</p>
             <h3 style="color:var(--accent); margin:15px 0;">@casemonk_relayer</h3>
-            <button class="btn btn-main" onclick="window.open('https://t.me/casemonk_relayer')">Перейти</button>
+            <button class="btn btn-main" onclick="window.open('https://t.me/casemonk_relayer')">Перейти к боту</button>
         </div>
     </div>
 
     <div id="win-overlay" class="overlay">
-        <h1 style="color:var(--accent); font-weight:900;" class="t-win">ВЫ ВЫИГРАЛИ!</h1>
+        <h1 style="color:var(--accent); font-weight:900;" class="l-win-h">ВЫ ВЫИГРАЛИ!</h1>
         <img id="win-img" src="" style="width:180px; height:180px; object-fit:contain; margin:20px 0;">
         <h2 id="win-name">Item Name</h2>
         <h3 id="win-price" style="margin-bottom:25px;">0.00 TON</h3>
-        <button class="btn btn-main" id="claim-keep">Оставить</button>
-        <button class="btn" id="claim-sell">Продать</button>
+        <button class="btn btn-main" id="w-keep">Оставить</button>
+        <button class="btn" id="w-sell">Продать</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         let balance = 0.00;
-        let inventory = JSON.parse(localStorage.getItem('cm_inv') || '[]');
-        let lang = 'ru';
-        let walletLinked = false;
-        let isSpinning = false;
+        let inv = JSON.parse(localStorage.getItem('c_inv') || '[]');
+        let isSpin = false;
+        let isLinked = false;
 
-        const LOOT = [
+        const ITEMS = [
             { n: "Nail Bracelet Random", p: 115.83, c: 0.1, img: "nailbracelet.png" },
             { n: "Bonded Ring Random", p: 40.10, c: 0.3, img: "bondedring.png" },
             { n: "Signet Ring Random", p: 32.69, c: 1.0, img: "signetring.png" },
@@ -173,141 +159,141 @@
             { n: "3.0 TON balance", p: 3.00, c: 48.0, img: "tonbalance001.png", cash: true }
         ];
 
-        const TXT = {
-            ru: { sup: "Поддержка", promoh: "Введите промокод", promob: "Активировать", inv: "Инвентарь", empty: "Пусто", dep: "Пополнение", n1: "КЕЙСЫ", n2: "ПРОФИЛЬ", win: "ВЫ ВЫИГРАЛИ!" },
-            en: { sup: "Support", promoh: "Enter Promo Code", promob: "Activate", inv: "Inventory", empty: "Empty", dep: "Deposit", n1: "CASES", n2: "PROFILE", win: "YOU WON!" }
+        const LANGS = {
+            ru: { support: "Поддержка", promoh: "Введите промокод", promob: "Активировать", inv: "Инвентарь", empty: "Пусто", dep: "Пополнение", nav1: "КЕЙСЫ", nav2: "ПРОФИЛЬ", win: "ВЫ ВЫИГРАЛИ!", gift: "Отправьте NFT подарок на аккаунт:" },
+            en: { support: "Support", promoh: "Enter Promo Code", promob: "Activate", inv: "Inventory", empty: "Empty", dep: "Deposit", nav1: "CASES", nav2: "PROFILE", win: "YOU WON!", gift: "Send NFT gift to account:" }
         };
 
-        function nav(p, el) {
-            document.querySelectorAll('.page').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('p-'+p).classList.add('active');
+        function tab(t, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('p-'+t).classList.add('active');
             el.classList.add('active');
         }
 
-        function setLang(l) {
-            lang = l;
-            const t = TXT[l];
-            document.querySelector('.t-sup').innerText = t.sup;
-            document.querySelector('.t-promo-h').innerText = t.promoh;
-            document.querySelector('.t-inv').innerText = t.inv;
-            document.querySelector('.t-empty').innerText = t.empty;
-            document.querySelector('.t-nav-1').innerText = t.n1;
-            document.querySelector('.t-nav-2').innerText = t.n2;
-            document.querySelector('.t-win').innerText = t.win;
+        function changeL(l) {
+            const t = LANGS[l];
+            document.querySelector('.l-support').innerText = t.support;
+            document.querySelector('.l-promo-h').innerText = t.promoh;
+            document.querySelector('.l-promo-btn').innerText = t.promob;
+            document.querySelector('.l-inv').innerText = t.inv;
+            document.querySelector('.l-empty').innerText = t.empty;
+            document.querySelector('.l-dep-h').innerText = t.dep;
+            document.querySelector('.l-nav1').innerText = t.nav1;
+            document.querySelector('.l-nav2').innerText = t.nav2;
+            document.querySelector('.l-win-h').innerText = t.win;
+            document.querySelector('.l-gift-txt').innerText = t.gift;
         }
 
-        function openCase() {
-            openMod('m-case');
-            const tape = document.getElementById('tape');
-            tape.innerHTML = '';
-            for(let i=0; i<80; i++) {
-                const it = LOOT[Math.floor(Math.random()*LOOT.length)];
-                tape.innerHTML += `<div class="tape-item"><img src="${it.img}"></div>`;
+        function prepareCase() {
+            openM('m-case');
+            const t = document.getElementById('tape');
+            t.innerHTML = '';
+            for(let i=0; i<85; i++) {
+                const it = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+                t.innerHTML += `<div class="tape-item"><img src="${it.img}"></div>`;
             }
         }
 
-        function startSpin(demo) {
-            if(isSpinning) return;
-            if(!demo && balance < 10) return showMsg("Недостаточно TON", "red");
+        function run(demo) {
+            if(isSpin) return;
+            if(!demo && balance < 10) return msg("Недостаточно TON", "var(--red)");
             
-            isSpinning = true;
-            if(!demo) updateBal(-10);
+            isSpin = true;
+            if(!demo) updBal(-10);
 
-            const tape = document.getElementById('tape');
-            const winIdx = 65;
-            const winner = LOOT[Math.floor(Math.random()*LOOT.length)];
+            const t = document.getElementById('tape');
+            const winIdx = 70;
+            const r = Math.random() * 100;
+            let winner = ITEMS[ITEMS.length-1];
+            let sum = 0;
+            for(let it of ITEMS) { sum += it.c; if(r <= sum) { winner = it; break; } }
             
-            tape.children[winIdx].innerHTML = `<img src="${winner.img}">`;
-            const x = (winIdx * 115) - (window.innerWidth / 2) + 57;
-            tape.style.transition = 'transform 9s cubic-bezier(0.1, 0, 0.1, 1)';
-            tape.style.transform = `translateX(-${x}px)`;
+            t.children[winIdx].innerHTML = `<img src="${winner.img}">`;
+            const offset = (winIdx * 115) - (window.innerWidth / 2) + 57;
+            t.style.transition = 'transform 9s cubic-bezier(0.1, 0, 0.1, 1)';
+            t.style.transform = `translateX(-${offset}px)`;
 
             setTimeout(() => {
-                showWin(winner, demo);
-                isSpinning = false;
+                showW(winner, demo);
+                isSpin = false;
             }, 9500);
         }
 
-        function showWin(it, demo) {
+        function showW(it, demo) {
             const ov = document.getElementById('win-overlay');
             document.getElementById('win-img').src = it.img;
             document.getElementById('win-name').innerText = it.n;
             document.getElementById('win-price').innerText = it.p + " TON";
             ov.style.display = 'flex';
 
-            document.getElementById('claim-keep').onclick = () => {
-                if(!demo) {
-                    if(it.cash) updateBal(it.p);
-                    else { inventory.push(it); saveInv(); }
-                }
-                ov.style.display = 'none'; resetRoulette();
+            document.getElementById('w-keep').onclick = () => {
+                if(!demo) { if(it.cash) updBal(it.p); else { inv.push(it); saveInv(); } }
+                ov.style.display = 'none'; resetR();
             };
-            document.getElementById('claim-sell').onclick = () => {
-                if(!demo) updateBal(it.p);
-                ov.style.display = 'none'; resetRoulette();
+            document.getElementById('w-sell').onclick = () => {
+                if(!demo) updBal(it.p);
+                ov.style.display = 'none'; resetR();
             };
         }
 
-        function invAction(idx) {
-            const it = inventory[idx];
+        function invClick(i) {
+            const it = inv[i];
             tg.showPopup({
                 title: it.n,
-                message: `Цена: ${it.p} TON`,
+                message: `Цена продажи: ${it.p} TON`,
                 buttons: [{id:'out', text:'Вывести'}, {id:'sell', text:'Продать', type:'destructive'}, {type:'cancel'}]
             }, (id) => {
-                if(id === 'sell') { updateBal(it.p); inventory.splice(idx,1); saveInv(); }
+                if(id === 'sell') { updBal(it.p); inv.splice(i,1); saveInv(); }
                 else if(id === 'out') {
-                    tg.showPopup({title:"Вывод", message:"Напишите @casemonk_relayer", buttons:[{id:'ok', text:'Я выполнил'}]}, (res) => {
-                        if(res === 'ok') {
+                    tg.showPopup({title:"Вывод", message:"Напишите @casemonk_relayer", buttons:[{id:'ok', text:'Я выполнил'}]}, (r) => {
+                        if(r === 'ok') {
                             tg.showAlert("Успешно ваш вывод обработан, ожидайте получения подарка до 24х часов");
-                            inventory.splice(idx,1); saveInv();
+                            inv.splice(i,1); saveInv();
                         }
                     });
                 }
             });
         }
 
-        function toggleWallet() {
-            walletLinked = !walletLinked;
-            document.getElementById('wallet-btn').innerText = walletLinked ? "Отвязать кошелек" : "Привязать кошелек";
-            document.getElementById('wallet-box').style.display = walletLinked ? "block" : "none";
+        function linkWall() {
+            isLinked = !isLinked;
+            document.getElementById('wall-btn').innerText = isLinked ? "Отвязать кошелек" : "Привязать кошелек";
+            document.getElementById('wall-box').style.display = isLinked ? "block" : "none";
         }
 
-        function confirmDep() {
-            const v = document.getElementById('dep-val').value;
-            if(v < 0.1) showMsg("Ошибка Пополнение от 0.10 тон", "red");
-            else tg.showAlert("Запрос отправлен");
+        function sendDep() {
+            const v = document.getElementById('dep-v').value;
+            if(v < 0.1) msg("Ошибка Пополнение от 0.10 тон", "var(--red)");
+            else tg.showAlert("Запрос отправлен на подтверждение");
         }
 
-        function applyPromo() {
+        function checkPromo() {
             const v = document.getElementById('promo-in').value;
-            if(v === "CASE") showMsg("Успешно активирован!", "var(--accent)");
-            else if(v === "OLD") showMsg("Промокод закончился", "red");
-            else showMsg("Промокод не существует", "red");
+            if(v === "GIFT") msg("Успешно активирован!", "var(--accent)");
+            else if(v === "OLD") msg("Промокод закончился", "var(--red)");
+            else msg("Промокод не существует", "var(--red)");
         }
 
-        function updateBal(v) { balance += v; document.getElementById('bal-val').innerText = balance.toFixed(2); }
-        function saveInv() { localStorage.setItem('cm_inv', JSON.stringify(inventory)); renderInv(); }
+        function updBal(v) { balance += v; document.getElementById('bal-val').innerText = balance.toFixed(2); }
+        function saveInv() { localStorage.setItem('c_inv', JSON.stringify(inv)); renderInv(); }
         function renderInv() {
             const l = document.getElementById('inv-list'); l.innerHTML = '';
-            document.getElementById('inv-empty').style.display = inventory.length ? 'none' : 'block';
-            inventory.forEach((it, i) => {
-                l.innerHTML += `<div class="slot" onclick="invAction(${i})"><img src="${it.img}"></div>`;
-            });
+            document.getElementById('inv-empty').style.display = inv.length ? 'none' : 'block';
+            inv.forEach((it, i) => { l.innerHTML += `<div class="slot" onclick="invClick(${i})"><img src="${it.img}"></div>`; });
         }
-        function showMsg(t, c) {
-            const m = document.getElementById('msg'); m.innerText = t; m.style.background = c; m.style.display = 'block';
+        function msg(t, c) {
+            const m = document.getElementById('toast'); m.innerText = t; m.style.background = c; m.style.display = 'block';
             setTimeout(() => m.style.display = 'none', 3000);
         }
-        function openMod(id) { document.getElementById(id).classList.add('active'); }
-        function closeMod(id) { document.getElementById(id).classList.remove('active'); resetRoulette(); }
-        function resetRoulette() { const t = document.getElementById('tape'); t.style.transition = 'none'; t.style.transform = 'translateX(0)'; }
-        function switchDep(t) {
-            document.getElementById('dep-ton').style.display = t === 'ton' ? 'block' : 'none';
-            document.getElementById('dep-gift').style.display = t === 'gift' ? 'block' : 'none';
-            document.getElementById('tab-ton').style.background = t === 'ton' ? 'var(--accent)' : 'var(--glass)';
-            document.getElementById('tab-gift').style.background = t === 'gift' ? 'var(--accent)' : 'var(--glass)';
+        function openM(id) { document.getElementById(id).classList.add('active'); }
+        function closeM(id) { document.getElementById(id).classList.remove('active'); resetR(); }
+        function resetR() { const t = document.getElementById('tape'); t.style.transition = 'none'; t.style.transform = 'translateX(0)'; }
+        function depTab(t) {
+            document.getElementById('d-ton').style.display = t === 'ton' ? 'block' : 'none';
+            document.getElementById('d-gift').style.display = t === 'gift' ? 'block' : 'none';
+            document.getElementById('t-ton').style.background = t === 'ton' ? 'var(--accent)' : 'var(--glass)';
+            document.getElementById('t-gift').style.background = t === 'gift' ? 'var(--accent)' : 'var(--glass)';
         }
 
         const u = tg.initDataUnsafe.user;
