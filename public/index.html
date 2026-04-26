@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style>
         :root {
-            --bg: #000000;
+            --bg-color: #000000;
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
             --accent: #007aff;
-            --green: #76ff03;
+            --tg-green: #76ff03;
         }
 
         body {
-            background: var(--bg);
+            background-color: var(--bg-color);
             background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 80%);
-            color: white;
+            color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             padding: 0;
@@ -23,6 +23,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* ЭФФЕКТ СТЕКЛА */
         .glass {
             background: var(--glass);
             backdrop-filter: blur(15px);
@@ -31,39 +32,118 @@
             border-radius: 20px;
         }
 
-        /* ТА САМАЯ АНИМАЦИЯ ПОДАРКА */
-        @keyframes tg-gift {
+        /* АНИМАЦИЯ ПОДАРКА (TG STYLE) */
+        @keyframes gift-bounce {
             0% { transform: scale(1); }
-            30% { transform: scale(1.1) rotate(-3deg); }
-            50% { transform: scale(0.95) rotate(3deg); }
+            30% { transform: scale(1.12) rotate(-3deg); }
+            50% { transform: scale(0.92) rotate(3deg); }
             100% { transform: scale(1) rotate(0); }
         }
-        .anim-active { animation: tg-gift 0.4s ease-out; }
+        .anim-active { animation: gift-bounce 0.4s ease-out; }
 
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .balance { padding: 8px 18px; display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 18px; }
+        /* Шапка */
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-card {
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
         .ton-icon { width: 18px; height: 18px; }
 
-        .case-title { text-align: center; font-size: 26px; font-weight: 800; margin: 20px 0; letter-spacing: 1px; }
+        .case-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 800;
+            margin: 20px 0;
+            letter-spacing: 1px;
+        }
 
-        /* Сетка 3х3 */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 15px; }
-        .grid-item { padding: 12px; text-align: center; }
-        .item-preview { width: 100%; height: 45px; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        /* Сетка предметов */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 0 15px;
+        }
 
-        /* Секция Gifts */
-        .section-glass { margin: 15px; padding: 20px; }
-        .step { display: flex; gap: 12px; margin-bottom: 12px; font-size: 14px; line-height: 1.4; }
-        .step-n { background: rgba(255,255,255,0.1); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .grid-item {
+            padding: 12px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
 
-        .btn-blue { background: var(--accent); color: white; border: none; padding: 16px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        .item-preview {
+            width: 100%;
+            height: 45px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
 
-        /* Инвентарь (склеенные кнопки) */
-        .btn-group { display: flex; flex-direction: column; gap: 2px; margin-top: 15px; }
-        .btn-sell { background: #2c2c3e; color: white; border: none; padding: 12px; border-radius: 16px 16px 5px 5px; font-weight: 600; font-size: 13px; }
-        .btn-withdraw { background: var(--green); color: black; border: none; padding: 12px; border-radius: 5px 5px 16px 16px; font-weight: 800; font-size: 13px; }
+        /* Gifts Инструкция */
+        .section-box {
+            margin: 20px 15px;
+            padding: 20px;
+        }
 
-        .nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 12px 0 30px; background: rgba(0,0,0,0.85); border-top: 1px solid #222; backdrop-filter: blur(10px); }
+        .step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .step-n {
+            background: rgba(255,255,255,0.1);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .btn-blue {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* Инвентарь Кнопки */
+        .btn-group { display: flex; flex-direction: column; gap: 3px; margin-top: 15px; }
+        .btn-sell { background: #2c2c3e; color: white; border: none; padding: 12px; border-radius: 16px 16px 6px 6px; font-weight: 600; font-size: 13px; }
+        .btn-withdraw { background: var(--tg-green); color: black; border: none; padding: 12px; border-radius: 6px 6px 16px 16px; font-weight: 800; font-size: 13px; }
+
+        .nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 30px;
+            background: rgba(0,0,0,0.9);
+            border-top: 1px solid #222;
+        }
+
         .nav-item { color: #555; font-size: 12px; text-decoration: none; }
         .nav-item.active { color: white; }
     </style>
@@ -73,9 +153,9 @@
     <div class="header">
         <div style="display:flex; align-items:center; gap:10px;">
             <div style="width:35px; height:35px; border-radius:50%; background:#333; border: 1px solid #444;"></div>
-            <span style="font-weight:600; letter-spacing: 0.5px;">MONK</span>
+            <span style="font-weight:600;">MONK</span>
         </div>
-        <div class="balance glass">
+        <div class="balance-card glass">
             <span>10.00</span>
             <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="ton-icon">
             <span style="opacity:0.3; margin-left:5px;">+</span>
@@ -84,13 +164,13 @@
 
     <div class="case-title">Heart Кейс</div>
 
-    <div class="grid" id="gifts-grid"></div>
+    <div class="grid" id="grid-container"></div>
 
     <div style="padding: 15px;">
         <button class="btn-blue">ОТКРЫТЬ КЕЙС (1.5 TON)</button>
     </div>
 
-    <div class="section-glass glass">
+    <div class="section-box glass">
         <div style="font-weight:bold; margin-bottom:15px; font-size: 15px;">Способ оплаты: Gifts 🎁</div>
         <div class="step">
             <div class="step-n">1</div>
@@ -129,10 +209,10 @@
         ];
 
         function init() {
-            const container = document.getElementById('gifts-grid');
+            const container = document.getElementById('grid-container');
             loot.forEach(item => {
                 container.innerHTML += `
-                    <div class="grid-item glass" onclick="animateIt(this)">
+                    <div class="grid-item glass" onclick="play(this)">
                         <div class="item-preview" style="background:${item.c}; box-shadow: 0 0 15px ${item.c}44;"></div>
                         <div style="font-size:10px; opacity:0.6; white-space: nowrap;">${item.n}</div>
                         <div style="font-size:11px; font-weight:bold; margin-top:4px;">
@@ -143,7 +223,7 @@
             });
         }
 
-        function animateIt(el) {
+        function play(el) {
             el.classList.remove('anim-active');
             void el.offsetWidth;
             el.classList.add('anim-active');
