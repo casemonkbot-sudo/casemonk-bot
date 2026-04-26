@@ -3,35 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>CaseMonk</title>
+    <title>CaseMonk Releyer</title>
     <style>
         :root {
-            --bg-color: #0d0d12;
-            --card-bg: #1c1c26;
+            --bg-dark: #000000;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --accent-blue: #007aff;
-            --tg-green: #4cd964;
+            --tg-green: #76ff03;
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 75%);
             color: white;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0;
-            user-select: none;
+            overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* АНИМАЦИЯ (КАК В TG GIFTS) */
-        @keyframes tg-gift-bounce {
+        /* --- ЭФФЕКТ ЖИДКОГО СТЕКЛА --- */
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+
+        /* --- АНИМАЦИЯ ПОДАРКА (TG STYLE) --- */
+        @keyframes tg-pop {
             0% { transform: scale(1); }
-            30% { transform: scale(1.15) rotate(-3deg); }
-            50% { transform: scale(0.9) rotate(3deg); }
+            30% { transform: scale(1.1) rotate(-3deg); }
+            50% { transform: scale(0.95) rotate(3deg); }
             100% { transform: scale(1) rotate(0); }
         }
-        .anim-active { animation: tg-gift-bounce 0.4s ease-out; }
+        .anim-active { animation: tg-pop 0.4s ease-out; }
 
-        /* ШАПКА */
+        /* Шапка */
         .header {
             padding: 20px;
             display: flex;
@@ -39,70 +50,137 @@
             align-items: center;
         }
 
-        .balance-card {
-            background: var(--card-bg);
-            padding: 8px 16px;
-            border-radius: 20px;
+        .balance-badge {
+            padding: 8px 18px;
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: bold;
-            border: 1px solid #2d2d3d;
+            font-size: 17px;
         }
 
-        .ton-icon { width: 18px; height: 18px; }
+        .ton-logo { width: 18px; height: 18px; }
 
-        /* НАЗВАНИЕ КЕЙСА */
-        .case-title {
+        /* Заголовок кейса */
+        .case-header {
             text-align: center;
+            margin: 20px 0;
+        }
+
+        .case-title {
             font-size: 24px;
             font-weight: 800;
-            margin: 10px 0 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* СЕТКА ПРЕДМЕТОВ КЕЙСА (3х3) */
-        .items-grid {
+        /* Сетка предметов (3х3) */
+        .grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 0 15px;
+            gap: 12px;
+            padding: 15px;
         }
 
-        .item-box {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 10px;
+        .grid-item {
+            padding: 12px;
             text-align: center;
-            border: 1px solid #2d2d3d;
+            transition: 0.2s;
         }
 
-        .gift-img { width: 50px; height: 50px; margin-bottom: 5px; }
+        .item-preview {
+            width: 100%;
+            height: 45px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
 
-        /* ПОПОЛНЕНИЕ GIFTS */
-        .section-box {
-            background: var(--card-bg);
-            margin: 20px 15px;
+        /* Секция Пополнения */
+        .gifts-section {
+            margin: 15px;
             padding: 20px;
-            border-radius: 20px;
-            border: 1px solid #2d2d3d;
         }
 
-        .step { display: flex; gap: 12px; margin-bottom: 15px; align-items: center; font-size: 14px; }
-        .step-n { background: #32324a; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        
-        .warning { background: rgba(255, 59, 48, 0.1); color: #ff3b30; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center; }
+        .step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
 
-        /* КНОПКИ (СКЛЕЕННЫЕ В ИНВЕНТАРЕ) */
-        .inv-card { background: var(--card-bg); border-radius: 24px; padding: 15px; text-align: center; margin: 15px; border: 1px solid #2d2d3d; }
-        .btn-group { display: flex; flex-direction: column; gap: 3px; margin-top: 10px; }
-        .btn-sell { background: #32324a; color: white; border: none; padding: 12px; border-radius: 16px 16px 6px 6px; font-weight: 600; }
-        .btn-withdraw { background: var(--tg-green); color: black; border: none; padding: 12px; border-radius: 6px 6px 16px 16px; font-weight: 800; }
+        .step-n {
+            background: rgba(255,255,255,0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
 
-        /* НАВИГАЦИЯ */
-        .nav { position: fixed; bottom: 0; width: 100%; background: rgba(13,13,18,0.95); display: flex; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #222; }
+        .btn-main {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* Инвентарь (склеенные кнопки) */
+        .inv-card {
+            margin: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 15px;
+        }
+
+        .btn-sell {
+            background: #2c2c3e;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 16px 16px 6px 6px;
+            font-weight: 600;
+        }
+
+        .btn-withdraw {
+            background: var(--tg-green);
+            color: black;
+            border: none;
+            padding: 12px;
+            border-radius: 6px 6px 16px 16px;
+            font-weight: 800;
+        }
+
+        /* Навигация */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 28px;
+            background: rgba(0,0,0,0.9);
+            border-top: 1px solid #222;
+        }
+
         .nav-item { color: #555; font-size: 11px; text-decoration: none; text-align: center; }
         .nav-item.active { color: white; }
-
     </style>
 </head>
 <body>
@@ -112,50 +190,48 @@
             <div style="width:35px; height:35px; border-radius:50%; background:#333;"></div>
             <span style="font-weight:600;">НИК</span>
         </div>
-        <div class="balance-card">
-            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="ton-icon">
-            <span>0.03</span>
-            <span style="margin-left:5px; opacity:0.5;">+</span>
+        <div class="balance-badge glass">
+            <span id="bal">0.03</span>
+            <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" class="ton-logo">
+            <span style="opacity:0.4; margin-left:4px;">+</span>
         </div>
     </div>
 
-    <div class="case-title">Heart Кейс</div>
+    <div class="case-header">
+        <div class="case-title">Heart Кейс</div>
+    </div>
 
-    <div class="items-grid">
-        <div class="item-box" onclick="giftAnim(this)">
-            <div style="font-size:10px; color:#888;">Diamond Ring</div>
-            <div style="height:40px; margin:5px 0; background:linear-gradient(45deg, #00d2ff, #3a7bd5); border-radius:8px;"></div>
-            <div style="font-size:11px;">10.5 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" style="width:10px;"></div>
+    <div class="grid" id="main-grid">
         </div>
-        <div class="item-box" onclick="giftAnim(this)">
-            <div style="font-size:10px; color:#888;">Nail Bracelet</div>
-            <div style="height:40px; margin:5px 0; background:linear-gradient(45deg, #f093fb, #f5576c); border-radius:8px;"></div>
-            <div style="font-size:11px;">5.20 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" style="width:10px;"></div>
+
+    <div style="padding: 0 15px;">
+        <button class="btn-main">ОТКРЫТЬ КЕЙС (1.5 TON)</button>
+    </div>
+
+    <div class="gifts-section glass">
+        <div style="font-weight:bold; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+            Способ оплаты: Gifts 🎁
         </div>
-        <div class="item-box" onclick="giftAnim(this)">
-            <div style="font-size:10px; color:#888;">Snoop Dogg</div>
-            <div style="height:40px; margin:5px 0; background:linear-gradient(45deg, #5ee7df, #b490ca); border-radius:8px;"></div>
-            <div style="font-size:11px;">4.56 <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" style="width:10px;"></div>
+        <div class="step">
+            <div class="step-n">1</div>
+            <div>Перейдите в нашего бота <b style="color:var(--accent-blue)">@casemonk_relayer</b></div>
+        </div>
+        <div class="step">
+            <div class="step-n">2</div>
+            <div>Отправьте ему <b>NFT подарок</b><br><small style="color:#777">Модель и фон не учитываются</small></div>
+        </div>
+        <div class="step">
+            <div class="step-n">3</div>
+            <div>Баланс пополнится мгновенно</div>
+        </div>
+        <div style="background:rgba(255,59,48,0.1); color:#ff3b30; padding:10px; border-radius:10px; font-size:12px; text-align:center;">
+            Отправляйте подарки только напрямую со своего аккаунта!
         </div>
     </div>
 
-    <div style="padding:15px;"><button style="width:100%; padding:16px; border-radius:12px; background:var(--accent-blue); border:none; color:white; font-weight:bold;">Пополнить баланс</button></div>
-
-    <div class="section-box">
-        <div style="font-weight:bold; margin-bottom:15px;">Способ оплаты: Gifts 🎁</div>
-        <div class="step"><div class="step-n">1</div><div>Перейдите в нашего бота <b style="color:var(--accent-blue);">@casemonk_relayer</b></div></div>
-        <div class="step"><div class="step-n">2</div><div>Отправьте ему <b>NFT подарок</b></div></div>
-        <div class="step"><div class="step-n">3</div><div>Баланс пополнится в течении секунд</div></div>
-        <div class="warning">Отправляйте подарки только напрямую со своего аккаунта!</div>
-    </div>
-
-    <div class="inv-card">
-        <div style="font-weight:bold; margin-bottom:10px;">Spy Agaric</div>
-        <div style="width:80px; height:80px; background:#ff4d4d; border-radius:50%; margin:0 auto;" onclick="giftAnim(this)"></div>
-        <div class="btn-group">
-            <button class="btn-sell">Продать <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" style="width:12px;"> 4.29</button>
-            <button class="btn-withdraw">Вывести</button>
-        </div>
+    <div style="padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 100px;">
+        <button class="btn-main glass" style="background:none; margin:0;">🎁 Бонусы</button>
+        <button class="btn-main glass" style="background:none; margin:0;">👨‍💻 Поддержка</button>
     </div>
 
     <nav class="nav">
@@ -166,7 +242,31 @@
     </nav>
 
     <script>
-        function giftAnim(el) {
+        const gifts = [
+            { n: "Diamond Ring", p: "12.50", c: "#00d2ff" },
+            { n: "Nail Bracelet", p: "8.20", c: "#f093fb" },
+            { n: "Signet Ring", p: "5.10", c: "#43e97b" },
+            { n: "Cupid Charm", p: "4.40", c: "#ff5858" },
+            { n: "Snoop Dogg", p: "4.56", c: "#f6d365" },
+            { n: "Love Candle", p: "1.20", c: "#feb47b" }
+        ];
+
+        function load() {
+            const g = document.getElementById('main-grid');
+            gifts.forEach(item => {
+                g.innerHTML += `
+                    <div class="grid-item glass" onclick="animateGift(this)">
+                        <div class="item-preview" style="background:${item.c}"></div>
+                        <div style="font-size:10px; opacity:0.6;">${item.n}</div>
+                        <div style="font-size:11px; font-weight:bold; margin-top:4px;">
+                            ${item.p} <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg" style="width:10px;">
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function animateGift(el) {
             el.classList.remove('anim-active');
             void el.offsetWidth;
             el.classList.add('anim-active');
@@ -174,6 +274,8 @@
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
             }
         }
+
+        window.onload = load;
     </script>
 </body>
 </html>
